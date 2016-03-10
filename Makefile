@@ -51,17 +51,18 @@ oall = cenmass.o \
        random.o \
        sizes.o \
        usegencan.o \
-       molpa.o
-oserial = feasy.o geasy.o
+       molpa.o \
+       feasy.o \
+       geasy.o
 #
-# Linking the serial version
+# Linking 
 #
-serial : $(oall) $(oserial)
+all : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
 	@echo " Flags: $(FLAGS) " 
 	@echo " ------------------------------------------------------ " 
-	@$(FORTRAN) -o packmol $(oall) $(oserial) $(FLAGS) 
+	@$(FORTRAN) -o packmol $(oall) $(FLAGS) 
 	@\rm -f *.mod *.o
 	@echo " ------------------------------------------------------ " 
 	@echo " Packmol succesfully built." 
@@ -69,12 +70,12 @@ serial : $(oall) $(oserial)
 #
 # Compiling with flags for development
 #
-devel : $(oall) $(oserial)
+devel : $(oall) 
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
-	@echo " Flags: -Wunused"
+	@echo " Flags: -Wunused -fcheck=bounds"
 	@echo " ------------------------------------------------------ "
-	@$(FORTRAN) -o packmol $(oall) $(oserial) -Wunused 
+	@$(FORTRAN) -o packmol $(oall) -Wunused -fcheck=bounds 
 	@echo " ------------------------------------------------------ " 
 	@echo " Packmol succesfully built. " 
 	@echo " ------------------------------------------------------ " 
@@ -111,7 +112,6 @@ pgencan.o : pgencan.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c pgencan.f90
 gencan.o : gencan.f
 	@$(FORTRAN) $(FLAGS) -c gencan.f 
-# Compiled for serial version only
 feasy.o : feasy.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c feasy.f90
 geasy.o : geasy.f90 $(modules)   

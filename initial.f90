@@ -106,32 +106,33 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
 
   ! Create first aleatory guess
 
-  i = 1
+  i = 0
+  j = ntotmol*3
   do itype = 1, ntype
     do imol = 1, nmols(itype)
-      x(i) = sizemin(1) + rnd(seed)*(sizemax(1)-sizemin(1))
-      x(i+1) = sizemin(2) + rnd(seed)*(sizemax(2)-sizemin(2))
-      x(i+2) = sizemin(3) + rnd(seed)*(sizemax(3)-sizemin(3))
-      j = i + ntotmol*3
+      x(i+1) = sizemin(1) + rnd(seed)*(sizemax(1)-sizemin(1))
+      x(i+2) = sizemin(2) + rnd(seed)*(sizemax(2)-sizemin(2))
+      x(i+3) = sizemin(3) + rnd(seed)*(sizemax(3)-sizemin(3))
       if ( constrain_rot(itype,1) ) then
-        x(j) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
+        x(j+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
                2.d0*rnd(seed)*dabs(rot_bound(itype,1,2))
-      else
-        x(j) = twopi*rnd(seed)
-      end if
-      if ( constrain_rot(itype,2) ) then
-        x(j+1) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
-                 2.d0*rnd(seed)*dabs(rot_bound(itype,2,2))
       else
         x(j+1) = twopi*rnd(seed)
       end if
-      if ( constrain_rot(itype,3) ) then
-        x(j+2) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
-                 2.d0*rnd(seed)*dabs(rot_bound(itype,3,2))
+      if ( constrain_rot(itype,2) ) then
+        x(j+2) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
+                 2.d0*rnd(seed)*dabs(rot_bound(itype,2,2))
       else
         x(j+2) = twopi*rnd(seed)
       end if
+      if ( constrain_rot(itype,3) ) then
+        x(j+3) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
+                 2.d0*rnd(seed)*dabs(rot_bound(itype,3,2))
+      else
+        x(j+3) = twopi*rnd(seed)
+      end if
       i = i + 3
+      j = j + 3
     end do
   end do
 
@@ -321,9 +322,36 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
   ! Building random initial point 
 
   write(*,*) ' Building random initial point ... '
-  do i = n/2 + 1, n
-    x(i) = twopi * rnd(seed)
+
+  ! Setting random angles, except if the rotations were constrained
+
+  j = ntotmol*3
+  do itype = 1, ntype
+    do imol = 1, nmols(itype)
+      if ( constrain_rot(itype,1) ) then
+        x(j+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
+               2.d0*rnd(seed)*dabs(rot_bound(itype,1,2))
+      else
+        x(j+1) = twopi*rnd(seed)
+      end if
+      if ( constrain_rot(itype,2) ) then
+        x(j+2) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
+                 2.d0*rnd(seed)*dabs(rot_bound(itype,2,2))
+      else
+        x(j+2) = twopi*rnd(seed)
+      end if
+      if ( constrain_rot(itype,3) ) then
+        x(j+3) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
+                 2.d0*rnd(seed)*dabs(rot_bound(itype,3,2))
+      else
+        x(j+3) = twopi*rnd(seed)
+      end if
+      j = j + 3
+    end do
   end do
+
+  ! Setting the center of mass coordinates
+
   ilubar = 0
   do itype = 1, ntype
     do imol = 1, nmols(itype)

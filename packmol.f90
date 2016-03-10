@@ -103,7 +103,7 @@ program packmol
              ' generation of starting configurations for',        /&
              ' molecular dynamics. ',/&
              ' ',/&
-             t42,' Version 16.066 ',/&
+             t42,' Version 16.070 ',/&
              ,/,62('#'),               /,/)")
       
   ! Reading input file
