@@ -98,13 +98,7 @@ program packmol
   ! Printing title
 
   dash1_line = "( 62('#') )"
-  write(*,"( 62('#'), /,/&
-             ' PACKMOL - Packing optimization for the automated', /&
-             ' generation of starting configurations for',        /&
-             ' molecular dynamics. ',/&
-             ' ',/&
-             t42,' Version 16.070 ',/&
-             ,/,62('#'),               /,/)")
+  call title()
       
   ! Reading input file
 

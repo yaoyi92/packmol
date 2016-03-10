@@ -43,6 +43,7 @@ oall = cenmass.o \
        gencan.o \
        pgencan.o \
        initial.o \
+       title.o \
        io.o \
 	 fgcommon.o \
        packmol.o \
@@ -96,6 +97,8 @@ cenmass.o : cenmass.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c cenmass.f90
 initial.o : initial.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c initial.f90
+title.o : title.f90 
+	@$(FORTRAN) $(FLAGS) -c title.f90
 io.o : io.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c io.f90
 fgcommon.o : fgcommon.f90 $(modules)
