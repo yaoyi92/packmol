@@ -1724,7 +1724,7 @@ subroutine getkey(keyword,record,iline)
   do while(i.le.200)
     i = i + 1
     ilast = i
-    do while(record(i:i).gt.' '.and.i.le.200)
+    do while(record(i:i).gt.' '.and.i.lt.200)
       i = i + 1
     end do
     if(i.gt.ilast) then
