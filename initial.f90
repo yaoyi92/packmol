@@ -408,8 +408,8 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
     call pgencan(n,x,fx)
     call feasy(x,fx)
     if(fx.gt.precision) then
-      write(*,"( a,i6,a,i6 )")'  Moving worst molecules ... ', i,' of ',nloop/10
-      movebadprint = .false.
+      write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
+      movebadprint = .true.
       call movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadprint)
     end if
   end do
