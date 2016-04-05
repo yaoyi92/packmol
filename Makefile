@@ -22,7 +22,11 @@ FORTRAN = /usr/bin/gfortran
 #
 # Change the flags of the compilation if you want:
 #
-FLAGS= -O3 -ffast-math 
+FLAGS= -O3 -ffast-math
+#
+# For very large systems, use these flags instead:
+#
+#FLAGS= -O3 -ffast-math -mcmodel=medium
  
 ###################################################################
 #                                                                 #

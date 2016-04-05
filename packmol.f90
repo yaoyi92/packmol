@@ -131,6 +131,11 @@ program packmol
   if(ntotat.gt.maxatom) then
     write(*,*)' ERROR: Total number of atoms greater than maxatom.'
     write(*,*)'        Change the maxatom (sizes.f90 file) '
+    if ( ntotat > 1000000 ) then
+      write(*,*) ' Since your system is very large, you will probably need '
+      write(*,*) ' to modify the compilation FLAGS in the Makefile file. '
+      write(*,*) ' Add the -mcmodel=medium flag, as specified there. '
+    end if
     stop
   end if
 

@@ -24,7 +24,7 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
   integer :: indflash(maxatom), lflash(maxatom), mflash
 
   ! Internal variables
-  integer :: n, i, icart, itype, iatom, imol, ilubar, ilugan, &
+  integer :: n, i, j, icart, itype, iatom, imol, ilubar, ilugan, &
              ilubar2, ilugan2, nbad, seed, igood, ibad, nmove
   double precision :: x(nn), fx, fmol(maxatom), movefrac, rnd, &
                       precision, frac, radiuswork(maxatom)
@@ -107,6 +107,9 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
         do i = 1, itype - 1
           if(comptype(i)) imol = imol + nmols(i) 
         end do
+        write(*,"( '  Moving:|0 ',tr39,'100%|' )")
+        write(*,"( '         |',$)") 
+        j = 0
         do i = 1, nmove
           ibad = nmols(itype) - i + 1 
           igood = int(rnd(seed)*nmols(itype)*frac) + 1
@@ -127,7 +130,12 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
           x(ilugan+2) = x(ilugan2+2)
           x(ilugan+3) = x(ilugan2+3)
           call restmol(itype,ilubar,n,x,fx,.true.,precision,seed)
+          do while( j < 45.d0*i/nmove ) 
+            write(*,"('*',$)")
+            j = j + 1
+          end do
         end do             
+        write(*,"('|')")
       end if
     end if
   end do
@@ -139,7 +147,7 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
   end do
 
 return
-end
+end subroutine movebad
 
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !                                                             c
