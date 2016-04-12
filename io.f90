@@ -76,15 +76,18 @@ subroutine getinp(dism,precision,sidemax,&
   do while (.true.)
     read(5,"( a200 )",iostat=ioerr) record
     if ( ioerr /= 0 ) exit
-
-    ! Checking if the line is empty or if it is a commentary
+    
+    ! Find commentary character
 
     i = 0
-    ignore = .true.
-    do while(ignore.and.i.lt.200)
+    do while( i < 200 )
       i = i + 1
-      if(record(i:i).gt.' '.and.record(1:1).ne.'#') ignore = .false.
+      if ( record(i:i) == '#' ) exit
     end do
+    i = i - 1
+    record = record(1:i)//blank(i+1:200)
+    ignore = .false.
+    if ( len(adjustl(trim(record))) < 1 ) ignore = .true.
 
     ! If the line contains relevant data, save it in the inputfile array
 
