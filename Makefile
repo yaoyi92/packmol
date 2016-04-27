@@ -12,8 +12,6 @@
 #
 #          make 
 #
-# The default compilation compiles only the serial version of packmol.
-#
 # If you want to compile with some specific fortran compiler, you must 
 # change the line below to the path of your fortran compiler. 
 #
@@ -69,9 +67,9 @@ oall = cenmass.o \
        computeg.o \
        input.o
 #
-# Linking the serial version
+# Linking 
 #
-serial : $(oall)
+all : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
 	@echo " Flags: $(FLAGS) " 
