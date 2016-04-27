@@ -10,22 +10,21 @@
 !  
 !
 ! Subroutine pgencan: This is only a interface to set some
-!                    parameters. What might be important here
-!                    is the setup of the constraint_axis constraint.
+!                     parameters. What might be important here
+!                     is the setup of the constraint_axis constraint.
 !
 
 subroutine pgencan(n,x,fx)
 
   use sizes 
-  use molpa
+  use compute_data
   use usegencan
   implicit none
 
-  double precision :: l(nn), lambda(1), rho(1), u(nn), wd(8*nn)
+  double precision :: lambda(1), rho(1)
   double precision :: epsgpsn,gpsupn,delmin
-  double precision :: x(nn), fx, g(nn)
+  double precision :: x(n), fx
   integer :: m,iprint,maxfc,ncomp,iter,fcnt,gcnt,cgcnt,inform
-  integer :: wi(nn)
   integer :: n, i
   integer :: trtype1
   integer :: itype, imol

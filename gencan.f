@@ -52,7 +52,7 @@ C     LOCAL SCALARS
 
       flag = 0
 
-      call feasy(x,f)
+      call computef(n,x,f)
 
       end
 
@@ -110,7 +110,7 @@ C     LOCAL SCALARS
 
       flag = 0
 
-      call geasy(n,x,g)
+      call computeg(n,x,g)
 
       end
 

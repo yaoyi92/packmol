@@ -18,7 +18,7 @@ subroutine title()
              ' generation of starting configurations for',        /&
              ' molecular dynamics. ',/&
              ' ',/&
-             t42,' Version 16.103 ',/&
+             t42,' Version 16.118 ',/&
              ,/,62('#'),               /,/)")
 
 end subroutine title

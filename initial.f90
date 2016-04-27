@@ -13,27 +13,30 @@
 !                     builds the initial point
 !
 
-subroutine initial(seed,randini,x,n,ntfix,fix,&
-                   moldy,chkgrad,nloop,discale,precision,sidemax,&
-                   movefrac,movebadrandom,check)
+subroutine initial(n,x)
 
   use sizes
-  use molpa
+  use compute_data
+  use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, &
+                    discale, precision, sidemax, movefrac, movebadrandom, check
   use usegencan
+
   implicit none
+  integer :: n, i, j, k, idatom, iatom, ilubar, icart, itype, &
+             imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
+             idfatom, iftype, jatom 
 
-  integer :: seed, n, i, j, k, idatom, iatom, ilubar, icart, itype, &
-             imol, ntry, ntfix, nb, iboxx, iboxy, iboxz, ifatom, &
-             idfatom, iftype, jatom, nloop
-
-  double precision :: x(nn), cmx, cmy, &
-                      cmz, fx, xlength, dbox, rnd, discale, precision, &
-                      movefrac, sidemax, radmax
-  double precision, parameter :: twopi = 2.d0 * 3.1415925655d0
+  double precision :: x(n), cmx, cmy, &
+                      cmz, fx, xlength, dbox, rnd, &
+                      radmax
+  double precision, parameter :: twopi = 8.d0*datan(1.d0)
      
-  logical :: fix, randini, moldy, chkgrad, &
-             hasfixed(0:nbp+1,0:nbp+1,0:nbp+1), &
-             overlap, movebadprint, hasbad, check, movebadrandom
+  logical :: overlap, movebadprint, hasbad 
+  logical, allocatable :: hasfixed(:,:,:)
+
+  ! Allocate hasfixed array
+
+  allocate(hasfixed(0:nbp+1,0:nbp+1,0:nbp+1))
 
   ! We need to initialize the move logical variable
 
@@ -56,7 +59,7 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
   scale2 = 1.d-2
 
   ! Move molecules to their center of mass (not for moldy)                                                                                   
-  if(.not.moldy) call tobar(coor,ntype,natoms,idfirst)
+  if(.not.moldy) call tobar()
 
   ! Compute maximum internal distance within each type of molecule
 
@@ -91,7 +94,7 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
     x(i) = 0.d0
     x(i+ntotmol*3) = 0.d0
   end do
-  call restmol(1,0,n,x,fx,.true.,precision,seed)
+  call restmol(1,0,n,x,fx,.true.)
   sizemin(1) = x(1) - sidemax 
   sizemax(1) = x(1) + sidemax
   sizemin(2) = x(2) - sidemax
@@ -110,26 +113,26 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
   j = ntotmol*3
   do itype = 1, ntype
     do imol = 1, nmols(itype)
-      x(i+1) = sizemin(1) + rnd(seed)*(sizemax(1)-sizemin(1))
-      x(i+2) = sizemin(2) + rnd(seed)*(sizemax(2)-sizemin(2))
-      x(i+3) = sizemin(3) + rnd(seed)*(sizemax(3)-sizemin(3))
+      x(i+1) = sizemin(1) + rnd()*(sizemax(1)-sizemin(1))
+      x(i+2) = sizemin(2) + rnd()*(sizemax(2)-sizemin(2))
+      x(i+3) = sizemin(3) + rnd()*(sizemax(3)-sizemin(3))
       if ( constrain_rot(itype,1) ) then
         x(j+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
-               2.d0*rnd(seed)*dabs(rot_bound(itype,1,2))
+               2.d0*rnd()*dabs(rot_bound(itype,1,2))
       else
-        x(j+1) = twopi*rnd(seed)
+        x(j+1) = twopi*rnd()
       end if
       if ( constrain_rot(itype,2) ) then
         x(j+2) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
-                 2.d0*rnd(seed)*dabs(rot_bound(itype,2,2))
+                 2.d0*rnd()*dabs(rot_bound(itype,2,2))
       else
-        x(j+2) = twopi*rnd(seed)
+        x(j+2) = twopi*rnd()
       end if
       if ( constrain_rot(itype,3) ) then
         x(j+3) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
-                 2.d0*rnd(seed)*dabs(rot_bound(itype,3,2))
+                 2.d0*rnd()*dabs(rot_bound(itype,3,2))
       else
-        x(j+3) = twopi*rnd(seed)
+        x(j+3) = twopi*rnd()
       end if
       i = i + 3
       j = j + 3
@@ -154,7 +157,7 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
       boxl(i) = dmax1(xlength/dfloat(nb),dbox)
       nboxes(i) = nb
     end do
-    call compgrad(n,x)
+    call comparegrad(n,x)
     stop
   end if
 
@@ -172,11 +175,11 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
     i = i + 1 
     write(*,"( '  Packing:|0 ',tr39,'  10|' )")
     call pgencan(n,x,fx)
-    call feasy(x,fx)
+    call computef(n,x,fx)
     if(fx.gt.precision) then 
       write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
       movebadprint = .true.
-      call movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadprint)
+      call movebad(n,x,fx,movebadprint)
     end if
   end do
   write(*,*) 
@@ -330,27 +333,27 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
     do imol = 1, nmols(itype)
       if ( constrain_rot(itype,1) ) then
         x(j+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
-               2.d0*rnd(seed)*dabs(rot_bound(itype,1,2))
+               2.d0*rnd()*dabs(rot_bound(itype,1,2))
       else
-        x(j+1) = twopi*rnd(seed)
+        x(j+1) = twopi*rnd()
       end if
       if ( constrain_rot(itype,2) ) then
         x(j+2) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
-                 2.d0*rnd(seed)*dabs(rot_bound(itype,2,2))
+                 2.d0*rnd()*dabs(rot_bound(itype,2,2))
       else
-        x(j+2) = twopi*rnd(seed)
+        x(j+2) = twopi*rnd()
       end if
       if ( constrain_rot(itype,3) ) then
         x(j+3) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
-                 2.d0*rnd(seed)*dabs(rot_bound(itype,3,2))
+                 2.d0*rnd()*dabs(rot_bound(itype,3,2))
       else
-        x(j+3) = twopi*rnd(seed)
+        x(j+3) = twopi*rnd()
       end if
       j = j + 3
     end do
   end do
 
-  ! Setting the center of mass coordinates
+  ! Setting random center of mass coordinates, withing size limits
 
   ilubar = 0
   do itype = 1, ntype
@@ -360,9 +363,9 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
       overlap = .false.
       do while((overlap.or.fx.gt.precision).and.ntry.le.20) 
         ntry = ntry + 1
-        x(ilubar+1) = cmxmin(itype) + rnd(seed)*(cmxmax(itype)-cmxmin(itype))
-        x(ilubar+2) = cmymin(itype) + rnd(seed)*(cmymax(itype)-cmymin(itype))
-        x(ilubar+3) = cmzmin(itype) + rnd(seed)*(cmzmax(itype)-cmzmin(itype))
+        x(ilubar+1) = cmxmin(itype) + rnd()*(cmxmax(itype)-cmxmin(itype))
+        x(ilubar+2) = cmymin(itype) + rnd()*(cmymax(itype)-cmymin(itype))
+        x(ilubar+3) = cmzmin(itype) + rnd()*(cmzmax(itype)-cmzmin(itype))
         if(fix) then
           call setibox(x(ilubar+1),x(ilubar+2),x(ilubar+3),&
                        sizemin,boxl,nboxes,iboxx,iboxy,iboxz)
@@ -385,8 +388,7 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
             overlap = .false.
           end if
         end if  
-        if(.not.overlap) call restmol(itype,ilubar,n,x,fx,.false.,&
-                                      precision,seed)
+        if(.not.overlap) call restmol(itype,ilubar,n,x,fx,.false.)
       end do
       ilubar = ilubar + 3
     end do
@@ -406,11 +408,11 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
     i = i + 1 
     write(*,"( '  Packing:|0 ',tr39,'  10|' )")
     call pgencan(n,x,fx)
-    call feasy(x,fx)
+    call computef(n,x,fx)
     if(fx.gt.precision) then
       write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
       movebadprint = .true.
-      call movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadprint)
+      call movebad(n,x,fx,movebadprint)
     end if
   end do
   write(*,*) 
@@ -419,6 +421,10 @@ subroutine initial(seed,randini,x,n,ntfix,fix,&
 
   write(*,"( /,62('#'),/ )")
 
+  ! Deallocate hasfixed array
+
+  deallocate(hasfixed)
+
   return
 end subroutine initial
 
@@ -426,15 +432,13 @@ end subroutine initial
 ! Subroutine resetboxes
 !
 
-subroutine resetboxes(nboxes,latomfirst,latomfix)
+subroutine resetboxes()
       
   use sizes
+  use compute_data, only : nboxes, latomfirst, latomfix
   implicit none
 
   integer :: i,j,k
-  integer :: nboxes(3)
-  integer :: latomfirst(0:nbp+1,0:nbp+1,0:nbp+1),&
-             latomfix(0:nbp+1,0:nbp+1,0:nbp+1) 
 
   ! Reset boxes
 
@@ -476,13 +480,13 @@ end subroutine resetboxes
 ! subroutine tobar: moves molecules to their baricentres
 !
 
-subroutine tobar(coor,ntype,natoms,idfirst)
+subroutine tobar()
       
   use sizes
+  use compute_data, only : coor, ntype, natoms, idfirst
   implicit none
-  integer :: ntype, natoms(maxtype), idfirst(maxtype), idatom, &
-             itype, iatom
-  double precision :: xcm, ycm, zcm, coor(maxatom,3)
+  integer :: idatom, itype, iatom
+  double precision :: xcm, ycm, zcm
 
   do itype = 1, ntype
     idatom = idfirst(itype) - 1
@@ -543,17 +547,17 @@ end subroutine setibox
 !                     in the restraint region
 !  
 
-subroutine restmol(itype,ilubar,n,x,fx,solve,precision,seed)
+subroutine restmol(itype,ilubar,n,x,fx,solve)
 
   use sizes
-  use molpa
+  use compute_data
   use usegencan
   implicit none
 
-  integer :: n, nsafe, ntotsafe, itype, i, ilubar, nmoltype, seed, ip1, ip2
-  double precision :: xmol(nn), x(nn), fx, precision
-  logical :: solve, compsafe(maxtype), initsafe
-
+  integer :: n, nsafe, ntotsafe, itype, i, ilubar, nmoltype, ip1, ip2
+  double precision :: x(n), fx
+  logical :: solve, initsafe
+ 
   ! Saving global problem variables
 
   nsafe = n
@@ -587,7 +591,7 @@ subroutine restmol(itype,ilubar,n,x,fx,solve,precision,seed)
   ! If not going to solve the problem, compute energy and return
 
   if(.not.solve) then
-    call feasy(xmol,fx)
+    call computef(n,xmol,fx)
     ! Otherwise, put this molecule in its constraints
   else
     ip1 = iprint1

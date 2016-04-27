@@ -8,7 +8,7 @@
 !  as published by the Free Software Foundation; either version 2
 !  of the License, or (at your option) any later version.
 !  
-!cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc          
+!-----------------------------------------------------------------------------
 !
 ! Packmol: A package for building initial configurations for
 ! molecular dynamics simulations, to be published, 2008.
@@ -42,102 +42,73 @@
 program packmol
 
   use sizes
-  use molpa
+  use compute_data
+  use input
   use usegencan
+  use flashsort
   implicit none
 
-  integer :: irestline(maxrest)
-  integer :: linestrut(maxtype,2)
-  integer :: itype, nrest, irest, idatom, iatom
-  integer :: ntemp, ntfix, idtemp, nmtemp, natemp, nlines
+  integer :: itype, irest, idatom, iatom
+  integer :: ntemp, idtemp, nmtemp, natemp
   integer :: linesttmp1, linesttmp2, jtype
   integer :: ntmol, n, iftype, icart, imol, iicart, iline_atoms
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
-  integer :: seed
-  integer :: nloop, loop
-  integer :: maxcon(maxatom)
-  integer :: ntcon(9), nconnect(maxatom,8) 
+  integer :: loop
   integer :: ntottemp, ilubar, ilugan  
-  integer :: resnumbers(maxtype), resntemp
-  integer :: charl, writeout, ioerr
-  integer :: input_itype(maxtype)
+  integer :: resntemp
+  integer :: charl, ioerr
       
+  double precision, allocatable :: x(:) ! (nn)
+  double precision, allocatable :: xfull(:) ! (nn)
+  double precision, allocatable :: xbest(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
-  double precision :: x(nn), xfull(nn), xbest(nn)
-  double precision :: rad, radiuswork(maxatom), radscale
+  double precision :: rad, radscale
   double precision :: cmx, cmy, cmz, beta, gama, teta
   double precision :: xtemp, ytemp, ztemp
   double precision :: fx, bestf, flast, fout
-  double precision :: fimp, fimprov, precision
-  double precision :: amass(maxatom), charge(maxatom)
-  double precision :: discale, movefrac, dism
-  double precision :: add_sides_fix
-  double precision :: sidemax
-  double precision, parameter :: pi=3.141592653589793d0
+  double precision :: fimp, fimprov
+  double precision, parameter :: pi=4.d0*datan(1.d0)
 
   real :: etime, tarray(2), time0
   
-  character(len=200) :: keyword(maxlines,maxkeywords)
   character(len=200) :: record
-  character(len=200) :: name(maxtype)
-  character(len=80) :: pdbfile(maxtype), xyzfile
-  character(len=3) :: ele(maxatom)
-  character(len=200) :: xyzout        
+  character(len=80) :: xyzfile
   character(len=80) :: dash1_line
 
-  logical :: fix,fixed(maxtype),fixtmp,randini,check,chkgrad
-  logical :: pdb,tinker,xyz,moldy,rests,writebad,writexyz
-  logical :: add_amber_ter, add_box_sides
-  logical :: movebadprint, hasbad, movebadrandom
-  logical :: thisisfixed(maxtype), changechains(maxtype)
+  logical :: fixtmp
+  logical :: rests, writexyz
+  logical :: movebadprint
 
-  ! Start time computation
-
-  time0 = etime(tarray)
+  logical, allocatable :: fixed(:) ! ntype
 
   ! Printing title
 
   dash1_line = "( 62('#') )"
   call title()
       
+  ! Set dimensions of all arrays
+
+  call setsizes()
+
+  ! Allocate local array
+
+  allocate(fixed(ntype),x(nn),xfull(nn),xbest(nn))
+
+  ! Start time computation
+
+  time0 = etime(tarray)
+
   ! Reading input file
 
-  call getinp(dism,precision,sidemax,&
-              ntype,nlines,nrest,&
-              natoms,idfirst,nconnect,maxcon,nmols,&
-              seed,&
-              discale,nloop,&
-              irestline,ityperest,linestrut,&
-              coor,amass,charge,restpars,&
-              pdbfile,name,ele,keyword,&
-              xyzout,writeout,writebad,&
-              tinker,pdb,xyz,moldy,check,chkgrad,&
-              randini,resnumbers,movefrac,movebadrandom,changechains,&
-              add_amber_ter,add_box_sides,add_sides_fix)
+  call getinp()
 
   ! Put molecules in their center of mass
 
-  call cenmass(coor,amass,ntype,nlines,idfirst,natoms,&
-               keyword,linestrut)
+  call cenmass()
  
-  ! Computing the total number of atoms
+  ! Writting some input data
      
-  ntotat = 0
-  do itype = 1, ntype
-    ntotat = ntotat + natoms(itype) * nmols(itype)
-  end do              
   write(*,*) ' Total number of atoms: ', ntotat
-
-  if(ntotat.gt.maxatom) then
-    write(*,*)' ERROR: Total number of atoms greater than maxatom.'
-    write(*,*)'        Change the maxatom (sizes.f90 file) '
-    if ( ntotat > 1000000 ) then
-      write(*,*) ' Since your system is very large, you will probably need '
-      write(*,*) ' to modify the compilation FLAGS in the Makefile file. '
-      write(*,*) ' Add the -mcmodel=medium flag, as specified there. '
-    end if
-    stop
-  end if
 
   ! Setting the vector that contains the default tolerance
 
@@ -276,12 +247,10 @@ program packmol
             coor(idatom, 3) = ztemp + cmz 
           end do
           record = name(itype)
-          write(*,*) ' Molecule ',record(1:charl(record)),&
-                     '(',itype,') will be fixed.' 
+          write(*,*) ' Molecule ',record(1:charl(record)),'(',itype,') will be fixed.' 
           fixed(itype) = .true.
           if(nmols(itype).gt.1) then
-            write(*,*)' ERROR: You cannot set number > 1',&
-                      ' for fixed molecules. '
+            write(*,*)' ERROR: You cannot set number > 1',' for fixed molecules. '
             stop
           end if
         end if
@@ -507,13 +476,7 @@ program packmol
   ! If there are no variables (only fixed molecules, stop)
 
   if(n.eq.0) then
-    call output(x,amass,&
-                irestline,linestrut,maxcon,ntcon,nconnect,&
-                nrest,ntfix,resnumbers,&
-                ele,pdbfile,xyzout,name,&
-                pdb,tinker,xyz,moldy,fix,&
-                add_amber_ter,add_box_sides,add_sides_fix,&
-                input_itype,thisisfixed,changechains)
+    call output(n,x)
     write(*,dash1_line)
     write(*,*) ' There are only fixed molecules, therefore '
     write(*,*) ' there is nothing to do. '
@@ -527,9 +490,7 @@ program packmol
   ! (Re)setting parameters and building initial point
   !
 
-  call initial(seed,randini,x,n,ntfix,fix,moldy,&
-               chkgrad,nloop,discale,precision,sidemax,&
-               movefrac,movebadrandom,check)
+  call initial(n,x)
 
   ! Computing the energy at the initial point
 
@@ -537,7 +498,7 @@ program packmol
   do i = 1, ntotat
     radius_ini(i) = radius(i)
   end do
-  call feasy(x,fx)
+  call computef(n,x,fx)
   write(*,*) ' Objective function at initial point: ', fx
   bestf = fx
   flast = fx
@@ -547,15 +508,8 @@ program packmol
   end do
 
   if(check) then
-    call output(x,amass,&
-                irestline,linestrut,maxcon,ntcon,nconnect,&
-                nrest,ntfix,resnumbers,&
-                ele,pdbfile,xyzout,name,&
-                pdb,tinker,xyz,moldy,fix,&
-                add_amber_ter,add_box_sides,add_sides_fix,&
-                input_itype,thisisfixed,changechains)
-    write(*,*) ' Wrote initial point to output file: ',&
-               xyzout(1:charl(xyzout)) 
+    call output(n,x)
+    write(*,*) ' Wrote initial point to output file: ', xyzout(1:charl(xyzout)) 
     stop
   end if
 
@@ -656,7 +610,7 @@ program packmol
           radiuswork(i) = radius(i) 
           radius(i) = radius_ini(i)
         end do
-        call feasy(x,fx)
+        call computef(n,x,fx)
         do i = 1, ntotat
           radius(i) = radiuswork(i)
         end do
@@ -668,20 +622,13 @@ program packmol
 
       if(radscale == 1.d0 .and. fimp.le.10.d0) then
         movebadprint = .true.
-        call movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadprint)
+        call movebad(n,x,fx,movebadprint)
         flast = fx
       end if
 
       if(loop.eq.nloop.and.itype.eq.ntype+1) then
         write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
-        call checkpoint(n,xbest,amass,&
-                        nrest,ntfix,nloop,&
-                        irestline,linestrut,maxcon,ntcon,nconnect,&
-                        ele,pdbfile,xyzout,name,&
-                        pdb,tinker,xyz,moldy,fix,&
-                        movefrac,movebadrandom,precision,seed,resnumbers,&
-                        add_amber_ter,add_box_sides,add_sides_fix,&
-                        input_itype,thisisfixed,changechains)
+        call checkpoint(n,xbest)
         stop
       end if
 
@@ -699,7 +646,7 @@ program packmol
         radiuswork(i) = radius(i)
         radius(i) = radius_ini(i)
       end do
-      call feasy(x,fx)
+      call computef(n,x,fx)
       do i = 1, ntotat
         radius(i) = radiuswork(i)
       end do
@@ -767,15 +714,7 @@ program packmol
           write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
         end if
 
-        if ( writexyz ) then
-          call output(x,amass,&
-                      irestline,linestrut,maxcon,ntcon,nconnect,&
-                      nrest,ntfix,resnumbers,&
-                      ele,pdbfile,xyzout,name,&
-                      pdb,tinker,xyz,moldy,fix,&
-                      add_amber_ter,add_box_sides,add_sides_fix,&
-                      input_itype,thisisfixed,changechains)
-        end if
+        if ( writexyz ) call output(n,x)
 
       end if
 

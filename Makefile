@@ -12,21 +12,18 @@
 #
 #          make 
 #
-# If you want to compile with some specific fortran compiler,
-# you must change the line below to the path of your fortran compiler.
+# The default compilation compiles only the serial version of packmol.
+#
+# If you want to compile with some specific fortran compiler, you must 
+# change the line below to the path of your fortran compiler. 
 #
 FORTRAN = /usr/bin/gfortran
 #
-# Change "AUTO" to the fortran command you want. After changing
-# this line, compile the package.
+# Change "AUTO" to the fortran command you want. 
 #
 # Change the flags of the compilation if you want:
 #
-FLAGS= -O3 -ffast-math
-#
-# For very large systems, use these flags instead:
-#
-#FLAGS= -O3 -ffast-math -mcmodel=medium
+FLAGS= -O3 -ffast-math 
  
 ###################################################################
 #                                                                 #
@@ -48,21 +45,33 @@ oall = cenmass.o \
        pgencan.o \
        initial.o \
        title.o \
-       io.o \
-	 fgcommon.o \
+       setsizes.o \
+       getinp.o \
+       length.o \
+       output.o \
+       checkpoint.o \
+       fparc.o \
+       gparc.o \
+       gwalls.o \
+       comprest.o \
+       comparegrad.o \
        packmol.o \
        polartocart.o \
        heuristics.o \
+       flashsort.o \
+       jacobi.o \
        random.o \
        sizes.o \
        usegencan.o \
-       molpa.o \
-       feasy.o \
-       geasy.o
+       compute_data.o \
+       flashmod.o \
+       computef.o \
+       computeg.o \
+       input.o
 #
-# Linking 
+# Linking the serial version
 #
-all : $(oall)
+serial : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
 	@echo " Flags: $(FLAGS) " 
@@ -75,23 +84,27 @@ all : $(oall)
 #
 # Compiling with flags for development
 #
-devel : $(oall) 
+devel : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
 	@echo " Flags: -Wunused -fcheck=bounds"
 	@echo " ------------------------------------------------------ "
-	@$(FORTRAN) -o packmol $(oall) -Wunused -fcheck=bounds 
+	@$(FORTRAN) -o packmol $(oall) -Wunused -fcheck=bounds
 	@echo " ------------------------------------------------------ " 
 	@echo " Packmol succesfully built. " 
 	@echo " ------------------------------------------------------ " 
 #
 # Modules
 #
-modules = sizes.o molpa.o usegencan.o
+modules = sizes.o compute_data.o usegencan.o input.o flashmod.o
 sizes.o : sizes.f90 
 	@$(FORTRAN) $(FLAGS) -c sizes.f90
-molpa.o : molpa.f90 sizes.o
-	@$(FORTRAN) $(FLAGS) -c molpa.f90
+compute_data.o : compute_data.f90 sizes.o
+	@$(FORTRAN) $(FLAGS) -c compute_data.f90
+input.o : input.f90 sizes.o 
+	@$(FORTRAN) $(FLAGS) -c input.f90
+flashmod.o : flashmod.f90 sizes.o 
+	@$(FORTRAN) $(FLAGS) -c flashmod.f90
 usegencan.o : usegencan.f90 
 	@$(FORTRAN) $(FLAGS) -c usegencan.f90
 #
@@ -101,30 +114,55 @@ cenmass.o : cenmass.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c cenmass.f90
 initial.o : initial.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c initial.f90
-title.o : title.f90 
+title.o : title.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c title.f90
-io.o : io.f90  $(modules)
-	@$(FORTRAN) $(FLAGS) -c io.f90
-fgcommon.o : fgcommon.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c fgcommon.f90
+setsizes.o : setsizes.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c setsizes.f90
+getinp.o : getinp.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c getinp.f90
+length.o : length.f90  
+	@$(FORTRAN) $(FLAGS) -c length.f90
+output.o : output.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c output.f90
+checkpoint.o : checkpoint.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c checkpoint.f90
+fparc.o : fparc.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c fparc.f90
+gparc.o : gparc.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c gparc.f90
+gwalls.o : gwalls.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c gwalls.f90
+comprest.o : comprest.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c comprest.f90
+comparegrad.o : comparegrad.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c comparegrad.f90
 packmol.o : packmol.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c packmol.f90
 polartocart.o : polartocart.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c polartocart.f90
 heuristics.o : heuristics.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c heuristics.f90
-random.o : random.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c random.f90
+flashsort.o : flashsort.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c flashsort.f90
+jacobi.o : jacobi.f90
+	@$(FORTRAN) $(FLAGS) -c jacobi.f90
 pgencan.o : pgencan.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c pgencan.f90
 gencan.o : gencan.f
 	@$(FORTRAN) $(FLAGS) -c gencan.f 
-feasy.o : feasy.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c feasy.f90
-geasy.o : geasy.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c geasy.f90
+random.o : random.f90 
+	@$(FORTRAN) $(FLAGS) -c random.f90
+computef.o : computef.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c computef.f90
+computeg.o : computeg.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c computeg.f90
 #
 # Clean build files
 #
 clean: 
 	@\rm -f ./*.o ./*.mod 
+#
+# Remove all build and executable files to upload to git
+#
+cleanall:  
+	@\rm -f ./packmol ./*.o ./*.mod

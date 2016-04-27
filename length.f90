@@ -8,16 +8,26 @@
 !  as published by the Free Software Foundation; either version 2
 !  of the License, or (at your option) any later version.
 !  
-! Optimization variables passed as common go pgencan
+!
+! Version 15.317
+!
 
-module usegencan
+!
+! Function that determines the length of a string
+!
 
-  use sizes
+function length(string)
+
   implicit none
+  integer :: length
+  character(len=200) :: string
+  
+  length = 200
+  do while(string(length:length) <= ' ')
+    length = length - 1
+    if ( length == 0 ) exit
+  end do
 
-  integer :: maxit, iprint1, iprint2
-  integer, allocatable :: wi(:) ! (nn)
-  double precision, allocatable :: l(:), u(:), g(:) ! (nn)
-  double precision, allocatable :: wd(:) ! (8*nn)
-
-end module usegencan
+return
+end function length      
+ 

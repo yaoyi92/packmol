@@ -13,25 +13,21 @@
 !            Computes the center of mass of free molecules and
 !            for fixed molecules, if required. 
 !
-
-subroutine cenmass(coor,amass, ntype, nlines, idfirst,natoms, &
-                   keyword,linestrut)
+subroutine cenmass()
 
   use sizes
+  use compute_data, only : ntype, coor, idfirst, natoms
+  use input, only : keyword, amass, nlines, linestrut
+
   implicit none
+  integer :: k, iline
+  integer :: itype, iatom, idatom
+  double precision, allocatable :: cm(:,:), totm(:)
+  logical, allocatable :: domass(:)
 
-  character(len=200) :: keyword(maxlines,maxkeywords)
+  ! Allocate local vectors
 
-  double precision :: cm(maxtype,3), totm(maxtype)
-  double precision :: amass(maxatom)
-  double precision :: coor(maxatom,3)
-
-  integer :: linestrut(maxtype,2)  
-  integer :: k, iline, nlines
-  integer :: itype, ntype, iatom, idatom
-  integer :: idfirst(maxtype), natoms(maxtype)
-
-  logical :: domass(maxtype)
+  allocate(cm(ntype,3),totm(ntype),domass(ntype))
 
   ! Setting the molecules for which the center of mass is computed
 
@@ -105,6 +101,8 @@ subroutine cenmass(coor,amass, ntype, nlines, idfirst,natoms, &
       end do
     end if
   end do
+
+  deallocate(cm,totm,domass)
 
   return
 end subroutine cenmass

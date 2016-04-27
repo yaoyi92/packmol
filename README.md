@@ -3,9 +3,7 @@ Packmol
 
 Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
-This page contains the GIT repository of the latest stable version of Packmol. You can download the package
-from here, but please register your download in our site http://www.ime.unicamp.br/~martinez/packmol, in order
-to keep our motivation in developing the code.
+This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page, for which the link is provided here.
 
 What is Packmol
 ---------------

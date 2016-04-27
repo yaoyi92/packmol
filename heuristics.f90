@@ -13,22 +13,21 @@
 !            positions
 !
 
-subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadprint)
+subroutine movebad(n,x,fx,movebadprint)
 
   use sizes
-  use molpa
+  use compute_data
+  use input, only : movefrac, movebadrandom, precision
   use usegencan
-  implicit none
+  use flashsort
 
-  ! For flashsort
-  integer :: indflash(maxatom), lflash(maxatom), mflash
+  implicit none
 
   ! Internal variables
   integer :: n, i, j, icart, itype, iatom, imol, ilubar, ilugan, &
-             ilubar2, ilugan2, nbad, seed, igood, ibad, nmove
-  double precision :: x(nn), fx, fmol(maxatom), movefrac, rnd, &
-                      precision, frac, radiuswork(maxatom)
-  logical :: movebadprint, hasbad, movebadrandom
+             ilubar2, ilugan2, nbad, igood, ibad, nmove
+  double precision :: x(n), fx, rnd, frac
+  logical :: movebadprint, hasbad
 
   if(movebadprint) write(*,*) ' Moving worst molecules ... ' 
 
@@ -52,7 +51,7 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
     radiuswork(i) = radius(i)
     radius(i) = radius_ini(i)
   end do
-  call feasy(x,fx)
+  call computef(n,x,fx)
   move = .false.
 
   ! Moving the worst molecules
@@ -112,24 +111,24 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
         j = 0
         do i = 1, nmove
           ibad = nmols(itype) - i + 1 
-          igood = int(rnd(seed)*nmols(itype)*frac) + 1
+          igood = int(rnd()*nmols(itype)*frac) + 1
           ilubar = 3*(indflash(ibad)+imol-1)
           ilugan = 3*(indflash(ibad)+imol-1)+3*ntotmol
           ilubar2 = 3*(indflash(igood)+imol-1)
           ilugan2 = 3*(indflash(igood)+imol-1)+3*ntotmol
           if ( movebadrandom ) then
-            x(ilubar+1) = sizemin(1) + rnd(seed)*(sizemax(1)-sizemin(1))
-            x(ilubar+2) = sizemin(2) + rnd(seed)*(sizemax(2)-sizemin(2)) 
-            x(ilubar+3) = sizemin(3) + rnd(seed)*(sizemax(3)-sizemin(3)) 
+            x(ilubar+1) = sizemin(1) + rnd()*(sizemax(1)-sizemin(1))
+            x(ilubar+2) = sizemin(2) + rnd()*(sizemax(2)-sizemin(2)) 
+            x(ilubar+3) = sizemin(3) + rnd()*(sizemax(3)-sizemin(3)) 
           else
-            x(ilubar+1) = x(ilubar2+1) - 0.3*dmax(itype)+0.6*rnd(seed)*dmax(itype) 
-            x(ilubar+2) = x(ilubar2+2) - 0.3*dmax(itype)+0.6*rnd(seed)*dmax(itype)
-            x(ilubar+3) = x(ilubar2+3) - 0.3*dmax(itype)+0.6*rnd(seed)*dmax(itype)
+            x(ilubar+1) = x(ilubar2+1) - 0.3*dmax(itype)+0.6*rnd()*dmax(itype) 
+            x(ilubar+2) = x(ilubar2+2) - 0.3*dmax(itype)+0.6*rnd()*dmax(itype)
+            x(ilubar+3) = x(ilubar2+3) - 0.3*dmax(itype)+0.6*rnd()*dmax(itype)
           end if
           x(ilugan+1) = x(ilugan2+1)
           x(ilugan+2) = x(ilugan2+2)
           x(ilugan+3) = x(ilugan2+3)
-          call restmol(itype,ilubar,n,x,fx,.true.,precision,seed)
+          call restmol(itype,ilubar,n,x,fx,.true.)
           do while( j < 45.d0*i/nmove ) 
             write(*,"('*',$)")
             j = j + 1
@@ -140,134 +139,12 @@ subroutine movebad(n,x,fx,movefrac,movebadrandom,precision,seed,hasbad,movebadpr
     end if
   end do
 
-  call feasy(x,fx)
+  call computef(n,x,fx)
   if(movebadprint) write(*,*) ' Function value after moving molecules:', fx
   do i = 1, ntotat
     radius(i) = radiuswork(i)
   end do
 
-return
+  return
 end subroutine movebad
-
-!cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-!                                                             c
-!     Subroutine Flash1                                       c
-!     SORTS ARRAY A WITH N ELEMENTS BY USE OF INDEX VECTOR L  c
-!     OF DIMENSION M WITH M ABOUT 0.1 N.                      c
-!     Karl-Dietrich Neubert, FlashSort1 Algorithm             c
-!     in  Dr. Dobb's Journal Feb.1998,p.123                   c
-!                                                             c
-!cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine flash1 (A, N, L, M, ind)
-
-      implicit none
-      double precision :: a(*), anmin, c1, hold, flash
-      integer :: L(*), ind(*), i, n, nmax, m, k, ihold, nmove, j, iflash
-!     ============================ CLASS FORMATION ===== 
-
-
-      do i = 1, n
-      ind(i) = i
-      end do
-
-      ANMIN=A(1)
-      NMAX=1 
-      DO I=1,N
-         IF( A(I).LT.ANMIN) ANMIN=A(I)
-         IF( A(I).GT.A(NMAX)) NMAX=I
-      END DO
-
-      IF (ANMIN.EQ.A(NMAX)) RETURN
-      C1=(M - 1) / (A(NMAX) - ANMIN)
-      DO K=1,M  
-         L(K)=0
-      END DO 
-      DO I=1,N
-         K=1 + INT(C1 * (A(I) - ANMIN))
-         L(K)=L(K) + 1
-      END DO
-      DO K=2,M
-         L(K)=L(K) + L(K - 1)
-      END DO
-      HOLD=A(NMAX)
-      A(NMAX)=A(1) 
-      A(1)=HOLD
-
-      ihold = ind(nmax)
-      ind(nmax) = ind(1)
-      ind(1) = ihold
-
-
-!     =============================== PERMUTATION ===== 
-      NMOVE=0 
-      J=1
-      K=M
-      DO WHILE (NMOVE.LT.N - 1)
-         DO WHILE (J.GT.L(K)) 
-            J=J + 1 
-            K=1 + INT(C1 * (A(J) - ANMIN)) 
-         END DO  
-         FLASH=A(J)
-         iflash=ind(j)
-
-         DO WHILE (.NOT.(J.EQ.L(K) + 1)) 
-            K=1 + INT(C1 * (FLASH - ANMIN))
-            HOLD=A(L(K)) 
-            ihold = ind(L(k))
-            A(L(K))=FLASH
-            ind(L(k)) = iflash
-            iflash = ihold
-            FLASH=HOLD
-            L(K)=L(K) - 1
-            NMOVE=NMOVE + 1 
-         END DO
-      END DO
-
-!     ========================= STRAIGHT INSERTION =====
-      DO I=N-2,1,-1
-         IF  (A(I + 1).LT.A(I)) THEN
-            HOLD=A(I)
-            ihold = ind(i)
-            J=I
-            DO WHILE  (A(J + 1).LT.HOLD)
-               A(J)=A(J + 1)
-               ind(j) = ind(j+1) 
-               J=J + 1 
-            END DO
-            A(J)=HOLD 
-            ind(j) = ihold
-         ENDIF
-      END DO
-
-!     =========================== RETURN,END FLASH1 =====
-      RETURN
-      END               
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

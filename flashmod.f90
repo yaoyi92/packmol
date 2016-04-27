@@ -8,16 +8,19 @@
 !  as published by the Free Software Foundation; either version 2
 !  of the License, or (at your option) any later version.
 !  
-! Optimization variables passed as common go pgencan
 
-module usegencan
+!
+! Arrays required by the flashsort package. Used only in heuristics, but
+! defined here to be allocated dynamically
+!
+
+module flashsort
 
   use sizes
   implicit none
+  integer, allocatable :: indflash(:) ! (ntotat)
+  integer, allocatable :: lflash(:) ! (ntotat)
+  integer :: mflash
 
-  integer :: maxit, iprint1, iprint2
-  integer, allocatable :: wi(:) ! (nn)
-  double precision, allocatable :: l(:), u(:), g(:) ! (nn)
-  double precision, allocatable :: wd(:) ! (8*nn)
+end module flashsort
 
-end module usegencan

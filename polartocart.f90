@@ -53,13 +53,12 @@ end subroutine eulerrmat
 !                      and the rotation matrix
 !      
 
-subroutine compcart(icart,xcart,xbar,ybar,zbar,&
+subroutine compcart(icart,xbar,ybar,zbar,&
                     xcoor,ycoor,zcoor,v1,v2,v3)
 
-  use sizes
+  use compute_data, only : xcart
   implicit none
   integer :: icart
-  double precision :: xcart(maxatom,3)
   double precision :: xbar, ybar, zbar
   double precision :: xcoor, ycoor, zcoor
   double precision :: v1(3), v2(3), v3(3)
