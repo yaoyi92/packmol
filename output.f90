@@ -70,7 +70,7 @@ subroutine output(n,x)
       ilugan = ilugan + 3
     end do
     close(10)
-    write(*,*) ' Wrote restart file: ', trim(adjustl(record))
+    write(*,*) ' Wrote restart file for all system: ', trim(adjustl(record))
   end if
 
   ! Restart files for specific molecule types
@@ -93,6 +93,9 @@ subroutine output(n,x)
       end do
       close(10)
       write(*,*) ' Wrote restart file: ', trim(adjustl(record))
+    else
+      ilubar = ilubar + nmols(itype)*3
+      ilugan = ilugan + nmols(itype)*3
     end if
   end do
 
