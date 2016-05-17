@@ -47,6 +47,7 @@ oall = cenmass.o \
        length.o \
        output.o \
        checkpoint.o \
+       writesuccess.o \
        fparc.o \
        gparc.o \
        gwalls.o \
@@ -124,6 +125,8 @@ output.o : output.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c output.f90
 checkpoint.o : checkpoint.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c checkpoint.f90
+writesuccess.o : writesuccess.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c writesuccess.f90
 fparc.o : fparc.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c fparc.f90
 gparc.o : gparc.f90 $(modules)   

@@ -142,6 +142,8 @@ subroutine getinp()
              keyword(i,1) /= 'sidemax' .and. &
              keyword(i,1) /= 'seed' .and. &
              keyword(i,1) /= 'randominitialpoint' .and. &
+             keyword(i,1) /= 'restart_from' .and. &
+             keyword(i,1) /= 'restart_to' .and. &
              keyword(i,1) /= 'nloop' .and. &
              keyword(i,1) /= 'writeout' .and. &
              keyword(i,1) /= 'writebad' .and. &
@@ -632,6 +634,47 @@ subroutine getinp()
                  itype,':', changechains(itype) 
     end do
   end if
+
+  ! Checking if restart files will be used for each structure or for the whole system
+
+  restart_from(0) = "none"
+  restart_to(0) = "none"
+  do itype = 1, ntype
+    restart_from(itype) = "none"
+    restart_to(itype) = "none"
+  end do
+  lines: do iline = 1, nlines
+    if ( keyword(iline,1) == 'restart_from' ) then
+      do itype = 1, ntype
+        if(iline.gt.linestrut(itype,1).and.&
+           iline.lt.linestrut(itype,2)) then
+          restart_from(itype) = keyword(iline,2)
+          cycle lines
+        end if
+      end do
+      if( restart_from(0) == 'none' ) then
+        restart_from(0) = keyword(iline,2)
+      else
+        write(*,*) ' ERROR: More than one definition of restart_from file for all system. '
+        stop
+      end if
+    end if
+    if ( keyword(iline,1) == 'restart_to' ) then
+      do itype = 1, ntype
+        if(iline.gt.linestrut(itype,1).and.&
+           iline.lt.linestrut(itype,2)) then
+          restart_to(itype) = keyword(iline,2)
+          cycle lines
+        end if
+      end do
+      if( restart_to(0) == 'none' ) then
+        restart_to(0) = keyword(iline,2)
+      else
+        write(*,*) ' ERROR: More than one definition of restart_to file for all system. '
+        stop
+      end if
+    end if
+  end do lines
 
   return
 end subroutine getinp

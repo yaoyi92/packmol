@@ -597,160 +597,170 @@ program packmol
       end if
     end if
  
-    loop = -1
-    gencanloop : do while(loop.le.nloop)
-      loop = loop + 1
+    ! Checking if first approximation is a solution
 
-      ! Reseting the parameters relative to the improvement of the function
-         
-      if(loop.eq.0) then
-        fimp = 1.d99
-        fimprov = fimp
+    call computef(n,x,fx)
+
+    if ( ( fdist < precision .and. frest < precision ) .or. &
+           fx < precision ) then
+
+      write(*,*)
+      write(*,*) ' Initial approximation is a solution. Nothing to do. '
+      write(*,*)
+      if( itype == ntype + 1 ) then
+        call output(n,x)
+        write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
+      end if
+      call writesuccess(itype,fdist,frest,fx)
+      if ( itype == ntype + 1 ) then
+        write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
+        stop 
+      end if
+
+    ! Otherwise, pack the molecules
+    
+    else 
+
+      loop = -1
+      gencanloop : do while(loop.le.nloop)
+        loop = loop + 1
+
+        ! Reseting the parameters relative to the improvement of the function
+           
+        if(loop.eq.0) then
+          fimp = 1.d99
+          fimprov = fimp
+          do i = 1, ntotat
+            radiuswork(i) = radius(i) 
+            radius(i) = radius_ini(i)
+          end do
+          call computef(n,x,fx)
+          do i = 1, ntotat
+            radius(i) = radiuswork(i)
+          end do
+          bestf = fx
+          flast = fx
+        end if
+
+        ! Moving bad molecules
+
+        if(radscale == 1.d0 .and. fimp.le.10.d0) then
+          movebadprint = .true.
+          call movebad(n,x,fx,movebadprint)
+          flast = fx
+        end if
+
+        if(loop.eq.nloop.and.itype.eq.ntype+1) then
+          write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
+          call checkpoint(n,xbest)
+          stop
+        end if
+
+        write(*,"( /, 17('-'),' Starting GENCAN loop(',i4,') ',17('-'),/&
+        '          Scaling radii by:',f10.2 )") loop, radscale
+
+        ! CALL GENCAN
+
+        write(*,"( '  Packing:|0 ',tr39,'  10|' )")
+        call pgencan(n,x,fx)
+
+        ! Compute the statistics of the last optimization loop
+
         do i = 1, ntotat
-          radiuswork(i) = radius(i) 
+          radiuswork(i) = radius(i)
           radius(i) = radius_ini(i)
         end do
         call computef(n,x,fx)
         do i = 1, ntotat
           radius(i) = radiuswork(i)
         end do
-        bestf = fx
+
+        if(bestf.gt.0.d0) fimprov = -100.d0 * (fx - bestf) / bestf
+        if(bestf.eq.0.d0) fimprov = 100.d0
+        if(flast.gt.0.d0) fimp = -100.d0 * (fx - flast) / flast
+        if(flast.eq.0.d0) fimp = 100.d0
+        fimp = dmin1(99.99d0,dmax1(-99.99d0,fimp))
+        fimprov = dmin1(99.99d0,dmax1(-99.99d0,fimprov))
+
+        write(*,"( /&
+               '  Function value from last GENCAN loop: f = ', e10.5, /&
+               '  Best function value before: f = ', e10.5,           /&
+               '  Improvement from best function value: ', f8.2, ' %',/&
+               '  Improvement from last loop: ', f8.2, ' %',          /&
+               '  Maximum violation of target distance: ', f12.6,/&
+               '  Maximum violation of the constraints: ', e10.5,     /&
+               62('-'),/ )")  fx, bestf, fimprov, fimp, fdist, frest
         flast = fx
-      end if
 
-      ! Moving bad molecules
+        ! If the distance between molecules is satisfactory, restore the radii
 
-      if(radscale == 1.d0 .and. fimp.le.10.d0) then
-        movebadprint = .true.
-        call movebad(n,x,fx,movebadprint)
-        flast = fx
-      end if
-
-      if(loop.eq.nloop.and.itype.eq.ntype+1) then
-        write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
-        call checkpoint(n,xbest)
-        stop
-      end if
-
-      write(*,"( /, 17('-'),' Starting GENCAN loop(',i4,') ',17('-'),/&
-      '          Scaling radii by:',f10.2 )") loop, radscale
-
-      ! CALL GENCAN
-
-      write(*,"( '  Packing:|0 ',tr39,'  10|' )")
-      call pgencan(n,x,fx)
-
-      ! Compute the statistics of the last optimization loop
-
-      do i = 1, ntotat
-        radiuswork(i) = radius(i)
-        radius(i) = radius_ini(i)
-      end do
-      call computef(n,x,fx)
-      do i = 1, ntotat
-        radius(i) = radiuswork(i)
-      end do
-
-      if(bestf.gt.0.d0) fimprov = -100.d0 * (fx - bestf) / bestf
-      if(bestf.eq.0.d0) fimprov = 100.d0
-      if(flast.gt.0.d0) fimp = -100.d0 * (fx - flast) / flast
-      if(flast.eq.0.d0) fimp = 100.d0
-      fimp = dmin1(99.99d0,dmax1(-99.99d0,fimp))
-      fimprov = dmin1(99.99d0,dmax1(-99.99d0,fimprov))
-
-      write(*,"( /&
-             '  Function value from last GENCAN loop: f = ', e10.5, /&
-             '  Best function value before: f = ', e10.5,           /&
-             '  Improvement from best function value: ', f8.2, ' %',/&
-             '  Improvement from last loop: ', f8.2, ' %',          /&
-             '  Maximum violation of target distance: ', f12.6,/&
-             '  Maximum violation of the constraints: ', e10.5,     /&
-             62('-'),/ )")  fx, bestf, fimprov, fimp, fdist, frest
-      flast = fx
-
-      ! If the distance between molecules is satisfactory, restore the radii
-
-      if ( radscale > 1.d0 ) then
-        if( ( fdist < precision .and. fimp < 10.d0 ) .or. &
-            fimp < 2.d0 ) then
-          radscale = dmax1(0.9*radscale,1.d0)
-          do i = 1, ntotat
-            radius(i) = dmax1(radius_ini(i),0.9d0*radius(i))
-          end do
-        end if
-      end if
-
-      ! Updating best point
-
-      if(fx.le.bestf) then
-        bestf = fx 
-        if(itype.eq.ntype+1) then
-          do i = 1, n
-            xbest(i) = x(i)
-          end do
-        end if
-      end if
-
-      ! Writing output file 
-
-      writexyz = .false.
-      if ( itype == ntype + 1 ) then
-
-        ! If solution was found
-        if ( ( fdist < precision .and. frest < precision ) .or. &
-               bestf < precision ) then
-          writexyz = .true.
-          write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
-
-        ! If this is the best structure so far
-        else if( mod(loop+1,writeout) == 0 .and. bestf < fout ) then
-          writexyz = .true.
-          write(*,*) ' Best solution written to file: ', xyzout(1:charl(xyzout))
-          fout = bestf
-
-        ! If the user required printing even bad structures
-        else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
-          writexyz = .true.
-          write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
+        if ( radscale > 1.d0 ) then
+          if( ( fdist < precision .and. fimp < 10.d0 ) .or. &
+              fimp < 2.d0 ) then
+            radscale = dmax1(0.9*radscale,1.d0)
+            do i = 1, ntotat
+              radius(i) = dmax1(radius_ini(i),0.9d0*radius(i))
+            end do
+          end if
         end if
 
-        if ( writexyz ) call output(n,x)
+        ! Updating best point
 
-      end if
-
-      ! When the solution is found, print success information and stop
-
-      if((fdist.lt.precision.and.&
-          frest.lt.precision).or.&
-          bestf.lt.precision) then
-
-        if(itype.le.ntype) then
-          write(*,dash1_line)
-          write(*,*)' Packing solved for molecules of type', itype
-          write(*,*)' Objective function value: ', bestf
-          write(*,*)' Maximum violation of target distance: ',fdist
-          write(*,*)' Max. constraint violation: ', frest
-          write(*,dash1_line)
-          loop = nloop + 1      
-        else
-          write(*,"( /, 62('#'),/,                           /,&
-            t27, ' Success! ',                               /,&
-            t10, ' Final objective function value: ', e10.5, /,&
-            t10, ' Maximum violation of target distance: ', f10.6, /,&
-            t10, ' Maximum violation of the constraints: ', e10.5,/,&
-            62('-'), /,&
-            ' Please cite this work if Packmol was useful: ',/,&
-       ' L. Martinez, R. Andrade, E. G. Birgin, J. M. Martinez, ',/,&
-       ' PACKMOL: A package for building initial configurations ',/,&
-       ' for molecular dynamics simulations. ',/,&
-       ' Journal of Computational Chemistry, 30:2157-2164,2009.',&
-            /,/,62('#'),/ )" ) bestf, fdist, frest
-          write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
-          stop 
+        if(fx.le.bestf) then
+          bestf = fx 
+          if(itype.eq.ntype+1) then
+            do i = 1, n
+              xbest(i) = x(i)
+            end do
+          end if
         end if
-      end if
 
-    end do gencanloop
+        ! Writing output file 
+
+        writexyz = .false.
+        if ( itype == ntype + 1 ) then
+
+          ! If solution was found
+          if ( ( fdist < precision .and. frest < precision ) .or. &
+                 bestf < precision ) then
+            writexyz = .true.
+            write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
+
+          ! If this is the best structure so far
+          else if( mod(loop+1,writeout) == 0 .and. bestf < fout ) then
+            writexyz = .true.
+            write(*,*) ' Best solution written to file: ', xyzout(1:charl(xyzout))
+            fout = bestf
+
+          ! If the user required printing even bad structures
+          else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
+            writexyz = .true.
+            write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
+          end if
+
+          if ( writexyz ) call output(n,x)
+
+        end if
+
+        ! When the solution is found, print success information and stop
+
+        if( ( fdist < precision .and. frest < precision ) .or. &
+            bestf < precision ) then
+
+          call writesuccess(itype,fdist,frest,bestf)
+          if ( itype <= ntype ) then
+            exit gencanloop
+          else
+            write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
+            stop 
+          end if
+        end if
+
+      end do gencanloop
+
+    end if
+
+    ! Restoring counters for packing next type of molecules
 
     if(itype.le.ntype) then
       ilubar = 0
@@ -770,3 +780,4 @@ program packmol
   end do main
 
 end program packmol
+

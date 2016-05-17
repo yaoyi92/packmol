@@ -155,7 +155,8 @@ subroutine setsizes()
            rot_bound(ntype,3,2),dmax(ntype),&
            cmxmin(ntype),cmymin(ntype),cmzmin(ntype),&
            cmxmax(ntype),cmymax(ntype),cmzmax(ntype),&
-           comptype(ntype),compsafe(ntype))
+           comptype(ntype),compsafe(ntype),&
+           restart_from(0:ntype),restart_to(0:ntype))
 
   ! Reading the number of molecules of each type, and the number of atoms
   ! of each molecule type

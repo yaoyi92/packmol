@@ -68,5 +68,6 @@ module input
   character(len=200), allocatable :: name(:) ! (ntype)
   character(len=200), allocatable :: keyword(:,:) ! (nlines,maxkeywords)
   character(len=200), allocatable :: inputfile(:) ! (nlines)
+  character(len=200), allocatable :: restart_from(:), restart_to(:) ! (0:ntype)
 
 end module input

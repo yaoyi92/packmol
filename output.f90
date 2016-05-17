@@ -22,7 +22,7 @@ subroutine output(n,x)
   use input
 
   implicit none
-  integer :: n, k, ilugan, ilubar, itype, imol, idatom,&
+  integer :: n, k, i, ilugan, ilubar, itype, imol, idatom,&
              irest, iimol, ichain, iatom, irec, ilres, ifres,&
              iires, iconn, charl, irescount,&
              icart, i_ref_atom, ioerr
@@ -47,6 +47,54 @@ subroutine output(n,x)
   ! Job title
 
   title = ' Built with Packmol '
+
+  !
+  ! Write restart files, if required
+  !
+  
+  ! Restart file for all system
+
+  if ( restart_to(0) /= 'none' ) then
+    record = restart_to(0)
+    open(10,file=restart_to(0),iostat=ioerr)
+    if ( ioerr /= 0 ) then
+      write(*,*) ' ERROR: Could not open restart_to file: ', trim(adjustl(record))
+      stop
+    end if
+    ilubar = 0
+    ilugan = ntotmol*3
+    do i = 1, ntotmol
+      write(10,*) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                  x(ilugan+1), x(ilugan+2), x(ilugan+3)
+      ilubar = ilubar + 3
+      ilugan = ilugan + 3
+    end do
+    close(10)
+    write(*,*) ' Wrote restart file: ', trim(adjustl(record))
+  end if
+
+  ! Restart files for specific molecule types
+
+  ilubar = 0
+  ilugan = ntotmol*3
+  do itype = 1, ntype
+    if ( restart_to(itype) /= 'none' ) then
+      record = restart_to(itype)
+      open(10,file=restart_to(itype),iostat=ioerr)
+      if ( ioerr /= 0 ) then
+        write(*,*) ' ERROR: Could not open restart_to file: ', trim(adjustl(record))
+        stop
+      end if
+      do i = 1, nmols(itype)
+        write(10,*) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                    x(ilugan+1), x(ilugan+2), x(ilugan+3)
+        ilubar = ilubar + 3
+        ilugan = ilugan + 3
+      end do
+      close(10)
+      write(*,*) ' Wrote restart file: ', trim(adjustl(record))
+    end if
+  end do
 
   ! Write the output (xyz file)
 

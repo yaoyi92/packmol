@@ -18,13 +18,14 @@ subroutine initial(n,x)
   use sizes
   use compute_data
   use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, &
-                    discale, precision, sidemax, movefrac, movebadrandom, check
+                    discale, precision, sidemax, movefrac, movebadrandom, check, &
+                    restart_from
   use usegencan
 
   implicit none
-  integer :: n, i, j, k, idatom, iatom, ilubar, icart, itype, &
+  integer :: n, i, j, k, idatom, iatom, ilubar, ilugan, icart, itype, &
              imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
-             idfatom, iftype, jatom 
+             idfatom, iftype, jatom, ioerr
 
   double precision :: x(n), cmx, cmy, &
                       cmz, fx, xlength, dbox, rnd, &
@@ -33,6 +34,8 @@ subroutine initial(n,x)
      
   logical :: overlap, movebadprint, hasbad 
   logical, allocatable :: hasfixed(:,:,:)
+
+  character(len=200) :: record
 
   ! Allocate hasfixed array
 
@@ -322,41 +325,37 @@ subroutine initial(n,x)
     end do
   end do
 
+  ! If there is a restart file for all system, read it
+
+  if ( restart_from(0) /= 'none' ) then
+    record = restart_from(0)
+    write(*,*) ' Restarting all system from file: ', trim(adjustl(record))
+    open(10,file=restart_from(0),status='old',action='read',iostat=ioerr)
+    ilubar = 0
+    ilugan = ntotmol*3
+    do i = 1, ntotmol
+      read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                              x(ilugan+1), x(ilugan+2), x(ilugan+3)
+      if ( ioerr /= 0 ) then
+        write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
+        stop
+      end if
+      ilubar = ilubar + 3
+      ilugan = ilugan + 3
+    end do
+    close(10)
+    return
+  end if
+
   ! Building random initial point 
 
   write(*,*) ' Building random initial point ... '
-
-  ! Setting random angles, except if the rotations were constrained
-
-  j = ntotmol*3
-  do itype = 1, ntype
-    do imol = 1, nmols(itype)
-      if ( constrain_rot(itype,1) ) then
-        x(j+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
-               2.d0*rnd()*dabs(rot_bound(itype,1,2))
-      else
-        x(j+1) = twopi*rnd()
-      end if
-      if ( constrain_rot(itype,2) ) then
-        x(j+2) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
-                 2.d0*rnd()*dabs(rot_bound(itype,2,2))
-      else
-        x(j+2) = twopi*rnd()
-      end if
-      if ( constrain_rot(itype,3) ) then
-        x(j+3) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
-                 2.d0*rnd()*dabs(rot_bound(itype,3,2))
-      else
-        x(j+3) = twopi*rnd()
-      end if
-      j = j + 3
-    end do
-  end do
 
   ! Setting random center of mass coordinates, withing size limits
 
   ilubar = 0
   do itype = 1, ntype
+    if ( restart_from(itype) /= 'none' ) cycle
     do imol = 1, nmols(itype)
       fx = 1.d0
       ntry = 0
@@ -392,6 +391,65 @@ subroutine initial(n,x)
       end do
       ilubar = ilubar + 3
     end do
+  end do
+
+  ! Setting random angles, except if the rotations were constrained
+
+  ilugan = ntotmol*3
+  do itype = 1, ntype
+    if ( restart_from(itype) /= 'none' ) cycle
+    do imol = 1, nmols(itype)
+      if ( constrain_rot(itype,1) ) then
+        x(ilugan+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
+               2.d0*rnd()*dabs(rot_bound(itype,1,2))
+      else
+        x(ilugan+1) = twopi*rnd()
+      end if
+      if ( constrain_rot(itype,2) ) then
+        x(ilugan+2) = ( rot_bound(itype,2,1) - dabs(rot_bound(itype,2,2)) ) + &
+                 2.d0*rnd()*dabs(rot_bound(itype,2,2))
+      else
+        x(ilugan+2) = twopi*rnd()
+      end if
+      if ( constrain_rot(itype,3) ) then
+        x(ilugan+3) = ( rot_bound(itype,3,1) - dabs(rot_bound(itype,3,2)) ) + &
+                 2.d0*rnd()*dabs(rot_bound(itype,3,2))
+      else
+        x(ilugan+3) = twopi*rnd()
+      end if
+      ilugan = ilugan + 3
+    end do
+  end do
+
+  !
+  ! Reading restart files of specific molecule types, if available
+  !
+
+  ilubar = 0
+  ilugan = ntotmol*3
+  do itype = 1, ntype
+    if ( restart_from(itype) /= 'none' ) then
+      record = restart_from(itype)
+      open(10,file=restart_from(itype),status='old',action='read',iostat=ioerr)
+      if ( ioerr /= 0 ) then
+        write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
+        stop
+      end if
+      do i = 1, nmols(itype)
+        read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                                x(ilugan+1), x(ilugan+2), x(ilugan+3)
+        if ( ioerr /= 0 ) then
+          write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
+          stop
+        end if
+        ilubar = ilubar + 3
+        ilugan = ilugan + 3
+      end do
+      close(10)
+    else
+      ilubar = ilubar + nmols(itype)*3
+      ilugan = ilugan + nmols(itype)*3
+    end if
   end do
 
   ! Return with current random point (not default)
