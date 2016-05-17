@@ -675,7 +675,7 @@ subroutine getinp()
       end if
     end if
   end do lines
-
+ 
   return
 end subroutine getinp
 

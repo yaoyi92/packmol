@@ -250,7 +250,14 @@ program packmol
           write(*,*) ' Molecule ',record(1:charl(record)),'(',itype,') will be fixed.' 
           fixed(itype) = .true.
           if(nmols(itype).gt.1) then
-            write(*,*)' ERROR: You cannot set number > 1',' for fixed molecules. '
+            write(*,*)' ERROR: Cannot set number > 1',' for fixed molecules. '
+            write(*,*) '       Structure: ', itype,': ', trim(adjustl(record))
+            stop
+          end if
+          if ( restart_from(itype) /= 'none' .or. &
+               restart_to(itype) /= 'none' ) then
+            write(*,*) ' ERROR: Restart files cannot be used for fixed molecules. '
+            write(*,*) '        Structure: ', itype,': ', trim(adjustl(record))
             stop
           end if
         end if
