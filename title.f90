@@ -13,12 +13,13 @@
 
 subroutine title()
 
-  write(*,"( 62('#'), /,/&
-             ' PACKMOL - Packing optimization for the automated', /&
-             ' generation of starting configurations for',        /&
-             ' molecular dynamics. ',/&
-             ' ',/&
-             t42,' Version 16.118 ',/&
-             ,/,62('#'),               /,/)")
+  use ahestetic
+  write(*,hash3_line)
+  write(*,"(' PACKMOL - Packing optimization for the automated', /&
+            ' generation of starting configurations for',        /&
+            ' molecular dynamics. ',/&
+            ' ',/&
+            t42,' Version 16.118 ')")
+  write(*,hash3_line)
 
 end subroutine title

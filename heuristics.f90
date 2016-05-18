@@ -20,7 +20,7 @@ subroutine movebad(n,x,fx,movebadprint)
   use input, only : movefrac, movebadrandom, precision
   use usegencan
   use flashsort
-
+  use ahestetic
   implicit none
 
   ! Internal variables
@@ -106,8 +106,8 @@ subroutine movebad(n,x,fx,movebadprint)
         do i = 1, itype - 1
           if(comptype(i)) imol = imol + nmols(i) 
         end do
-        write(*,"( '  Moving:|0 ',tr39,'100%|' )")
-        write(*,"( '         |',$)") 
+        write(*,prog2_line)
+        write(*,"( '          |',$)") 
         j = 0
         do i = 1, nmove
           ibad = nmols(itype) - i + 1 
@@ -129,7 +129,7 @@ subroutine movebad(n,x,fx,movebadprint)
           x(ilugan+2) = x(ilugan2+2)
           x(ilugan+3) = x(ilugan2+3)
           call restmol(itype,ilubar,n,x,fx,.true.)
-          do while( j < 45.d0*i/nmove ) 
+          do while( j <= 65.d0*i/nmove ) 
             write(*,"('*',$)")
             j = j + 1
           end do

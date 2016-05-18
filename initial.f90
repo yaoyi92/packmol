@@ -12,7 +12,6 @@
 ! Subroutine initial: Subroutine that reset parameters and
 !                     builds the initial point
 !
-
 subroutine initial(n,x)
 
   use sizes
@@ -21,7 +20,7 @@ subroutine initial(n,x)
                     discale, precision, sidemax, movefrac, movebadrandom, check, &
                     restart_from, input_itype, thisisfixed
   use usegencan
-
+  use ahestetic
   implicit none
   integer :: n, i, j, k, idatom, iatom, ilubar, ilugan, icart, itype, &
              imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
@@ -165,36 +164,40 @@ subroutine initial(n,x)
   end if
 
   ! Performing some steps of optimization for the restrictions only
-
-  write(*,*)
-  write(*,"( /, 13('-'), &
-         ' Building initial approximation ... ', 13('-'),/,/,&
-         '  Adjusting initial point to fit the constraints ')")
+  
+  write(*,hash3_line)
+  write(*,"('  Building initial approximation ... ' )")
+  write(*,hash3_line)
+  write(*,"('  Adjusting initial point to fit the constraints ')")
+  write(*,dash2_line)
   init1 = .true.
-  call swaptype(n,x,itype,0)
+  call swaptype(n,x,itype,0) ! Initialize swap arrays
   do while( itype <= ntype )
     itype = itype + 1
+    call swaptype(n,x,itype,1) ! Set arrays for this type
+    call swaptype(n,x,itype,3) ! Restore arrays if itype = itype + 1
+    if ( itype == ntype + 1 ) exit
+    write(*,dash3_line)
     write(*,*) ' Molecules of type: ', input_itype(itype)
-    call swaptype(n,x,itype,1)
-    call swaptype(n,x,itype,3)
+    write(*,*)
     i = 0
     hasbad = .true.
     call computef(n,x,fx)
     do while( frest > precision .and. i.le. (nloop/10-1) .and. hasbad)
       i = i + 1 
-      write(*,"( '  Packing:|0 ',tr39,'  10|' )")
+      write(*,prog1_line)
       call pgencan(n,x,fx)
       call computef(n,x,fx)
       if(frest > precision) then 
         write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
         movebadprint = .true.
-        call movebad(n,x,fx,movebadprint)
+        call movebad(n,x,fx,movebadprint) 
       end if
     end do
     write(*,*) 
     write(*,*) ' Restraint-only function value: ', fx
     write(*,*) ' Maximum violation of the restraints: ', frest
-    call swaptype(n,x,itype,2)
+    call swaptype(n,x,itype,2) ! Set arrays for next type
 
     if( hasbad .and. frest > precision ) then
       write(*,*) ' ERROR: Packmol was unable to put the molecules'
@@ -217,6 +220,7 @@ subroutine initial(n,x)
 
   ! Rescaling sizemin and sizemax in order to build the patch of boxes
 
+  write(*,dash3_line)
   write(*,*) ' Rescaling maximum and minimum coordinates... '
   do i = 1, 3
     sizemin(i) = 1.d20
@@ -358,7 +362,9 @@ subroutine initial(n,x)
 
   ! Building random initial point 
 
-  write(*,*) ' Building random initial point ... '
+  write(*,dash3_line)
+  write(*,*) ' Setting initial trial coordinates ... '
+  write(*,dash2_line)
 
   ! Setting random center of mass coordinates, withing size limits
 
@@ -472,19 +478,22 @@ subroutine initial(n,x)
   ! Adjusting current point to fit the constraints
 
   init1 = .true.
-  call swaptype(n,x,itype,0)
+  call swaptype(n,x,itype,0) ! Initialize swap arrays
   call computef(n,x,fx)
   do while( itype <= ntype )
     itype = itype + 1
+    call swaptype(n,x,itype,1) ! Set arrays for this type
+    call swaptype(n,x,itype,3) ! Restore arrays if itype=ntype+1
+    if ( itype == ntype + 1 ) exit
+    write(*,dash3_line)
     write(*,*) ' Molecules of type: ', input_itype(itype)
-    call swaptype(n,x,itype,1)
-    call swaptype(n,x,itype,3)
+    write(*,*)
     i = 0
     call computef(n,x,fx)
     hasbad = .true.
     do while( frest > precision .and. i <= (nloop/10-1) .and. hasbad)
       i = i + 1 
-      write(*,"( '  Packing:|0 ',tr39,'  10|' )")
+      write(*,prog1_line)
       call pgencan(n,x,fx)
       call computef(n,x,fx)
       if(frest > precision) then
@@ -492,15 +501,13 @@ subroutine initial(n,x)
         movebadprint = .true.
         call movebad(n,x,fx,movebadprint)
       end if
-      call swaptype(n,x,itype,2)
+      call swaptype(n,x,itype,2) ! Set arrays for next type
     end do
-    write(*,*) 
     write(*,*) ' Restraint-only function value: ', fx
     write(*,*) ' Maximum violation of the restraints: ', fx
   end do
   init1 = .false.
-
-  write(*,"( /,62('#'),/ )")
+  write(*,hash3_line)
 
   ! Deallocate hasfixed array
 
@@ -702,6 +709,4 @@ subroutine restmol(itype,ilubar,n,x,fx,solve)
 
   return
 end subroutine restmol
-
-
 

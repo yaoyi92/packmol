@@ -58,6 +58,7 @@ oall = cenmass.o \
        polartocart.o \
        swaptype.o \
        swaptypemod.o \
+       ahestetic.o \
        heuristics.o \
        flashsort.o \
        jacobi.o \
@@ -97,7 +98,7 @@ devel : $(oall)
 #
 # Modules
 #
-modules = sizes.o compute_data.o usegencan.o input.o flashmod.o swaptypemod.o
+modules = sizes.o compute_data.o usegencan.o input.o flashmod.o swaptypemod.o ahestetic.o
 sizes.o : sizes.f90 
 	@$(FORTRAN) $(FLAGS) -c sizes.f90
 compute_data.o : compute_data.f90 sizes.o
@@ -110,6 +111,8 @@ usegencan.o : usegencan.f90
 	@$(FORTRAN) $(FLAGS) -c usegencan.f90
 swaptypemod.o : swaptypemod.f90 
 	@$(FORTRAN) $(FLAGS) -c swaptypemod.f90
+ahestetic.o : ahestetic.f90 
+	@$(FORTRAN) $(FLAGS) -c ahestetic.f90
 #
 # Code compiled only for all versions
 #

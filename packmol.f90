@@ -47,6 +47,7 @@ program packmol
   use usegencan
   use flashsort
   use swaptypemod
+  use ahestetic
   implicit none
 
   integer :: itype, irest, idatom, iatom
@@ -73,7 +74,6 @@ program packmol
   
   character(len=200) :: record
   character(len=80) :: xyzfile
-  character(len=80) :: dash1_line
 
   logical :: fixtmp
   logical :: rests, writexyz
@@ -83,7 +83,6 @@ program packmol
 
   ! Printing title
 
-  dash1_line = "( 62('#') )"
   call title()
       
   ! Set dimensions of all arrays
@@ -527,7 +526,7 @@ program packmol
 
   call swaptype(n,x,itype,0)
 
-  main : do while(itype <= ntype+1)
+  main : do while(itype <= ntype)
     itype = itype + 1
  
     ! Use larger tolerance than required to improove separation
@@ -544,6 +543,16 @@ program packmol
     ! If itype=ntype+1 restore original vectors and pack all molecules
 
     call swaptype(n,x,itype,3)
+
+    ! Print titles
+
+    write(*,hash3_line)
+    if ( itype <= ntype ) then
+      write(*,*) ' Packing molecules of type: ', input_itype(itype)
+    else
+      write(*,*) ' Packing all molecules together '
+    end if
+    write(*,hash3_line)
 
     ! Checking if first approximation is a solution
 
@@ -603,12 +612,14 @@ program packmol
           stop
         end if
 
-        write(*,"( /, 17('-'),' Starting GENCAN loop(',i4,') ',17('-'),/&
-        '          Scaling radii by:',f10.2 )") loop, radscale
+        write(*,dash3_line)
+        write(*,*) ' Starting GENCAN loop: ', loop
+        write(*,*) ' Scaling radii by: ', radscale
+        write(*,*)
 
         ! CALL GENCAN
 
-        write(*,"( '  Packing:|0 ',tr39,'  10|' )")
+        write(*,prog1_line)
         call pgencan(n,x,fx)
 
         ! Compute the statistics of the last optimization loop
@@ -635,8 +646,9 @@ program packmol
                '  Improvement from best function value: ', f8.2, ' %',/&
                '  Improvement from last loop: ', f8.2, ' %',          /&
                '  Maximum violation of target distance: ', f12.6,/&
-               '  Maximum violation of the constraints: ', e10.5,     /&
-               62('-'),/ )")  fx, bestf, fimprov, fimp, fdist, frest
+               '  Maximum violation of the constraints: ', e10.5       &
+               )") fx, bestf, fimprov, fimp, fdist, frest
+        write(*,dash3_line)
         flast = fx
 
         ! If the distance between molecules is satisfactory, restore the radii
@@ -697,6 +709,7 @@ program packmol
             exit gencanloop
           else
             write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
+            write(*,*)
             stop 
           end if
         end if

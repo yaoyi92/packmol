@@ -20,17 +20,14 @@ subroutine checkpoint(n,x)
   use compute_data
   use input
   use usegencan
+  use ahestetic
 
   implicit none
   integer :: i, charl
   integer :: n
   double precision :: x(n)
   double precision :: fx
-  character(len=80) :: dash1_line, dash2_line
   logical :: movebadprint
-
-  dash1_line = "( 62('-'),/ )"
-  dash2_line = "( /,62('#'),/ )"
 
   ! All molecules are important
 
@@ -42,7 +39,8 @@ subroutine checkpoint(n,x)
 
   call computef(n,x,fx)
 
-  write(*,"(/,62('-'),/,&
+  write(*,dash3_line)
+  write(*,"(&
          ' Packmol was not able to find a solution to your',/,&
          ' packing problem with the desired distance tolerance.',/,/,&
          ' First of all, be sure if the molecules fit in the',/,&
@@ -61,8 +59,9 @@ subroutine checkpoint(n,x)
          ' fits your needs if your purpose is to run a MD',/,&
          ' simulation.',/,&
          ' Therefore, we recommend to minimize the energy of the',/,&
-         ' solution found, equilibrate it and run with it as well.',/,/,&
-         62('-'),/)") fx
+         ' solution found, equilibrate it and run with it as well.',/&
+         )") fx
+  write(*,dash3_line)
 
   call output(n,x)
 
@@ -100,7 +99,7 @@ subroutine checkpoint(n,x)
   write(*,*) ' The default nloop value is 50 for each molecule.'
   write(*,*)
 
-  write(*,dash2_line) 
+  write(*,hash1_line) 
   write(*,*) ' TERMINATION WITHOUT PERFECT PACKING: '
   write(*,*) ' The output file:'
   write(*,*)
@@ -111,7 +110,7 @@ subroutine checkpoint(n,x)
   write(*,*) ' Very likely, if the input data was correct, '
   write(*,*) ' it is a reasonable starting configuration.'
   write(*,*) ' Check commentaries above for more details. '
-  write(*,dash2_line) 
+  write(*,hash1_line) 
       
   return
 end subroutine checkpoint

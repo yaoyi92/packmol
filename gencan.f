@@ -1855,9 +1855,9 @@ c          write(*,1003) iter,f,gpsupn
             write(*,777)
           end if
       end if
-777   format('*****',$)
+777   format('*******',$)
 778   format('          |',$)
-779   format('*****|')
+779   format('**********|')
 
       if( iprint .ge. 3 ) then
           write(*, 981) iter
