@@ -32,18 +32,18 @@ subroutine writesuccess(itype,fdist,frest,f)
   else
     write(*,hash3_line)
     write(*,"(&
-      t27, ' Success! ',                               /,&
-      t10, ' Final objective function value: ', e10.5, /,&
-      t10, ' Maximum violation of target distance: ', f10.6, /,&
-      t10, ' Maximum violation of the constraints: ', e10.5 &
+      t33, ' Success! ',                               /,&
+      t14, ' Final objective function value: ', e10.5, /,&
+      t14, ' Maximum violation of target distance: ', f10.6, /,&
+      t14, ' Maximum violation of the constraints: ', e10.5 &
              )") f, fdist, frest
     write(*,dash3_line)
     write(*,"(&
-      ' Please cite this work if Packmol was useful: ',/,&
-      ' L. Martinez, R. Andrade, E. G. Birgin, J. M. Martinez, ',/,&
-      ' PACKMOL: A package for building initial configurations ',/,&
-      ' for molecular dynamics simulations. ',/,&
-      ' Journal of Computational Chemistry, 30:2157-2164,2009.' )")
+      t14,' Please cite this work if Packmol was useful: ',/,/,&
+      t11,' L. Martinez, R. Andrade, E. G. Birgin, J. M. Martinez, ',/,&
+      t9,' PACKMOL: A package for building initial configurations for',/,&
+      t19,' molecular dynamics simulations. ',/,&
+      t10,' Journal of Computational Chemistry, 30:2157-2164,2009.' )")
     write(*,hash3_line)
   end if
 
