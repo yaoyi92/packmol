@@ -46,20 +46,20 @@ program packmol
   use input
   use usegencan
   use flashsort
+  use swaptypemod
   implicit none
 
   integer :: itype, irest, idatom, iatom
-  integer :: ntemp, idtemp, nmtemp, natemp
+  integer :: idtemp, nmtemp, natemp
   integer :: linesttmp1, linesttmp2, jtype
   integer :: ntmol, n, iftype, icart, imol, iicart, iline_atoms
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
   integer :: loop
-  integer :: ntottemp, ilubar, ilugan  
+  integer :: ilubar, ilugan  
   integer :: resntemp
   integer :: charl, ioerr
       
   double precision, allocatable :: x(:) ! (nn)
-  double precision, allocatable :: xfull(:) ! (nn)
   double precision, allocatable :: xbest(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
   double precision :: rad, radscale
@@ -525,18 +525,9 @@ program packmol
   ! pack all molecules together
   !
 
-  do i = 1, nn
-    xfull(i) = x(i)
-  end do
-  ntemp = n
-  ntottemp = ntotmol
-  if(ntype.eq.1) then
-    itype = 1
-  else 
-    itype = 0
-  end if
+  call swaptype(n,x,itype,0)
 
-  main : do while(itype.le.ntype+1)
+  main : do while(itype <= ntype+1)
     itype = itype + 1
  
     ! Use larger tolerance than required to improove separation
@@ -546,70 +537,19 @@ program packmol
       radius(i) = discale*radius_ini(i)
     end do
     
-    if(itype.le.ntype) then
-      if(nmols(itype).eq.1) itype = itype + 1
-    end if
-
     ! Adjusting parameters for packing only this type
 
-    if(itype.le.ntype) then
-      write(*,*)
-      write(*,dash1_line)
-      write(*,*)
-      write(*,*) ' Packing molecules of type ', itype
-      write(*,*)
-      write(*,dash1_line)
-      do i = 1, ntype
-        if(i.eq.itype) then
-          comptype(i) = .true.
-        else
-          comptype(i) = .false.
-        end if
-      end do
-      n = nmols(itype) * 6
-      ntotmol = nmols(itype)
-      ilubar = 0
-      do i = 1, itype - 1
-        ilubar = ilubar + nmols(i) * 3
-      end do
-      ilubar = ilubar + 1
-      ilugan = ntemp/2 + ilubar 
-      do i = 1, n / 2
-        x(i) = xfull(ilubar)
-        x(i+n/2) = xfull(ilugan)
-        ilubar = ilubar + 1
-        ilugan = ilugan + 1
-      end do
-    end if
+    call swaptype(n,x,itype,1)
 
     ! If itype=ntype+1 restore original vectors and pack all molecules
 
-    if(itype.eq.ntype+1) then
-      n = ntemp 
-      ntotmol = ntottemp
-      do i = 1, n
-        x(i) = xfull(i)
-      end do
-      do itype = 1, ntype
-        comptype(itype) = .true.
-      end do
-      if(ntype.gt.1) then
-        write(*,*)
-        write(*,dash1_line)
-        write(*,*)
-        write(*,*)' Solving the problem for all molecules together.'
-        write(*,*)
-        write(*,dash1_line)
-        write(*,*)
-      end if
-    end if
- 
+    call swaptype(n,x,itype,3)
+
     ! Checking if first approximation is a solution
 
     call computef(n,x,fx)
 
-    if ( ( fdist < precision .and. frest < precision ) .or. &
-           fx < precision ) then
+    if ( fdist < precision .and. frest < precision ) then
 
       write(*,*)
       write(*,*) ' Initial approximation is a solution. Nothing to do. '
@@ -703,7 +643,7 @@ program packmol
 
         if ( radscale > 1.d0 ) then
           if( ( fdist < precision .and. fimp < 10.d0 ) .or. &
-              fimp < 2.d0 ) then
+                fimp < 2.d0 ) then
             radscale = dmax1(0.9*radscale,1.d0)
             do i = 1, ntotat
               radius(i) = dmax1(radius_ini(i),0.9d0*radius(i))
@@ -728,8 +668,7 @@ program packmol
         if ( itype == ntype + 1 ) then
 
           ! If solution was found
-          if ( ( fdist < precision .and. frest < precision ) .or. &
-                 bestf < precision ) then
+          if ( fdist < precision .and. frest < precision ) then
             writexyz = .true.
             write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
 
@@ -751,8 +690,7 @@ program packmol
 
         ! When the solution is found, print success information and stop
 
-        if( ( fdist < precision .and. frest < precision ) .or. &
-            bestf < precision ) then
+        if( fdist < precision .and. frest < precision ) then
 
           call writesuccess(itype,fdist,frest,bestf)
           if ( itype <= ntype ) then
@@ -769,20 +707,7 @@ program packmol
 
     ! Restoring counters for packing next type of molecules
 
-    if(itype.le.ntype) then
-      ilubar = 0
-      do i = 1, itype - 1
-        ilubar = ilubar + nmols(i)*3
-      end do
-      ilubar = ilubar + 1
-      ilugan = ntemp/2 + ilubar
-      do i = 1, n/2
-        xfull(ilubar) = x(i)
-        xfull(ilugan) = x(i+n/2)
-        ilubar = ilubar + 1
-        ilugan = ilugan + 1
-      end do
-    end if
+    call swaptype(n,x,itype,2)
 
   end do main
 

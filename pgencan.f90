@@ -29,8 +29,6 @@ subroutine pgencan(n,x,fx)
   integer :: trtype1
   integer :: itype, imol
 
-  m = 0
-
   ! Setup upper and lower bounds for variables. Usually there are none,
   ! but one might want to restrict the rotation of the molecules in one
   ! or more axis
@@ -67,6 +65,7 @@ subroutine pgencan(n,x,fx)
     end do
   end do
 
+  m = 0
   epsgpsn = 1.0d-06
   maxfc   = 10 * maxit
   if(init1) iprint  = iprint1
@@ -82,3 +81,24 @@ subroutine pgencan(n,x,fx)
 
   return
 end subroutine pgencan
+
+!
+! Function that test convergence according to Packmol precision
+!
+
+function packmolprecision(n,x)
+  use input, only : precision
+  use compute_data, only : fdist, frest, init1
+  implicit none
+  integer :: n
+  double precision :: f, x(n)
+  logical :: packmolprecision
+
+  call computef(n,x,f)
+
+  packmolprecision = .false.
+  if ( fdist < precision .and. frest < precision ) then 
+    packmolprecision = .true.
+  end if
+
+end function packmolprecision

@@ -19,13 +19,13 @@ subroutine initial(n,x)
   use compute_data
   use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, &
                     discale, precision, sidemax, movefrac, movebadrandom, check, &
-                    restart_from
+                    restart_from, input_itype, thisisfixed
   use usegencan
 
   implicit none
   integer :: n, i, j, k, idatom, iatom, ilubar, ilugan, icart, itype, &
              imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
-             idfatom, iftype, jatom, ioerr
+             idfatom, iftype, jatom, ioerr, i_not_fixed
 
   double precision :: x(n), cmx, cmy, &
                       cmz, fx, xlength, dbox, rnd, &
@@ -172,14 +172,14 @@ subroutine initial(n,x)
          '  Adjusting initial point to fit the constraints ')")
   init1 = .true.
   i = 0
-  fx = 1.d0
   hasbad = .true.
-  do while( fx.gt.precision .and. i.le. (nloop/10-1) .and. hasbad)
+  call computef(n,x,fx)
+  do while( frest > precision .and. i.le. (nloop/10-1) .and. hasbad)
     i = i + 1 
     write(*,"( '  Packing:|0 ',tr39,'  10|' )")
     call pgencan(n,x,fx)
     call computef(n,x,fx)
-    if(fx.gt.precision) then 
+    if(frest > precision) then 
       write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
       movebadprint = .true.
       call movebad(n,x,fx,movebadprint)
@@ -187,9 +187,10 @@ subroutine initial(n,x)
   end do
   write(*,*) 
   write(*,*) ' Restraint-only function value: ', fx
+  write(*,*) ' Maximum violation of the restraints: ', frest
   init1 = .false.
 
-  if(hasbad .and. fx.gt.precision) then
+  if( hasbad .and. frest > precision ) then
     write(*,*) ' ERROR: Packmol was unable to put the molecules'
     write(*,*) '        in the desired regions even without'
     write(*,*) '        considering distance tolerances. '
@@ -425,30 +426,34 @@ subroutine initial(n,x)
   ! Reading restart files of specific molecule types, if available
   !
 
+  i_not_fixed = 0
   ilubar = 0
   ilugan = ntotmol*3
-  do itype = 1, ntype
-    if ( restart_from(itype) /= 'none' ) then
-      record = restart_from(itype)
-      open(10,file=restart_from(itype),status='old',action='read',iostat=ioerr)
-      if ( ioerr /= 0 ) then
-        write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
-        stop
-      end if
-      do i = 1, nmols(itype)
-        read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
-                                x(ilugan+1), x(ilugan+2), x(ilugan+3)
+  do itype = 1, ntfix
+    if ( .not. thisisfixed(itype) ) then
+      i_not_fixed = i_not_fixed + 1
+      if ( restart_from(input_itype(itype)) /= 'none' ) then
+        record = restart_from(input_itype(itype))
+        open(10,file=record,status='old',action='read',iostat=ioerr)
         if ( ioerr /= 0 ) then
-          write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
+          write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
           stop
         end if
-        ilubar = ilubar + 3
-        ilugan = ilugan + 3
-      end do
-      close(10)
-    else
-      ilubar = ilubar + nmols(itype)*3
-      ilugan = ilugan + nmols(itype)*3
+        do i = 1, nmols(i_not_fixed)
+          read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                                  x(ilugan+1), x(ilugan+2), x(ilugan+3)
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
+            stop
+          end if
+          ilubar = ilubar + 3
+          ilugan = ilugan + 3
+        end do
+        close(10)
+      else
+        ilubar = ilubar + nmols(i_not_fixed)*3
+        ilugan = ilugan + nmols(i_not_fixed)*3
+      end if
     end if
   end do
 
@@ -460,14 +465,14 @@ subroutine initial(n,x)
 
   init1 = .true.
   i = 0
-  fx = 1.d0
+  call computef(n,x,fx)
   hasbad = .true.
-  do while( fx.gt.precision .and. i.le. (nloop/10-1) .and. hasbad)
+  do while( frest > precision .and. i <= (nloop/10-1) .and. hasbad)
     i = i + 1 
     write(*,"( '  Packing:|0 ',tr39,'  10|' )")
     call pgencan(n,x,fx)
     call computef(n,x,fx)
-    if(fx.gt.precision) then
+    if(frest > precision) then
       write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
       movebadprint = .true.
       call movebad(n,x,fx,movebadprint)
@@ -475,6 +480,7 @@ subroutine initial(n,x)
   end do
   write(*,*) 
   write(*,*) ' Restraint-only function value: ', fx
+  write(*,*) ' Maximum violation of the restraints: ', fx
   init1 = .false.
 
   write(*,"( /,62('#'),/ )")

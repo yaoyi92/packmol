@@ -1675,6 +1675,7 @@ C     LOCAL SCALARS
       double precision acgeps,amax,amaxx,bestprog,bcgeps,cgeps,currprog,
      +        delta,epsgpen2,fprev,gieucn2,gpeucn20,gpi,gpnmax,gpsupn0,
      +        kappa,lamspg,ometa2,sts,sty,xnorm
+      logical packmolprecision
 
 C     ==================================================================
 C     Initialization
@@ -1756,9 +1757,9 @@ C     Compute function and gradient at the initial point
 
       call evalal(n,x,m,lambda,rho,f,inform)
 
-      if(f.lt.1.d-5) then
-c Output for packmol (and return)
-c        write(*,1003) 0, 0.d0, 0.d0  
+c LM: Added packmolprecision function test, for Packmol
+
+      if ( packmolprecision(n,x) ) then
         if(iprint.gt.0) then
           write(*,780)
 780       format('  Current point is a solution.') 
@@ -1889,6 +1890,12 @@ C     ==================================================================
 C     ==================================================================
 C     Test stopping criteria
 C     ==================================================================
+
+c LM: Added packmolprecision function test, for Packmol
+
+      if ( packmolprecision(n,x) ) then
+        goto 500
+      end if
 
 C     Test whether the continuous-projected-gradient Euclidian norm
 C     is small enough to declare convergence
