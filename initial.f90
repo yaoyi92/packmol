@@ -171,41 +171,49 @@ subroutine initial(n,x)
          ' Building initial approximation ... ', 13('-'),/,/,&
          '  Adjusting initial point to fit the constraints ')")
   init1 = .true.
-  i = 0
-  hasbad = .true.
-  call computef(n,x,fx)
-  do while( frest > precision .and. i.le. (nloop/10-1) .and. hasbad)
-    i = i + 1 
-    write(*,"( '  Packing:|0 ',tr39,'  10|' )")
-    call pgencan(n,x,fx)
+  call swaptype(n,x,itype,0)
+  do while( itype <= ntype )
+    itype = itype + 1
+    write(*,*) ' Molecules of type: ', input_itype(itype)
+    call swaptype(n,x,itype,1)
+    call swaptype(n,x,itype,3)
+    i = 0
+    hasbad = .true.
     call computef(n,x,fx)
-    if(frest > precision) then 
-      write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
-      movebadprint = .true.
-      call movebad(n,x,fx,movebadprint)
+    do while( frest > precision .and. i.le. (nloop/10-1) .and. hasbad)
+      i = i + 1 
+      write(*,"( '  Packing:|0 ',tr39,'  10|' )")
+      call pgencan(n,x,fx)
+      call computef(n,x,fx)
+      if(frest > precision) then 
+        write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
+        movebadprint = .true.
+        call movebad(n,x,fx,movebadprint)
+      end if
+    end do
+    write(*,*) 
+    write(*,*) ' Restraint-only function value: ', fx
+    write(*,*) ' Maximum violation of the restraints: ', frest
+    call swaptype(n,x,itype,2)
+
+    if( hasbad .and. frest > precision ) then
+      write(*,*) ' ERROR: Packmol was unable to put the molecules'
+      write(*,*) '        in the desired regions even without'
+      write(*,*) '        considering distance tolerances. '
+      write(*,*) '        Probably there is something wrong with'
+      write(*,*) '        the constraints, since it seems that'
+      write(*,*) '        the molecules cannot satisfy them at'
+      write(*,*) '        at all. '
+      write(*,*) '        Please check the spatial constraints and' 
+      write(*,*) '        try again.'
+      if ( i .ge. nloop/10-1 ) then
+      end if
+        write(*,*) ' >The maximum number of cycles (',nloop,') was achieved.' 
+        write(*,*) '  You may try increasing it with the',' nloop keyword, as in: nloop 1000 '
+      stop
     end if
   end do
-  write(*,*) 
-  write(*,*) ' Restraint-only function value: ', fx
-  write(*,*) ' Maximum violation of the restraints: ', frest
   init1 = .false.
-
-  if( hasbad .and. frest > precision ) then
-    write(*,*) ' ERROR: Packmol was unable to put the molecules'
-    write(*,*) '        in the desired regions even without'
-    write(*,*) '        considering distance tolerances. '
-    write(*,*) '        Probably there is something wrong with'
-    write(*,*) '        the constraints, since it seems that'
-    write(*,*) '        the molecules cannot satisfy them at'
-    write(*,*) '        at all. '
-    write(*,*) '        Please check the spatial constraints and' 
-    write(*,*) '        try again.'
-    if ( i .ge. nloop/10-1 ) then
-    end if
-      write(*,*) ' >The maximum number of cycles (',nloop,') was achieved.' 
-      write(*,*) '  You may try increasing it with the',' nloop keyword, as in: nloop 1000 '
-    stop
-  end if
 
   ! Rescaling sizemin and sizemax in order to build the patch of boxes
 
@@ -464,23 +472,32 @@ subroutine initial(n,x)
   ! Adjusting current point to fit the constraints
 
   init1 = .true.
-  i = 0
+  call swaptype(n,x,itype,0)
   call computef(n,x,fx)
-  hasbad = .true.
-  do while( frest > precision .and. i <= (nloop/10-1) .and. hasbad)
-    i = i + 1 
-    write(*,"( '  Packing:|0 ',tr39,'  10|' )")
-    call pgencan(n,x,fx)
+  do while( itype <= ntype )
+    itype = itype + 1
+    write(*,*) ' Molecules of type: ', input_itype(itype)
+    call swaptype(n,x,itype,1)
+    call swaptype(n,x,itype,3)
+    i = 0
     call computef(n,x,fx)
-    if(frest > precision) then
-      write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
-      movebadprint = .true.
-      call movebad(n,x,fx,movebadprint)
-    end if
+    hasbad = .true.
+    do while( frest > precision .and. i <= (nloop/10-1) .and. hasbad)
+      i = i + 1 
+      write(*,"( '  Packing:|0 ',tr39,'  10|' )")
+      call pgencan(n,x,fx)
+      call computef(n,x,fx)
+      if(frest > precision) then
+        write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
+        movebadprint = .true.
+        call movebad(n,x,fx,movebadprint)
+      end if
+      call swaptype(n,x,itype,2)
+    end do
+    write(*,*) 
+    write(*,*) ' Restraint-only function value: ', fx
+    write(*,*) ' Maximum violation of the restraints: ', fx
   end do
-  write(*,*) 
-  write(*,*) ' Restraint-only function value: ', fx
-  write(*,*) ' Maximum violation of the restraints: ', fx
   init1 = .false.
 
   write(*,"( /,62('#'),/ )")

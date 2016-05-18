@@ -15,7 +15,7 @@
 subroutine swaptype(n,x,itype,action)
 
   use sizes, only : nn
-  use compute_data, only : ntype, comptype, nmols, ntotmol 
+  use compute_data, only : ntype, comptype, nmols, ntotmol, init1
   use swaptypemod
   implicit none
   integer ::n, itype, ilubar, ilugan, i, action
@@ -42,11 +42,11 @@ subroutine swaptype(n,x,itype,action)
   if ( action == 1 ) then
     if ( itype <= ntype ) then
       write(*,*)
-      write(*,dash1_line)
+      if ( .not. init1 ) write(*,dash1_line)
       write(*,*)
       write(*,*) ' Packing molecules of type ', itype
       write(*,*)
-      write(*,dash1_line)
+      if ( .not. init1 ) write(*,dash1_line)
       do i = 1, ntype
         if(i.eq.itype) then
           comptype(i) = .true.
@@ -68,6 +68,15 @@ subroutine swaptype(n,x,itype,action)
         ilubar = ilubar + 1
         ilugan = ilugan + 1
       end do
+    else
+      if(ntype.gt.1) then
+        write(*,*)
+        if ( .not. init1 ) then 
+          write(*,*)
+          write(*,*)' Solving the problem for all molecules together.'
+          write(*,*)
+        end if
+      end if
     end if
   end if
 
@@ -102,15 +111,6 @@ subroutine swaptype(n,x,itype,action)
       do itype = 1, ntype
         comptype(itype) = .true.
       end do
-      if(ntype.gt.1) then
-        write(*,*)
-        write(*,dash1_line)
-        write(*,*)
-        write(*,*)' Solving the problem for all molecules together.'
-        write(*,*)
-        write(*,dash1_line)
-        write(*,*)
-      end if
     end if                  
   end if
 
