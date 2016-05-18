@@ -70,10 +70,13 @@ subroutine swaptype(n,x,itype,action)
       end do
     else
       if(ntype.gt.1) then
-        write(*,*)
         if ( .not. init1 ) then 
           write(*,*)
+          write(*,dash1_line)
+          write(*,*)
           write(*,*)' Solving the problem for all molecules together.'
+          write(*,*)
+          write(*,dash1_line)
           write(*,*)
         end if
       end if
