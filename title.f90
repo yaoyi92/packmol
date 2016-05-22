@@ -19,7 +19,7 @@ subroutine title()
             ' generation of starting configurations for',        /&
             ' molecular dynamics. ',/&
             ' ',/&
-            t42,' Version 16.118 ')")
+            t42,' Version 16.143 ')")
   write(*,hash3_line)
 
 end subroutine title
