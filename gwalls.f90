@@ -13,14 +13,6 @@
 ! and gradient which are identical in the serial and parallel
 ! versions.
 !
-!
-!
-! Objective function evaluation
-!
-!
-!
-
-!
 ! Gradient relative to restraints
 !
 

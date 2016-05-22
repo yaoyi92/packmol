@@ -12,6 +12,7 @@
 ! Subroutine initial: Subroutine that reset parameters and
 !                     builds the initial point
 !
+
 subroutine initial(n,x)
 
   use sizes

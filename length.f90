@@ -8,14 +8,8 @@
 !  as published by the Free Software Foundation; either version 2
 !  of the License, or (at your option) any later version.
 !  
-!
-! Version 15.317
-!
-
-!
 ! Function that determines the length of a string
 !
-
 function length(string)
 
   implicit none
@@ -28,6 +22,5 @@ function length(string)
     if ( length == 0 ) exit
   end do
 
-return
 end function length      
  

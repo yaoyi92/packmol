@@ -13,13 +13,7 @@
 ! and gradient which are identical in the serial and parallel
 ! versions.
 !
-!
-!
-
-!
 ! Subroutine that computes the function value
-!
-!
 !
   
 subroutine computef(n,x,f) 

@@ -13,10 +13,6 @@
 ! and gradient which are identical in the serial and parallel
 ! versions.
 !
-!
-!
-
-!
 ! Function that computes the atom-to-atom component of the objective
 ! function
 !

@@ -8,10 +8,7 @@
 !  as published by the Free Software Foundation; either version 2
 !  of the License, or (at your option) any later version.
 !  
-
-!
 ! Subroutine that computes the analytical derivatives
-!
 !
 
 subroutine computeg(n,x,g) 

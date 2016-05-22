@@ -9,8 +9,6 @@
 !  of the License, or (at your option) any later version.
 !  
 !
-
-!
 ! Compute gradient relative to atom-to-atom distances
 !
 

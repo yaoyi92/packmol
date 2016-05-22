@@ -21,7 +21,7 @@ double precision function rnd()
 end function rnd
 
 !
-! Subroutine that returns a random number given a the seed
+! Subroutine that initializes the random number generator given a seed
 !
 
 subroutine init_random_number(iseed)

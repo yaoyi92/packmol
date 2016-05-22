@@ -12,7 +12,6 @@
 ! Subroutine eulerrmat: Computes the rotation matrix from the
 !                       Euler angles
 ! 
-
 ! Note that:
 ! In this routine, beta is a rotation about the y-axis
 !                  gama is a rotation about the z-axis
