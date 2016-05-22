@@ -57,7 +57,7 @@ module input
   logical :: fix
 
   logical, allocatable :: changechains(:) ! (ntype)
-  logical, allocatable :: thisisfixed(:) ! (ntype)
+  logical, allocatable :: fixedoninput(:) ! (ntype)
   
   character(len=200) :: xyzout
 

@@ -19,7 +19,7 @@ subroutine initial(n,x)
   use compute_data
   use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, &
                     discale, precision, sidemax, movefrac, movebadrandom, check, &
-                    restart_from, input_itype, thisisfixed
+                    restart_from, input_itype, fixedoninput
   use usegencan
   use ahestetic
   implicit none
@@ -371,7 +371,10 @@ subroutine initial(n,x)
 
   ilubar = 0
   do itype = 1, ntype
-    if ( restart_from(itype) /= 'none' ) cycle
+    if ( restart_from(itype) /= 'none' ) then
+      ilubar = ilubar + nmols(itype)*3
+      cycle
+    end if
     do imol = 1, nmols(itype)
       fx = 1.d0
       ntry = 0
@@ -413,7 +416,10 @@ subroutine initial(n,x)
 
   ilugan = ntotmol*3
   do itype = 1, ntype
-    if ( restart_from(itype) /= 'none' ) cycle
+    if ( restart_from(itype) /= 'none' ) then
+      ilugan = ilugan + nmols(itype)*3
+      cycle
+    end if
     do imol = 1, nmols(itype)
       if ( constrain_rot(itype,1) ) then
         x(ilugan+1) = ( rot_bound(itype,1,1) - dabs(rot_bound(itype,1,2)) ) + &
@@ -441,34 +447,30 @@ subroutine initial(n,x)
   ! Reading restart files of specific molecule types, if available
   !
 
-  i_not_fixed = 0
   ilubar = 0
   ilugan = ntotmol*3
-  do itype = 1, ntfix
-    if ( .not. thisisfixed(itype) ) then
-      i_not_fixed = i_not_fixed + 1
-      if ( restart_from(input_itype(itype)) /= 'none' ) then
-        record = restart_from(input_itype(itype))
-        open(10,file=record,status='old',action='read',iostat=ioerr)
+  do itype = 1, ntype
+    if ( restart_from(itype) /= 'none' ) then
+      record = restart_from(itype)
+      open(10,file=record,status='old',action='read',iostat=ioerr)
+      if ( ioerr /= 0 ) then
+        write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
+        stop
+      end if
+      do i = 1, nmols(itype)
+        read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                                x(ilugan+1), x(ilugan+2), x(ilugan+3)
         if ( ioerr /= 0 ) then
-          write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
+          write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
           stop
         end if
-        do i = 1, nmols(i_not_fixed)
-          read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
-                                  x(ilugan+1), x(ilugan+2), x(ilugan+3)
-          if ( ioerr /= 0 ) then
-            write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
-            stop
-          end if
-          ilubar = ilubar + 3
-          ilugan = ilugan + 3
-        end do
-        close(10)
-      else
-        ilubar = ilubar + nmols(i_not_fixed)*3
-        ilugan = ilugan + nmols(i_not_fixed)*3
-      end if
+        ilubar = ilubar + 3
+        ilugan = ilugan + 3
+      end do
+      close(10)
+    else
+      ilubar = ilubar + nmols(itype)*3
+      ilugan = ilugan + nmols(itype)*3
     end if
   end do
 
@@ -489,6 +491,11 @@ subroutine initial(n,x)
     write(*,dash3_line)
     write(*,*) ' Molecules of type: ', input_itype(itype)
     write(*,*)
+    if ( restart_from(itype) /= 'none' ) then
+      record = restart_from(itype)
+      write(*,*) ' Will restart coordinates from: ', trim(adjustl(record))
+      write(*,*)
+    end if
     i = 0
     call computef(n,x,fx)
     hasbad = .true.
@@ -505,7 +512,7 @@ subroutine initial(n,x)
       call swaptype(n,x,itype,2) ! Set arrays for next type
     end do
     write(*,*) ' Restraint-only function value: ', fx
-    write(*,*) ' Maximum violation of the restraints: ', fx
+    write(*,*) ' Maximum violation of the restraints: ', frest
   end do
   init1 = .false.
   write(*,hash3_line)

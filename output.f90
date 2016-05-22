@@ -71,31 +71,27 @@ subroutine output(n,x)
 
   ! Restart files for specific molecule types
 
-  i_not_fixed = 0
   ilubar = 0
   ilugan = ntotmol*3
-  do itype = 1, ntfix
-    if ( .not. thisisfixed(input_itype(itype)) ) then
-      i_not_fixed = i_not_fixed + 1
-      if ( restart_to(input_itype(itype)) /= 'none' ) then
-        record = restart_to(input_itype(itype))
-        open(10,file=record,iostat=ioerr)
-        if ( ioerr /= 0 ) then
-          write(*,*) ' ERROR: Could not open restart_to file: ', trim(adjustl(record))
-          stop
-        end if
-        do i = 1, nmols(i_not_fixed)
-          write(10,"(6(tr1,es23.16))") x(ilubar+1), x(ilubar+2), x(ilubar+3), &
-                                       x(ilugan+1), x(ilugan+2), x(ilugan+3)
-          ilubar = ilubar + 3
-          ilugan = ilugan + 3
-        end do
-        close(10)
-        write(*,*) ' Wrote restart file: ', trim(adjustl(record))
-      else
-        ilubar = ilubar + nmols(i_not_fixed)*3
-        ilugan = ilugan + nmols(i_not_fixed)*3
+  do itype = 1, ntype
+    if ( restart_to(itype) /= 'none' ) then
+      record = restart_to(itype)
+      open(10,file=record,iostat=ioerr)
+      if ( ioerr /= 0 ) then
+        write(*,*) ' ERROR: Could not open restart_to file: ', trim(adjustl(record))
+        stop
       end if
+      do i = 1, nmols(itype)
+        write(10,"(6(tr1,es23.16))") x(ilubar+1), x(ilubar+2), x(ilubar+3), &
+                                     x(ilugan+1), x(ilugan+2), x(ilugan+3)
+        ilubar = ilubar + 3
+        ilugan = ilugan + 3
+      end do
+      close(10)
+      write(*,*) ' Wrote restart file: ', trim(adjustl(record))
+    else
+      ilubar = ilubar + nmols(itype)*3
+      ilugan = ilugan + nmols(itype)*3
     end if
   end do
 
@@ -111,7 +107,7 @@ subroutine output(n,x)
     i_not_fixed = 0
     i_fixed = ntype
     do itype = 1, ntfix
-      if ( .not. thisisfixed(input_itype(itype)) ) then
+      if ( .not. fixedoninput(itype) ) then
         i_not_fixed = i_not_fixed + 1
         do imol = 1, nmols(i_not_fixed)
           xbar = x(ilubar+1) 
@@ -196,7 +192,7 @@ subroutine output(n,x)
     i_not_fixed = 0
     i_fixed = ntype
     do itype = 1, ntfix
-      if ( .not. thisisfixed(input_itype(itype)) ) then
+      if ( .not. fixedoninput(itype) ) then
         i_not_fixed = i_not_fixed + 1
         record = name(i_not_fixed)
         do imol = 1, nmols(i_not_fixed) 
@@ -390,7 +386,7 @@ subroutine output(n,x)
     i_fixed = ntype
     irescount = 1
     do itype = 1, ntfix 
-      if ( .not. thisisfixed(input_itype(itype)) ) then
+      if ( .not. fixedoninput(itype) ) then
         i_not_fixed = i_not_fixed + 1
 
         ! Counting the number of residues of this molecule
@@ -639,7 +635,7 @@ subroutine output(n,x)
 
     do itype = 1, ntfix
 
-      if ( .not. thisisfixed(input_itype(itype)) ) then
+      if ( .not. fixedoninput(itype) ) then
         i_not_fixed = i_not_fixed + 1
   
         do imol = 1, nmols(i_not_fixed) 

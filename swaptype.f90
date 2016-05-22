@@ -30,11 +30,7 @@ subroutine swaptype(n,x,itype,action)
     end do
     ntemp = n
     ntottemp = ntotmol
-    if(ntype.eq.1) then
-      itype = 1
-    else 
-      itype = 0
-    end if    
+    itype = 0
   end if
 
   ! Swapping data for packing this itype

@@ -15,7 +15,7 @@
 
 subroutine writesuccess(itype,fdist,frest,f)
 
-  use input, only : precision 
+  use input, only : precision, input_itype
   use compute_data, only : ntype
   use ahestetic
   implicit none
@@ -24,7 +24,7 @@ subroutine writesuccess(itype,fdist,frest,f)
 
   if(itype.le.ntype) then
     write(*,dash1_line)
-    write(*,*)' Packing solved for molecules of type', itype
+    write(*,*)' Packing solved for molecules of type', input_itype(itype)
     write(*,*)' Objective function value: ', f
     write(*,*)' Maximum violation of target distance: ',fdist
     write(*,*)' Max. constraint violation: ', frest

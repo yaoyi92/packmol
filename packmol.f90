@@ -51,7 +51,7 @@ program packmol
   implicit none
 
   integer :: itype, irest, idatom, iatom
-  integer :: idtemp, nmtemp, natemp
+  integer :: idtemp, nmtemp, natemp, input_itypetemp
   integer :: linesttmp1, linesttmp2, jtype
   integer :: ntmol, n, iftype, icart, imol, iicart, iline_atoms
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
@@ -72,7 +72,7 @@ program packmol
 
   real :: etime, tarray(2), time0
   
-  character(len=200) :: record
+  character(len=200) :: record, restart_from_temp, restart_to_temp
   character(len=80) :: xyzfile
 
   logical :: fixtmp
@@ -265,21 +265,22 @@ program packmol
   end do 
 
   ! Reseting parameters for removing the fixed molecules
+  ! fix is the logical variable that informs that there are fixed molecules
 
   fix = .false.
   ntemp = 0
   do itype = 1, ntype
 
-  ! input_itype and thisisfixed vectors are used only to preserve the
+  ! input_itype and fixedoninput vectors are used only to preserve the
   ! order of input in the output files
 
     input_itype(itype) = itype
     if(fixed(itype)) then
       fix = .true.
-      thisisfixed(itype) = .true.
+      fixedoninput(itype) = .true.
     else
       ntemp = ntemp + 1
-      thisisfixed(itype) = .false.
+      fixedoninput(itype) = .false.
     end if
   end do
   ntfix = ntype
@@ -289,8 +290,11 @@ program packmol
     do itype = 1, ntfix - 1
       if(fixed(itype)) then
         record = name(itype)
+        restart_to_temp = restart_to(itype)
+        restart_from_temp = restart_from(itype)
         fixtmp = fixed(itype)
         idtemp = idfirst(itype)
+        input_itypetemp = input_itype(itype)
         nmtemp = nmols(itype)
         natemp = natoms(itype)
         resntemp = resnumbers(itype)
@@ -301,8 +305,14 @@ program packmol
         if(.not.fixed(jtype)) then
           name(itype) = name(jtype)
           name(jtype) = record(1:10)
+          restart_to(itype) = restart_to(jtype)
+          restart_to(jtype) = restart_to_temp
+          restart_from(itype) = restart_from(jtype)
+          restart_from(jtype) = restart_from_temp
           idfirst(itype) = idfirst(jtype)
           idfirst(jtype) = idtemp
+          input_itype(itype) = input_itype(jtype)
+          input_itype(jtype) = input_itypetemp
           fixed(itype) = fixed(jtype)
           fixed(jtype) = fixtmp
           nmols(itype) = nmols(jtype)
