@@ -314,9 +314,6 @@ subroutine initial(n,x)
       do ifatom = 1, natoms(iftype)
         idfatom = idfatom + 1
         icart = icart + 1
-        xcart(icart,1) = coor(idfatom,1)
-        xcart(icart,2) = coor(idfatom,2)
-        xcart(icart,3) = coor(idfatom,3)
         call setibox(xcart(icart,1),xcart(icart,2),xcart(icart,3),&
                      sizemin,boxl,nboxes,iboxx,iboxy,iboxz)
         latomnext(icart) = latomfix(iboxx,iboxy,iboxz)
