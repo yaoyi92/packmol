@@ -7,11 +7,6 @@
 !  modify it under the terms of the GNU General Public License
 !  as published by the Free Software Foundation; either version 2
 !  of the License, or (at your option) any later version.
-!  
-!
-! This file contains the parts of the evaluation of the function
-! and gradient which are identical in the serial and parallel
-! versions.
 !
 ! Function that computes the atom-to-atom component of the objective
 ! function

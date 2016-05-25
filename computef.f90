@@ -9,10 +9,6 @@
 !  of the License, or (at your option) any later version.
 !  
 !
-! This file contains the parts of the evaluation of the function
-! and gradient which are identical in the serial and parallel
-! versions.
-!
 ! Subroutine that computes the function value
 !
   

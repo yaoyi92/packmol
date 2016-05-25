@@ -9,19 +9,8 @@
 !  of the License, or (at your option) any later version.
 !  
 !
-! This file contains the parts of the evaluation of the function
-! and gradient which are identical in the serial and parallel
-! versions.
-!
-!
-!
-! Objective function evaluation
-!
-!
-!
 ! Subroutine comprest: Compute the function value relative to
 !                      to the restrictions for one atom
-!
 !
 
 subroutine comprest(icart,f)
