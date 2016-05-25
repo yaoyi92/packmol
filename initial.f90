@@ -142,6 +142,12 @@ subroutine initial(n,x)
     end do
   end do
 
+  ! Initialize cartesian coordinates
+
+  idatom = idfirst(itype) - 1
+ 
+  
+
   ! Use the largest radius as the reference for binning the box
 
   radmax = 0.d0
@@ -227,7 +233,7 @@ subroutine initial(n,x)
     sizemin(i) = 1.d20
     sizemax(i) = -1.d20
   end do                       
-      
+
   icart = 0
   do itype = 1, ntfix
     do imol = 1, nmols(itype)

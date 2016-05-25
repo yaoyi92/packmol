@@ -27,7 +27,7 @@ module compute_data
 
   double precision :: scale, scale2
   double precision :: fdist, frest 
-  double precision :: sizemin(3),sizemax(3)
+  double precision :: sizemin(3), sizemax(3)
   double precision :: boxl(3)
 
   double precision, allocatable :: xcart(:,:) ! (ntotat,3)
