@@ -27,9 +27,9 @@ subroutine initial(n,x)
              imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
              idfatom, iftype, jatom, ioerr, i_not_fixed
 
-  double precision :: x(n), cmx, cmy, &
+  double precision :: x(n), cmx, cmy, beta, gamma, theta, &
                       cmz, fx, xlength, dbox, rnd, &
-                      radmax
+                      radmax, v1(3), v2(3), v3(3), xbar, ybar, zbar
   double precision, parameter :: twopi = 8.d0*datan(1.d0)
      
   logical :: overlap, movebadprint, hasbad 
@@ -142,11 +142,43 @@ subroutine initial(n,x)
     end do
   end do
 
-  ! Initialize cartesian coordinates
+  ! Initialize cartesian coordinate array for the first time
 
-  idatom = idfirst(itype) - 1
- 
-  
+  if(fix) then
+    icart = 0
+    do iftype = ntype + 1, ntfix
+      idfatom = idfirst(iftype) - 1
+      do ifatom = 1, natoms(iftype)
+        idfatom = idfatom + 1
+        icart = icart + 1
+        xcart(icart,1) = coor(idfatom,1)
+        xcart(icart,2) = coor(idfatom,2)
+        xcart(icart,3) = coor(idfatom,3)
+      end do
+    end do
+  end if
+  ilubar = 0
+  ilugan = ntotmol*3
+  icart = natfix
+  do itype = 1, ntype
+    do imol = 1, nmols(itype)
+      xbar = x(ilubar+1)
+      ybar = x(ilubar+2)
+      zbar = x(ilubar+3)
+      beta = x(ilugan+1)
+      gamma = x(ilugan+2)
+      theta = x(ilugan+3)
+      call eulerrmat(beta,gamma,theta,v1,v2,v3)
+      idatom = idfirst(itype) - 1
+      do iatom = 1, natoms(itype)
+        icart = icart + 1
+        idatom = idatom + 1
+        call compcart(icart,xbar,ybar,zbar,&
+                      coor(idatom,1),coor(idatom,2),coor(idatom,3),&
+                      v1,v2,v3)
+      end do
+    end do
+  end do
 
   ! Use the largest radius as the reference for binning the box
 
