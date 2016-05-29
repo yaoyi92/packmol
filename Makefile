@@ -37,6 +37,7 @@ endif
 #
 # Flags for compiling development version
 #
+GENCANFLAGS := $(FLAGS)
 ifeq ($(MAKECMDGOALS),devel)
 FLAGS = -Wall -fcheck=bounds
 endif
@@ -164,7 +165,7 @@ jacobi.o : jacobi.f90
 pgencan.o : pgencan.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c pgencan.f90
 gencan.o : gencan.f
-	@$(FORTRAN) $(FLAGS) -c gencan.f 
+	@$(FORTRAN) $(GENCANFLAGS) -c gencan.f 
 random.o : random.f90 
 	@$(FORTRAN) $(FLAGS) -c random.f90
 computef.o : computef.f90 $(modules)   
