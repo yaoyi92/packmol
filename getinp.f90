@@ -20,8 +20,8 @@ subroutine getinp()
   use usegencan
 
   implicit none
-  integer :: i, j, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
-             imark, charl, ioerr, length
+  integer :: i, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
+             imark, charl, ioerr
   double precision :: clen
   character(len=200) :: record, blank
 

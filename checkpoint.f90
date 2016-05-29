@@ -41,26 +41,26 @@ subroutine checkpoint(n,x)
 
   write(*,dash3_line)
   write(*,"(&
-         ' Packmol was not able to find a solution to your',/,&
-         ' packing problem with the desired distance tolerance.',/,/,&
-         ' First of all, be sure if the molecules fit in the',/,&
-         ' regions specified and if the constraints were set',/,&
-         ' correctly. ',/,/,&
-         ' Secondly, try simply running it again with a different ',/,&
-         ' seed for the random number generator of the initial ',/,&
-         ' point. This is done by adding the keyword seed to the',/,&
-         ' input file, as in: ',/,/,&
-         ' seed 192911 ',/,/,&
-         ' The best configuration found has a function value of',/,&
-         ' f = ', e14.7,/,/,&
-         ' IMPORTANT: ',/,&
-         ' If the number of molecules and the restraints are',/,&
-         ' correct, it is still very likely that the current point',/,&
-         ' fits your needs if your purpose is to run a MD',/,&
-         ' simulation.',/,&
-         ' Therefore, we recommend to minimize the energy of the',/,&
-         ' solution found, equilibrate it and run with it as well.',/&
-         )") fx
+            &' Packmol was not able to find a solution to your',/,&
+            &' packing problem with the desired distance tolerance.',/,/,&
+            &' First of all, be sure if the molecules fit in the',/,&
+            &' regions specified and if the constraints were set',/,&
+            &' correctly. ',/,/,&
+            &' Secondly, try simply running it again with a different ',/,&
+            &' seed for the random number generator of the initial ',/,&
+            &' point. This is done by adding the keyword seed to the',/,&
+            &' input file, as in: ',/,/,&
+            &' seed 192911 ',/,/,&
+            &' The best configuration found has a function value of',/,&
+            &' f = ', e14.7,/,/,&
+            &' IMPORTANT: ',/,&
+            &' If the number of molecules and the restraints are',/,&
+            &' correct, it is still very likely that the current point',/,&
+            &' fits your needs if your purpose is to run a MD',/,&
+            &' simulation.',/,&
+            &' Therefore, we recommend to minimize the energy of the',/,&
+            &' solution found, equilibrate it and run with it as well.',/&
+            &)") fx
   write(*,dash3_line)
 
   call output(n,x)

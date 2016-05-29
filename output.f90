@@ -350,26 +350,26 @@ subroutine output(n,x)
   if(pdb) then
 
     pdb_atom_line = "( t1,a5,t7,i5,t12,a10,t22,a1,t23,&
-                       i4,t27,a1,t31,f8.3,t39,f8.3,t47,&
-                       f8.3,t55,a26 )"
+                      &i4,t27,a1,t31,f8.3,t39,f8.3,t47,&
+                      &f8.3,t55,a26 )"
     pdb_hetatm_line = "( t1,a6,t7,i5,t12,a10,t22,a1,&
-                         t23,i4,t27,a1,t31,f8.3,t39,&
-                         f8.3,t47,f8.3,t55,a26 )"
+                        &t23,i4,t27,a1,t31,f8.3,t39,&
+                        &f8.3,t47,f8.3,t55,a26 )"
 
     open(30,file=xyzout,status='unknown') 
  
     write(30,"( & 
-             'HEADER ',/&
-             'TITLE    ', a64,/&
-             'REMARK   Packmol generated pdb file ',/&
-             'REMARK   Home-Page: ',&
-             'http://www.ime.unicamp.br/~martinez/packmol',/,&
-             'REMARK' )" ) title
+            &'HEADER ',/&
+            &'TITLE    ', a64,/&
+            &'REMARK   Packmol generated pdb file ',/&
+            &'REMARK   Home-Page: ',&
+            &'http://www.ime.unicamp.br/~martinez/packmol',/,&
+            &'REMARK' )" ) title
 
     if(add_box_sides) then
       write(30,"( 'CRYST1',t7,f9.2,t16,f9.2,t25,f9.2,&
-                      t34,f7.2,t41,f7.2,t48,f7.2,&
-                      t56,'P 1           1' )") &
+                     &t34,f7.2,t41,f7.2,t48,f7.2,&
+                     &t56,'P 1           1' )") &
             sizemax(1)-sizemin(1) + add_sides_fix,&
             sizemax(2)-sizemin(2) + add_sides_fix,& 
             sizemax(3)-sizemin(3) + add_sides_fix,&

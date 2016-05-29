@@ -88,7 +88,7 @@ end subroutine pgencan
 
 function packmolprecision(n,x)
   use input, only : precision
-  use compute_data, only : fdist, frest, init1
+  use compute_data, only : fdist, frest
   implicit none
   integer :: n
   double precision :: f, x(n)

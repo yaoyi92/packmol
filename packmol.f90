@@ -56,7 +56,6 @@ program packmol
   integer :: ntmol, n, iftype, icart, imol, iicart, iline_atoms
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
   integer :: loop
-  integer :: ilubar, ilugan  
   integer :: resntemp
   integer :: charl, ioerr
       
@@ -650,14 +649,14 @@ program packmol
         fimp = dmin1(99.99d0,dmax1(-99.99d0,fimp))
         fimprov = dmin1(99.99d0,dmax1(-99.99d0,fimprov))
 
-        write(*,"( /&
-               '  Function value from last GENCAN loop: f = ', e10.5, /&
-               '  Best function value before: f = ', e10.5,           /&
-               '  Improvement from best function value: ', f8.2, ' %',/&
-               '  Improvement from last loop: ', f8.2, ' %',          /&
-               '  Maximum violation of target distance: ', f12.6,/&
-               '  Maximum violation of the constraints: ', e10.5       &
-               )") fx, bestf, fimprov, fimp, fdist, frest
+        write(*,"(/&
+                  &'  Function value from last GENCAN loop: f = ', e10.5, /&
+                  &'  Best function value before: f = ', e10.5,           /&
+                  &'  Improvement from best function value: ', f8.2, ' %',/&
+                  &'  Improvement from last loop: ', f8.2, ' %',          /&
+                  &'  Maximum violation of target distance: ', f12.6,/&
+                  &'  Maximum violation of the constraints: ', e10.5       &
+                  &)") fx, bestf, fimprov, fimp, fdist, frest
         write(*,dash3_line)
         flast = fx
 

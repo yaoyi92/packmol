@@ -21,7 +21,7 @@ subroutine setsizes()
  
   implicit none
   integer :: i, ival, ilast, iline, itype
-  integer :: ioerr, length
+  integer :: ioerr
   character(len=200) :: record, word, blank
 
   ! Instructions on how to run packmol

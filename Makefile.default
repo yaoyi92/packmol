@@ -30,10 +30,15 @@ FLAGS= -O3 -ffast-math
 #
 # Get the default fortran compiler
 #
- 
 ifeq ($(FORTRAN),AUTO)
 FORTRAN = $(FC)
 endif 
+#
+# Flags for compiling development version
+#
+ifeq ($(MAKECMDGOALS),devel)
+FLAGS = -Wall -fcheck=bounds
+endif
 #
 # Files required
 #
@@ -89,9 +94,9 @@ all : $(oall)
 devel : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
-	@echo " Flags: -Wunused -fcheck=bounds"
+	@echo " Flags: $(FLAGS)"
 	@echo " ------------------------------------------------------ "
-	@$(FORTRAN) -o packmol $(oall) -Wunused -fcheck=bounds
+	@$(FORTRAN) -o packmol $(oall) $(FLAGS)
 	@echo " ------------------------------------------------------ " 
 	@echo " Packmol succesfully built. " 
 	@echo " ------------------------------------------------------ " 

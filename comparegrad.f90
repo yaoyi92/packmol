@@ -48,7 +48,7 @@ subroutine comparegrad(n,x)
   call computeg(n,x,g) 
 
   write(98,"( t2,'Component',t16,'Analytical',t33,'Discrete', &
-              t51,'Error',t62,'Best step' )")
+             &t51,'Error',t62,'Best step' )")
   time0 = etime(tarray)
   eworst = 0.d0
   do i = 1, n

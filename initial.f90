@@ -18,14 +18,13 @@ subroutine initial(n,x)
   use sizes
   use compute_data
   use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, &
-                    discale, precision, sidemax, movefrac, movebadrandom, check, &
-                    restart_from, input_itype, fixedoninput
+                    discale, precision, sidemax, restart_from, input_itype
   use usegencan
   use ahestetic
   implicit none
   integer :: n, i, j, k, idatom, iatom, ilubar, ilugan, icart, itype, &
              imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
-             idfatom, iftype, jatom, ioerr, i_not_fixed
+             idfatom, iftype, jatom, ioerr
 
   double precision :: x(n), cmx, cmy, beta, gamma, theta, &
                       cmz, fx, xlength, dbox, rnd, &
@@ -321,19 +320,6 @@ subroutine initial(n,x)
         ibtype(icart) = iftype
         ibmol(icart) = 1
         hasfixed(iboxx,  iboxy,  iboxz  ) = .true.
-        hasfixed(iboxx+1,iboxy,  iboxz  ) = .true.
-        hasfixed(iboxx,  iboxy+1,iboxz  ) = .true.
-        hasfixed(iboxx,  iboxy,  iboxz+1) = .true.
-        hasfixed(iboxx+1,iboxy+1,iboxz  ) = .true.
-        hasfixed(iboxx+1,iboxy,  iboxz+1) = .true.
-        hasfixed(iboxx+1,iboxy-1,iboxz  ) = .true.
-        hasfixed(iboxx+1,iboxy,  iboxz-1) = .true.
-        hasfixed(iboxx,  iboxy+1,iboxz+1) = .true.
-        hasfixed(iboxx,  iboxy+1,iboxz-1) = .true.
-        hasfixed(iboxx+1,iboxy+1,iboxz+1) = .true.
-        hasfixed(iboxx+1,iboxy+1,iboxz-1) = .true.
-        hasfixed(iboxx+1,iboxy-1,iboxz+1) = .true.
-        hasfixed(iboxx+1,iboxy-1,iboxz-1) = .true.
       end do
     end do
   end if
@@ -426,16 +412,29 @@ subroutine initial(n,x)
              hasfixed(iboxx+1,iboxy,  iboxz  ).or.&
              hasfixed(iboxx,  iboxy+1,iboxz  ).or.&
              hasfixed(iboxx,  iboxy,  iboxz+1).or.&
+             hasfixed(iboxx-1,iboxy,  iboxz  ).or.&
+             hasfixed(iboxx,  iboxy-1,iboxz  ).or.&
+             hasfixed(iboxx,  iboxy,  iboxz-1).or.&
              hasfixed(iboxx+1,iboxy+1,iboxz  ).or.&
              hasfixed(iboxx+1,iboxy,  iboxz+1).or.&
              hasfixed(iboxx+1,iboxy-1,iboxz  ).or.&
              hasfixed(iboxx+1,iboxy,  iboxz-1).or.&
              hasfixed(iboxx,  iboxy+1,iboxz+1).or.&
              hasfixed(iboxx,  iboxy+1,iboxz-1).or.&
+             hasfixed(iboxx,  iboxy-1,iboxz+1).or.&
+             hasfixed(iboxx,  iboxy-1,iboxz-1).or.&
+             hasfixed(iboxx-1,iboxy+1,iboxz  ).or.&
+             hasfixed(iboxx-1,iboxy,  iboxz+1).or.&
+             hasfixed(iboxx-1,iboxy-1,iboxz  ).or.&
+             hasfixed(iboxx-1,iboxy,  iboxz-1).or.&
              hasfixed(iboxx+1,iboxy+1,iboxz+1).or.&
              hasfixed(iboxx+1,iboxy+1,iboxz-1).or.&
              hasfixed(iboxx+1,iboxy-1,iboxz+1).or.&
-             hasfixed(iboxx+1,iboxy-1,iboxz-1)) then
+             hasfixed(iboxx+1,iboxy-1,iboxz-1).or.&
+             hasfixed(iboxx-1,iboxy+1,iboxz+1).or.&
+             hasfixed(iboxx-1,iboxy+1,iboxz-1).or.&
+             hasfixed(iboxx-1,iboxy-1,iboxz+1).or.&
+             hasfixed(iboxx-1,iboxy-1,iboxz-1)) then
             overlap = .true.
           else
             overlap = .false.

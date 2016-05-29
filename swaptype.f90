@@ -15,7 +15,7 @@
 subroutine swaptype(n,x,itype,action)
 
   use sizes, only : nn
-  use compute_data, only : ntype, comptype, nmols, ntotmol, init1
+  use compute_data, only : ntype, comptype, nmols, ntotmol
   use swaptypemod
   use ahestetic
   implicit none
