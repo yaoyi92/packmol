@@ -515,7 +515,6 @@ program packmol
   call computef(n,x,fx)
   write(*,*) ' Objective function at initial point: ', fx
   bestf = fx
-  flast = fx
   fprint = 1.d40
 
   ! Stop if only checking the initial approximation
@@ -630,16 +629,17 @@ program packmol
         write(*,prog1_line)
         call pgencan(n,x,fx)
 
+        !
         ! Compute the statistics of the last optimization loop
+        !
+
+        ! Use the user-specified radii for statistics
 
         do i = 1, ntotat
           radiuswork(i) = radius(i)
           radius(i) = radius_ini(i)
         end do
         call computef(n,x,fx)
-        do i = 1, ntotat
-          radius(i) = radiuswork(i)
-        end do
 
         if(bestf.gt.0.d0) fimprov = -100.d0 * (fx - bestf) / bestf
         if(bestf.eq.0.d0) fimprov = 100.d0
@@ -659,18 +659,6 @@ program packmol
         write(*,dash3_line)
         flast = fx
 
-        ! If the distance between molecules is satisfactory, restore the radii
-
-        if ( radscale > 1.d0 ) then
-          if( ( fdist < precision .and. fimp < 10.d0 ) .or. &
-                fimp < 2.d0 ) then
-            radscale = dmax1(0.9*radscale,1.d0)
-            do i = 1, ntotat
-              radius(i) = dmax1(radius_ini(i),0.9d0*radius(i))
-            end do
-          end if
-        end if
-
         !
         ! Analysis of final loop packing and output data
         !
@@ -685,7 +673,7 @@ program packmol
             fx = fx + ftype
             call swaptype(n,x,itype,3) ! Restore all-molecule vectors
           end do
-          write(*,*) ' Type-independent function value sum: ', fx
+          !write(*,*) ' Type-independent function value sum: ', fx
         else
           call computef(n,x,fx)
           ! If solution was found for all system
@@ -696,13 +684,15 @@ program packmol
             write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
             write(*,*)
             stop 
+          else
+            if ( fx < bestf ) bestf = fx
           end if
         end if
 
         ! If this is the best structure so far
         if( mod(loop+1,writeout) == 0 .and. fx < fprint ) then
           call output(n,x)
-          write(*,*) ' Best solution written to file: ', xyzout(1:charl(xyzout))
+          write(*,*) ' Current solution written to file: ', xyzout(1:charl(xyzout))
           fprint = fx
 
         ! If the user required printing even bad structures
@@ -711,14 +701,33 @@ program packmol
           write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
         end if
 
+        ! Restore vector for packing this type of molecule, if the case
+
         if ( itype <= ntype ) then
           call swaptype(n,x,itype,0) ! Reset type vectors
           call swaptype(n,x,itype,1) ! Set vector for molecules of this type
           call computef(n,x,fx)
           ! If the solution for this type of molecule was found, go to next molecule
           if( fdist < precision .and. frest < precision ) then
-            call writesuccess(itype,fdist,frest,bestf)
+            call writesuccess(itype,fdist,frest,fx)
             exit gencanloop
+          else
+            if ( fx < bestf ) bestf = fx
+          end if
+        end if
+
+        ! Restore the working radii 
+
+        do i = 1, ntotat
+          radius(i) = radiuswork(i)
+        end do
+        if ( radscale > 1.d0 ) then
+          if( ( fdist < precision .and. fimp < 10.d0 ) .or. &
+                fimp < 2.d0 ) then
+            radscale = dmax1(0.9*radscale,1.d0)
+            do i = 1, ntotat
+              radius(i) = dmax1(radius_ini(i),0.9d0*radius(i))
+            end do
           end if
         end if
 
