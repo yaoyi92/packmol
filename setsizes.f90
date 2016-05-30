@@ -64,7 +64,7 @@ subroutine setsizes()
 
     i = 0
     ival = 0
-    do while(i <= 200)
+    do while(i < 200)
       i = i + 1
       ilast = i
       do while(record(i:i) > ' ' .and. i < 200)

@@ -61,6 +61,7 @@ oall = cenmass.o \
        comparegrad.o \
        packmol.o \
        polartocart.o \
+       restmol.o \
        swaptype.o \
        swaptypemod.o \
        ahestetic.o \
@@ -154,6 +155,8 @@ packmol.o : packmol.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c packmol.f90
 polartocart.o : polartocart.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c polartocart.f90
+restmol.o : restmol.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c restmol.f90
 swaptype.o : swaptype.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c swaptype.f90
 heuristics.o : heuristics.f90 $(modules)   

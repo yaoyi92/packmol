@@ -573,7 +573,7 @@ subroutine getinp()
 
   itype = 0
   iline = 0
-  do while(iline.le.nlines)
+  do while(iline < nlines)
     iline = iline + 1
     if(keyword(iline,1).eq.'structure') then
       itype = itype + 1
@@ -581,8 +581,8 @@ subroutine getinp()
       iline = iline + 1
       do while(keyword(iline,1).ne.'end'.or.&
                keyword(iline,2).ne.'structure')
-        if(keyword(iline,1).eq.'structure'.or.&
-           iline.eq.nlines) then
+        if(keyword(iline,1) == 'structure'.or.&
+           iline == nlines) then
           write(*,*) ' Input file ERROR: structure specification',&
                      ' not ending with "end structure"'
           stop
@@ -814,10 +814,10 @@ subroutine getkeywords()
     if ( ioerr /= 0 ) exit
     i = 0
     ival = 0
-    do while(i.le.200)
+    do while(i < 200)
       i = i + 1
       ilast = i
-      do while(record(i:i).gt.' '.and.i.lt.200)
+      do while(record(i:i) > ' '.and. i < 200)
         i = i + 1
       end do
       if(i.gt.ilast) then
