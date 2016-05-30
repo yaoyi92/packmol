@@ -30,69 +30,62 @@ subroutine swaptype(n,x,itype,action)
     end do
     ntemp = n
     ntottemp = ntotmol
-    itype = 0
   end if
 
   ! Swapping data for packing this itype
 
   if ( action == 1 ) then
-    if ( itype <= ntype ) then
-      do i = 1, ntype
-        if(i.eq.itype) then
-          comptype(i) = .true.
-        else
-          comptype(i) = .false.
-        end if
-      end do
-      n = nmols(itype) * 6
-      ntotmol = nmols(itype)
-      ilubar = 0
-      do i = 1, itype - 1
-        ilubar = ilubar + nmols(i) * 3
-      end do
+    do i = 1, ntype
+      if(i == itype) then
+        comptype(i) = .true.
+      else
+        comptype(i) = .false.
+      end if
+    end do
+    n = nmols(itype) * 6
+    ntotmol = nmols(itype)
+    ilubar = 0
+    do i = 1, itype - 1
+      ilubar = ilubar + nmols(i) * 3
+    end do
+    ilubar = ilubar + 1
+    ilugan = ntemp/2 + ilubar 
+    do i = 1, n / 2
+      x(i) = xfull(ilubar)
+      x(i+n/2) = xfull(ilugan)
       ilubar = ilubar + 1
-      ilugan = ntemp/2 + ilubar 
-      do i = 1, n / 2
-        x(i) = xfull(ilubar)
-        x(i+n/2) = xfull(ilugan)
-        ilubar = ilubar + 1
-        ilugan = ilugan + 1
-      end do
-    end if
+      ilugan = ilugan + 1
+    end do
   end if
 
-  ! Restoring counters for packing next type of molecules
+  ! Save results for this type
 
   if ( action == 2 ) then
-    if ( itype <= ntype ) then
-      ilubar = 0
-      do i = 1, itype - 1
-        ilubar = ilubar + nmols(i)*3
-      end do
+    ilubar = 0
+    do i = 1, itype - 1
+      ilubar = ilubar + nmols(i)*3
+    end do
+    ilubar = ilubar + 1
+    ilugan = ntemp/2 + ilubar
+    do i = 1, n/2
+      xfull(ilubar) = x(i)
+      xfull(ilugan) = x(i+n/2)
       ilubar = ilubar + 1
-      ilugan = ntemp/2 + ilubar
-      do i = 1, n/2
-        xfull(ilubar) = x(i)
-        xfull(ilugan) = x(i+n/2)
-        ilubar = ilubar + 1
-        ilugan = ilugan + 1
-      end do
-    end if
+      ilugan = ilugan + 1
+    end do
   end if
 
-  ! If itype=ntype+1 restore original vectors and pack all molecules
+  ! Restore all-molecule vectors
 
   if ( action == 3 ) then
-    if(itype.eq.ntype+1) then
-      n = ntemp 
-      ntotmol = ntottemp
-      do i = 1, n
-        x(i) = xfull(i)
-      end do
-      do itype = 1, ntype
-        comptype(itype) = .true.
-      end do
-    end if                  
+    n = ntemp 
+    ntotmol = ntottemp
+    do i = 1, n
+      x(i) = xfull(i)
+    end do
+    do i = 1, ntype
+      comptype(i) = .true.
+    end do
   end if
 
 end subroutine swaptype

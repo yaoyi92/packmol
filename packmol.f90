@@ -60,12 +60,11 @@ program packmol
   integer :: charl, ioerr
       
   double precision, allocatable :: x(:) ! (nn)
-  double precision, allocatable :: xbest(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
   double precision :: rad, radscale
   double precision :: cmx, cmy, cmz, beta, gama, teta
   double precision :: xtemp, ytemp, ztemp
-  double precision :: fx, bestf, flast, fout
+  double precision :: fx, bestf, flast, fprint, ftype
   double precision :: fimp, fimprov
   double precision, parameter :: pi=4.d0*datan(1.d0)
 
@@ -75,7 +74,7 @@ program packmol
   character(len=80) :: xyzfile
 
   logical :: fixtmp
-  logical :: rests, writexyz
+  logical :: rests
   logical :: movebadprint
 
   logical, allocatable :: fixed(:) ! ntype
@@ -90,7 +89,7 @@ program packmol
 
   ! Allocate local array
 
-  allocate(fixed(ntype),x(nn),xfull(nn),xbest(nn))
+  allocate(fixed(ntype),x(nn),xfull(nn))
 
   ! Start time computation
 
@@ -517,10 +516,9 @@ program packmol
   write(*,*) ' Objective function at initial point: ', fx
   bestf = fx
   flast = fx
-  fout = fx
-  do i = 1, n
-    xbest(i) = x(i)
-  end do
+  fprint = 1.d40
+
+  ! Stop if only checking the initial approximation
 
   if(check) then
     call output(n,x)
@@ -533,8 +531,9 @@ program packmol
   ! pack all molecules together
   !
 
-  call swaptype(n,x,itype,0)
+  call swaptype(n,x,itype,0) ! Save all-molecule vector data
 
+  itype = 0
   main : do while(itype <= ntype)
     itype = itype + 1
  
@@ -544,14 +543,14 @@ program packmol
     do i = 1, ntotat
       radius(i) = discale*radius_ini(i)
     end do
+
+    ! Set vectors for specific or all-molecule packing
     
-    ! Adjusting parameters for packing only this type
-
-    call swaptype(n,x,itype,1)
-
-    ! If itype=ntype+1 restore original vectors and pack all molecules
-
-    call swaptype(n,x,itype,3)
+    if ( itype <= ntype ) then
+      call swaptype(n,x,itype,1) ! Set vectors to pack only this type of molecule
+    else 
+      call swaptype(n,x,itype,3) ! Restore all-molecule vectors
+    end if
 
     ! Print titles
 
@@ -617,7 +616,7 @@ program packmol
 
         if(loop.eq.nloop.and.itype.eq.ntype+1) then
           write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
-          call checkpoint(n,xbest)
+          call checkpoint(n,x)
           stop
         end if
 
@@ -672,64 +671,60 @@ program packmol
           end if
         end if
 
-        ! Updating best point
-
-        if(fx.le.bestf) then
-          bestf = fx 
-          if(itype.eq.ntype+1) then
-            do i = 1, n
-              xbest(i) = x(i)
-            end do
-          end if
-        end if
-
-        ! Writing output file 
-
-        writexyz = .false.
-        if ( itype == ntype + 1 ) then
-
-          ! If solution was found
+        !
+        ! Analysis of final loop packing and output data
+        !
+        
+        if ( itype <= ntype ) then
+          call swaptype(n,x,itype,2) ! Save this type current point 
+          call swaptype(n,x,itype,3) ! Restore all-molecule vectors
+          fx = 0.d0
+          do i = 1, ntype
+            call swaptype(n,x,i,1) ! Compute function value for this type
+            call computef(n,x,ftype)
+            fx = fx + ftype
+            call swaptype(n,x,itype,3) ! Restore all-molecule vectors
+          end do
+          write(*,*) ' Type-independent function value sum: ', fx
+        else
+          call computef(n,x,fx)
+          ! If solution was found for all system
           if ( fdist < precision .and. frest < precision ) then
-            writexyz = .true.
+            call output(n,x)
             write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
-
-          ! If this is the best structure so far
-          else if( mod(loop+1,writeout) == 0 .and. bestf < fout ) then
-            writexyz = .true.
-            write(*,*) ' Best solution written to file: ', xyzout(1:charl(xyzout))
-            fout = bestf
-
-          ! If the user required printing even bad structures
-          else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
-            writexyz = .true.
-            write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
-          end if
-
-          if ( writexyz ) call output(n,x)
-
-        end if
-
-        ! When the solution is found, print success information and stop
-
-        if( fdist < precision .and. frest < precision ) then
-
-          call writesuccess(itype,fdist,frest,bestf)
-          if ( itype <= ntype ) then
-            exit gencanloop
-          else
+            call writesuccess(itype,fdist,frest,fx)
             write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
             write(*,*)
             stop 
           end if
         end if
 
+        ! If this is the best structure so far
+        if( mod(loop+1,writeout) == 0 .and. fx < fprint ) then
+          call output(n,x)
+          write(*,*) ' Best solution written to file: ', xyzout(1:charl(xyzout))
+          fprint = fx
+
+        ! If the user required printing even bad structures
+        else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
+          call output(n,x)
+          write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
+        end if
+
+        if ( itype <= ntype ) then
+          call swaptype(n,x,itype,0) ! Reset type vectors
+          call swaptype(n,x,itype,1) ! Set vector for molecules of this type
+          call computef(n,x,fx)
+          ! If the solution for this type of molecule was found, go to next molecule
+          if( fdist < precision .and. frest < precision ) then
+            call writesuccess(itype,fdist,frest,bestf)
+            exit gencanloop
+          end if
+        end if
+
       end do gencanloop
 
     end if
-
-    ! Restoring counters for packing next type of molecules
-
-    call swaptype(n,x,itype,2)
 
   end do main
 

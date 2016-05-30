@@ -210,11 +210,15 @@ subroutine initial(n,x)
   write(*,dash2_line)
   init1 = .true.
   call swaptype(n,x,itype,0) ! Initialize swap arrays
+  itype = 0
   do while( itype <= ntype )
     itype = itype + 1
-    call swaptype(n,x,itype,1) ! Set arrays for this type
-    call swaptype(n,x,itype,3) ! Restore arrays if itype = itype + 1
-    if ( itype == ntype + 1 ) exit
+    if ( itype <= ntype ) then
+      call swaptype(n,x,itype,1) ! Set arrays for this type
+    else
+      call swaptype(n,x,itype,3) ! Restore arrays if itype = ntype + 1
+      exit
+    end if
     write(*,dash3_line)
     write(*,*) ' Molecules of type: ', input_itype(itype)
     write(*,*)
@@ -235,7 +239,7 @@ subroutine initial(n,x)
     write(*,*) 
     write(*,*) ' Restraint-only function value: ', fx
     write(*,*) ' Maximum violation of the restraints: ', frest
-    call swaptype(n,x,itype,2) ! Set arrays for next type
+    call swaptype(n,x,itype,2) ! Save current type results
 
     if( hasbad .and. frest > precision ) then
       write(*,*) ' ERROR: Packmol was unable to put the molecules'
