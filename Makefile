@@ -62,6 +62,9 @@ oall = cenmass.o \
        comparegrad.o \
        packmol.o \
        polartocart.o \
+       resetboxes.o \
+       tobar.o \
+       setibox.o \
        restmol.o \
        swaptype.o \
        swaptypemod.o \
@@ -155,6 +158,12 @@ packmol.o : packmol.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c packmol.f90
 polartocart.o : polartocart.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c polartocart.f90
+resetboxes.o : resetboxes.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c resetboxes.f90
+tobar.o : tobar.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c tobar.f90
+setibox.o : setibox.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c setibox.f90
 restmol.o : restmol.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c restmol.f90
 swaptype.o : swaptype.f90 $(modules)   

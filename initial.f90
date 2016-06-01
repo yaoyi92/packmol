@@ -487,7 +487,6 @@ subroutine initial(n,x)
 
   ilubar = 0
   ilugan = ntotmol*3
-  call swaptype(n,x,itype,0) ! Initialize swap arrays
   do itype = 1, ntype
     if ( restart_from(itype) /= 'none' ) then
       record = restart_from(itype)
@@ -509,12 +508,13 @@ subroutine initial(n,x)
         ilubar = ilubar + 3
         ilugan = ilugan + 3
       end do
+      close(10)
+      call swaptype(n,x,itype,0) ! Initialize swap arrays
       call swaptype(n,x,itype,1) ! Set arrays for this type
       call computef(n,x,fx)
       write(*,*) ' Maximum violation of the restraints: ', frest
       write(*,*) ' Maximum violation of minimum atom distances: ', fdist
       call swaptype(n,x,itype,3) ! Restore all-molecule arrays 
-      close(10)
     else
       ilubar = ilubar + nmols(itype)*3
       ilugan = ilugan + nmols(itype)*3
@@ -529,15 +529,14 @@ subroutine initial(n,x)
 
   init1 = .true.
   call swaptype(n,x,itype,0) ! Initialize swap arrays
-  call computef(n,x,fx)
   itype = 0
   do while( itype <= ntype )
     itype = itype + 1
-    if ( restart_from(itype) /= 'none' ) cycle
     if ( itype == ntype + 1 ) then
       call swaptype(n,x,itype,3) ! Restore arrays for all molecules
       exit
     end if
+    if ( restart_from(itype) /= 'none' ) cycle
     call swaptype(n,x,itype,1) ! Set arrays for this type
     write(*,dash3_line)
     write(*,*) ' Molecules of type: ', input_itype(itype)
@@ -555,10 +554,10 @@ subroutine initial(n,x)
         movebadprint = .true.
         call movebad(n,x,fx,movebadprint)
       end if
-      call swaptype(n,x,itype,2) ! Save results for this type
     end do
     write(*,*) ' Restraint-only function value: ', fx
     write(*,*) ' Maximum violation of the restraints: ', frest
+    call swaptype(n,x,itype,2) ! Save results for this type
   end do
   init1 = .false.
   write(*,hash3_line)
@@ -569,116 +568,4 @@ subroutine initial(n,x)
 
   return
 end subroutine initial
-
-!
-! Subroutine resetboxes
-!
-
-subroutine resetboxes()
-      
-  use sizes
-  use compute_data, only : nboxes, latomfirst, latomfix
-  implicit none
-
-  integer :: i,j,k
-
-  ! Reset boxes
-
-  do i = 1, nboxes(1)
-    do j = 1, nboxes(2)
-      do k = 1, nboxes(3)
-        latomfirst(i,j,k) = latomfix(i,j,k)
-      end do
-    end do
-  end do
-
-  ! Reset margins
-      
-  do j = 0, nboxes(2)+1
-    do k = 0, nboxes(3)+1
-      latomfirst(0,j,k) = 0
-      latomfirst(nboxes(1)+1,j,k) = 0
-    end do
-  end do
-
-  do i = 0, nboxes(1)+1
-    do k = 0, nboxes(3)+1
-      latomfirst(i,0,k) = 0
-      latomfirst(i,nboxes(2)+1,k) = 0
-    end do
-  end do
-
-  do i = 0, nboxes(1)+1
-    do j = 0, nboxes(2)+1
-      latomfirst(i,j,0) = 0
-      latomfirst(i,j,nboxes(3)+1) = 0
-    end do
-  end do      
-
-  return
-end subroutine resetboxes
-
-!
-! subroutine tobar: moves molecules to their baricentres
-!
-
-subroutine tobar()
-      
-  use sizes
-  use compute_data, only : coor, ntype, natoms, idfirst
-  implicit none
-  integer :: idatom, itype, iatom
-  double precision :: xcm, ycm, zcm
-
-  do itype = 1, ntype
-    idatom = idfirst(itype) - 1
-    xcm = 0.d0
-    ycm = 0.d0
-    zcm = 0.d0
-    do iatom = 1, natoms(itype)
-      idatom = idatom + 1
-      xcm = xcm + coor(idatom,1)
-      ycm = ycm + coor(idatom,2)
-      zcm = zcm + coor(idatom,3)
-    end do
-    xcm = xcm / natoms(itype)
-    ycm = ycm / natoms(itype)
-    zcm = zcm / natoms(itype)
-    idatom = idfirst(itype) - 1
-    do iatom = 1, natoms(itype)
-      idatom = idatom + 1
-      coor(idatom,1) = coor(idatom,1) - xcm
-      coor(idatom,2) = coor(idatom,2) - ycm
-      coor(idatom,3) = coor(idatom,3) - zcm
-    end do
-  end do
-
-  return                                                 
-end subroutine tobar
-
-!
-! Subroutine setibox: set box index for given coordinates
-! 
-
-subroutine setibox(x,y,z,sizemin,boxl,nboxes,iboxx,iboxy,iboxz)
-
-  implicit none
-  double precision :: x, y, z, sizemin(3), boxl(3), xtemp, ytemp, ztemp
-  integer :: nboxes(3), iboxx, iboxy, iboxz
-
-  xtemp = x - sizemin(1) 
-  ytemp = y - sizemin(2)
-  ztemp = z - sizemin(3)
-  iboxx = int(xtemp/boxl(1)) + 1
-  iboxy = int(ytemp/boxl(2)) + 1
-  iboxz = int(ztemp/boxl(3)) + 1
-  if(xtemp.le.0) iboxx = 1
-  if(ytemp.le.0) iboxy = 1
-  if(ztemp.le.0) iboxz = 1 
-  if(iboxx.gt.nboxes(1)) iboxx = nboxes(1)
-  if(iboxy.gt.nboxes(2)) iboxy = nboxes(2)
-  if(iboxz.gt.nboxes(3)) iboxz = nboxes(3)
-
-  return
-end subroutine setibox
 

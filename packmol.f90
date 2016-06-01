@@ -531,7 +531,6 @@ program packmol
   !
 
   call swaptype(n,x,itype,0) ! Save all-molecule vector data
-
   itype = 0
   main : do while(itype <= ntype)
     itype = itype + 1
@@ -570,9 +569,12 @@ program packmol
       write(*,*)
       write(*,*) ' Initial approximation is a solution. Nothing to do. '
       write(*,*)
+      call swaptype(n,x,itype,3) ! Restore all-molecule vectors
+      call output(n,x)
       if( itype == ntype + 1 ) then
-        call output(n,x)
-        write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
+        write(*,*) ' Solution written to file: ', trim(adjustl(xyzout))
+      else
+        write(*,*) ' Current point written to file: ', trim(adjustl(xyzout))
       end if
       call writesuccess(itype,fdist,frest,fx)
       if ( itype == ntype + 1 ) then
@@ -665,15 +667,25 @@ program packmol
         
         if ( itype <= ntype ) then
           call swaptype(n,x,itype,2) ! Save this type current point 
-          call swaptype(n,x,itype,3) ! Restore all-molecule vectors
-          fx = 0.d0
-          do i = 1, ntype
-            call swaptype(n,x,i,1) ! Compute function value for this type
-            call computef(n,x,ftype)
-            fx = fx + ftype
+          ! If the solution was found for this type
+          if( fdist < precision .and. frest < precision ) then
+            call swaptype(n,x,itype,3) ! Restore all molecule vectors
+            call output(n,x)
+            write(*,*) ' Current structure written to file: ', trim(adjustl(xyzout))
+            call writesuccess(itype,fdist,frest,fx)
+            exit gencanloop
+          else
             call swaptype(n,x,itype,3) ! Restore all-molecule vectors
-          end do
-          !write(*,*) ' Type-independent function value sum: ', fx
+            fx = 0.d0
+            do i = 1, ntype
+              call swaptype(n,x,i,1) ! Compute function value for this type
+              call computef(n,x,ftype)
+              fx = fx + ftype
+              call swaptype(n,x,itype,3) ! Restore all-molecule vectors
+            end do
+            if ( fx < bestf ) bestf = fx
+            !write(*,*) ' Type-independent function value sum: ', fx
+          end if
         else
           call computef(n,x,fx)
           ! If solution was found for all system
@@ -692,13 +704,13 @@ program packmol
         ! If this is the best structure so far
         if( mod(loop+1,writeout) == 0 .and. fx < fprint ) then
           call output(n,x)
-          write(*,*) ' Current solution written to file: ', xyzout(1:charl(xyzout))
+          write(*,*) ' Current solution written to file: ', trim(adjustl(xyzout))
           fprint = fx
 
         ! If the user required printing even bad structures
         else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
           call output(n,x)
-          write(*,*) ' Writing current (perhaps bad) structure to file: ', xyzout(1:charl(xyzout))
+          write(*,*) ' Writing current (perhaps bad) structure to file: ', trim(adjustl(xyzout))
         end if
 
         ! Restore vector for packing this type of molecule, if the case
@@ -707,13 +719,6 @@ program packmol
           call swaptype(n,x,itype,0) ! Reset type vectors
           call swaptype(n,x,itype,1) ! Set vector for molecules of this type
           call computef(n,x,fx)
-          ! If the solution for this type of molecule was found, go to next molecule
-          if( fdist < precision .and. frest < precision ) then
-            call writesuccess(itype,fdist,frest,fx)
-            exit gencanloop
-          else
-            if ( fx < bestf ) bestf = fx
-          end if
         end if
 
         ! Restore the working radii 
