@@ -487,9 +487,13 @@ subroutine initial(n,x)
 
   ilubar = 0
   ilugan = ntotmol*3
+  call swaptype(n,x,itype,0) ! Initialize swap arrays
   do itype = 1, ntype
     if ( restart_from(itype) /= 'none' ) then
       record = restart_from(itype)
+      write(*,dash3_line)
+      write(*,*) ' Molecules of type: ', input_itype(itype)
+      write(*,*) ' Will restart coordinates from: ', trim(adjustl(record))
       open(10,file=record,status='old',action='read',iostat=ioerr)
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
@@ -505,6 +509,11 @@ subroutine initial(n,x)
         ilubar = ilubar + 3
         ilugan = ilugan + 3
       end do
+      call swaptype(n,x,itype,1) ! Set arrays for this type
+      call computef(n,x,fx)
+      write(*,*) ' Maximum violation of the restraints: ', frest
+      write(*,*) ' Maximum violation of minimum atom distances: ', fdist
+      call swaptype(n,x,itype,3) ! Restore all-molecule arrays 
       close(10)
     else
       ilubar = ilubar + nmols(itype)*3
@@ -521,19 +530,18 @@ subroutine initial(n,x)
   init1 = .true.
   call swaptype(n,x,itype,0) ! Initialize swap arrays
   call computef(n,x,fx)
+  itype = 0
   do while( itype <= ntype )
     itype = itype + 1
+    if ( restart_from(itype) /= 'none' ) cycle
+    if ( itype == ntype + 1 ) then
+      call swaptype(n,x,itype,3) ! Restore arrays for all molecules
+      exit
+    end if
     call swaptype(n,x,itype,1) ! Set arrays for this type
-    call swaptype(n,x,itype,3) ! Restore arrays if itype=ntype+1
-    if ( itype == ntype + 1 ) exit
     write(*,dash3_line)
     write(*,*) ' Molecules of type: ', input_itype(itype)
-    write(*,*)
-    if ( restart_from(itype) /= 'none' ) then
-      record = restart_from(itype)
-      write(*,*) ' Will restart coordinates from: ', trim(adjustl(record))
-      write(*,*)
-    end if
+    write(*,*) ' Adjusting random positions to fit the constraints. '
     i = 0
     call computef(n,x,fx)
     hasbad = .true.
@@ -547,7 +555,7 @@ subroutine initial(n,x)
         movebadprint = .true.
         call movebad(n,x,fx,movebadprint)
       end if
-      call swaptype(n,x,itype,2) ! Set arrays for next type
+      call swaptype(n,x,itype,2) ! Save results for this type
     end do
     write(*,*) ' Restraint-only function value: ', fx
     write(*,*) ' Maximum violation of the restraints: ', frest
