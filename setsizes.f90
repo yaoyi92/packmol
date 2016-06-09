@@ -22,6 +22,7 @@ subroutine setsizes()
   implicit none
   integer :: i, ival, ilast, iline, itype
   integer :: ioerr
+  integer :: strlength
   character(len=200) :: record, word, blank
 
   ! Instructions on how to run packmol
@@ -53,8 +54,12 @@ subroutine setsizes()
       if ( record(i:i) == '#' ) exit
     end do
     i = i - 1
-    record = record(1:i)//blank(i+1:200)
-    if ( len(adjustl(trim(record))) < 1 ) cycle
+    if ( i > 0 ) then
+      record = record(1:i)//blank(i+1:200)
+    else
+      cycle
+    end if
+    if ( strlength(record) < 1 ) cycle
       
     ! Number of lines of the input file
 
@@ -95,8 +100,12 @@ subroutine setsizes()
       if ( record(i:i) == '#' ) exit
     end do
     i = i - 1
-    record = record(1:i)//blank(i+1:200)
-    if ( len(adjustl(trim(record))) < 1 ) cycle
+    if ( i > 0 ) then
+      record = record(1:i)//blank(i+1:200)
+    else
+      cycle
+    end if
+    if ( strlength(record) < 1 ) cycle
 
     iline = iline + 1
     inputfile(iline) = record

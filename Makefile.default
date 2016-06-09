@@ -50,7 +50,7 @@ oall = cenmass.o \
        title.o \
        setsizes.o \
        getinp.o \
-       length.o \
+       strlength.o \
        output.o \
        checkpoint.o \
        writesuccess.o \
@@ -136,8 +136,8 @@ setsizes.o : setsizes.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c setsizes.f90
 getinp.o : getinp.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c getinp.f90
-length.o : length.f90  
-	@$(FORTRAN) $(FLAGS) -c length.f90
+strlength.o : strlength.f90  
+	@$(FORTRAN) $(FLAGS) -c strlength.f90
 output.o : output.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c output.f90
 checkpoint.o : checkpoint.f90  $(modules)
