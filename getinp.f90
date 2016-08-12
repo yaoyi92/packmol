@@ -107,7 +107,10 @@ subroutine getinp()
       add_box_sides = .true.
       write(*,*) ' Will print BOX SIDE informations. '
       read(keyword(i,2),*,iostat=ioerr) add_sides_fix
-      if ( ioerr /= 0 ) cycle
+      if ( ioerr /= 0 ) then
+        ioerr = 0
+        cycle
+      end if
       write(*,*) ' Will sum ', add_sides_fix,' to each side length on print'
     else if(keyword(i,1).eq.'iprint1') then 
       read(keyword(i,2),*,iostat=ioerr) iprint1
