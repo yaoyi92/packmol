@@ -55,6 +55,7 @@ module input
   logical :: add_amber_ter
   logical :: add_box_sides
   logical :: fix
+  logical :: avoidoverlap
 
   logical, allocatable :: changechains(:) ! (ntype)
   logical, allocatable :: fixedoninput(:) ! (ntype)

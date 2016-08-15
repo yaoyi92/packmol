@@ -17,7 +17,7 @@ subroutine initial(n,x)
 
   use sizes
   use compute_data
-  use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, &
+  use input, only : randini, ntfix, fix, moldy, chkgrad, nloop, avoidoverlap,&
                     discale, precision, sidemax, restart_from, input_itype
   use usegencan
   use ahestetic
@@ -401,51 +401,63 @@ subroutine initial(n,x)
       cycle
     end if
     do imol = 1, nmols(itype)
-      fx = 1.d0
-      ntry = 0
-      overlap = .false.
-      do while((overlap.or.fx.gt.precision).and.ntry.le.20) 
-        ntry = ntry + 1
-        x(ilubar+1) = cmxmin(itype) + rnd()*(cmxmax(itype)-cmxmin(itype))
-        x(ilubar+2) = cmymin(itype) + rnd()*(cmymax(itype)-cmymin(itype))
-        x(ilubar+3) = cmzmin(itype) + rnd()*(cmzmax(itype)-cmzmin(itype))
-        if(fix) then
-          call setibox(x(ilubar+1),x(ilubar+2),x(ilubar+3),&
-                       sizemin,boxl,nboxes,iboxx,iboxy,iboxz)
-          if(hasfixed(iboxx,  iboxy,  iboxz  ).or.&
-             hasfixed(iboxx+1,iboxy,  iboxz  ).or.&
-             hasfixed(iboxx,  iboxy+1,iboxz  ).or.&
-             hasfixed(iboxx,  iboxy,  iboxz+1).or.&
-             hasfixed(iboxx-1,iboxy,  iboxz  ).or.&
-             hasfixed(iboxx,  iboxy-1,iboxz  ).or.&
-             hasfixed(iboxx,  iboxy,  iboxz-1).or.&
-             hasfixed(iboxx+1,iboxy+1,iboxz  ).or.&
-             hasfixed(iboxx+1,iboxy,  iboxz+1).or.&
-             hasfixed(iboxx+1,iboxy-1,iboxz  ).or.&
-             hasfixed(iboxx+1,iboxy,  iboxz-1).or.&
-             hasfixed(iboxx,  iboxy+1,iboxz+1).or.&
-             hasfixed(iboxx,  iboxy+1,iboxz-1).or.&
-             hasfixed(iboxx,  iboxy-1,iboxz+1).or.&
-             hasfixed(iboxx,  iboxy-1,iboxz-1).or.&
-             hasfixed(iboxx-1,iboxy+1,iboxz  ).or.&
-             hasfixed(iboxx-1,iboxy,  iboxz+1).or.&
-             hasfixed(iboxx-1,iboxy-1,iboxz  ).or.&
-             hasfixed(iboxx-1,iboxy,  iboxz-1).or.&
-             hasfixed(iboxx+1,iboxy+1,iboxz+1).or.&
-             hasfixed(iboxx+1,iboxy+1,iboxz-1).or.&
-             hasfixed(iboxx+1,iboxy-1,iboxz+1).or.&
-             hasfixed(iboxx+1,iboxy-1,iboxz-1).or.&
-             hasfixed(iboxx-1,iboxy+1,iboxz+1).or.&
-             hasfixed(iboxx-1,iboxy+1,iboxz-1).or.&
-             hasfixed(iboxx-1,iboxy-1,iboxz+1).or.&
-             hasfixed(iboxx-1,iboxy-1,iboxz-1)) then
-            overlap = .true.
-          else
-            overlap = .false.
-          end if
-        end if  
-        if(.not.overlap) call restmol(itype,ilubar,n,x,fx,.false.)
-      end do
+      if ( .not. avoidoverlap ) then
+        fx = 1.d0
+        ntry = 0
+        do while((fx.gt.precision).and.ntry.le.20) 
+          ntry = ntry + 1
+          x(ilubar+1) = cmxmin(itype) + rnd()*(cmxmax(itype)-cmxmin(itype))
+          x(ilubar+2) = cmymin(itype) + rnd()*(cmymax(itype)-cmymin(itype))
+          x(ilubar+3) = cmzmin(itype) + rnd()*(cmzmax(itype)-cmzmin(itype))
+          call restmol(itype,ilubar,n,x,fx,.false.)
+        end do
+      else
+        fx = 1.d0
+        ntry = 0
+        overlap = .false.
+        do while((overlap.or.fx.gt.precision).and.ntry.le.20) 
+          ntry = ntry + 1
+          x(ilubar+1) = cmxmin(itype) + rnd()*(cmxmax(itype)-cmxmin(itype))
+          x(ilubar+2) = cmymin(itype) + rnd()*(cmymax(itype)-cmymin(itype))
+          x(ilubar+3) = cmzmin(itype) + rnd()*(cmzmax(itype)-cmzmin(itype))
+          if(fix) then
+            call setibox(x(ilubar+1),x(ilubar+2),x(ilubar+3),&
+                         sizemin,boxl,nboxes,iboxx,iboxy,iboxz)
+            if(hasfixed(iboxx,  iboxy,  iboxz  ).or.&
+               hasfixed(iboxx+1,iboxy,  iboxz  ).or.&
+               hasfixed(iboxx,  iboxy+1,iboxz  ).or.&
+               hasfixed(iboxx,  iboxy,  iboxz+1).or.&
+               hasfixed(iboxx-1,iboxy,  iboxz  ).or.&
+               hasfixed(iboxx,  iboxy-1,iboxz  ).or.&
+               hasfixed(iboxx,  iboxy,  iboxz-1).or.&
+               hasfixed(iboxx+1,iboxy+1,iboxz  ).or.&
+               hasfixed(iboxx+1,iboxy,  iboxz+1).or.&
+               hasfixed(iboxx+1,iboxy-1,iboxz  ).or.&
+               hasfixed(iboxx+1,iboxy,  iboxz-1).or.&
+               hasfixed(iboxx,  iboxy+1,iboxz+1).or.&
+               hasfixed(iboxx,  iboxy+1,iboxz-1).or.&
+               hasfixed(iboxx,  iboxy-1,iboxz+1).or.&
+               hasfixed(iboxx,  iboxy-1,iboxz-1).or.&
+               hasfixed(iboxx-1,iboxy+1,iboxz  ).or.&
+               hasfixed(iboxx-1,iboxy,  iboxz+1).or.&
+               hasfixed(iboxx-1,iboxy-1,iboxz  ).or.&
+               hasfixed(iboxx-1,iboxy,  iboxz-1).or.&
+               hasfixed(iboxx+1,iboxy+1,iboxz+1).or.&
+               hasfixed(iboxx+1,iboxy+1,iboxz-1).or.&
+               hasfixed(iboxx+1,iboxy-1,iboxz+1).or.&
+               hasfixed(iboxx+1,iboxy-1,iboxz-1).or.&
+               hasfixed(iboxx-1,iboxy+1,iboxz+1).or.&
+               hasfixed(iboxx-1,iboxy+1,iboxz-1).or.&
+               hasfixed(iboxx-1,iboxy-1,iboxz+1).or.&
+               hasfixed(iboxx-1,iboxy-1,iboxz-1)) then
+              overlap = .true.
+            else
+              overlap = .false.
+            end if
+          end if  
+          if(.not.overlap) call restmol(itype,ilubar,n,x,fx,.false.)
+        end do
+      end if
       ilubar = ilubar + 3
     end do
   end do

@@ -52,6 +52,7 @@ subroutine getinp()
   add_sides_fix = 0.d0
   sidemax = 1000.d0
   ioerr = 0
+  avoidoverlap = .true.
   do i = 1, nlines
     if(keyword(i,1).eq.'seed') then
       read(keyword(i,2),*,iostat=ioerr) seed
@@ -103,6 +104,14 @@ subroutine getinp()
     else if(keyword(i,1).eq.'add_amber_ter') then
       add_amber_ter = .true.
       write(*,*) ' Will add the TER flag between molecules. '
+    else if(keyword(i,1).eq.'avoid_overlap') then
+      if ( keyword(i,2).eq.'yes') then
+        avoidoverlap = .true.
+        write(*,*) ' Will avoid overlap to fixed molecules at initial point. '
+      else
+        avoidoverlap = .false.
+        write(*,*) ' Will NOT avoid overlap to fixed molecules at initial point. '
+      end if
     else if(keyword(i,1).eq.'add_box_sides') then
       add_box_sides = .true.
       write(*,*) ' Will print BOX SIDE informations. '
