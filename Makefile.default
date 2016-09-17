@@ -117,7 +117,7 @@ input.o : input.f90 sizes.o
 	@$(FORTRAN) $(FLAGS) -c input.f90
 flashmod.o : flashmod.f90 sizes.o 
 	@$(FORTRAN) $(FLAGS) -c flashmod.f90
-usegencan.o : usegencan.f90 
+usegencan.o : usegencan.f90 sizes.o
 	@$(FORTRAN) $(FLAGS) -c usegencan.f90
 swaptypemod.o : swaptypemod.f90 
 	@$(FORTRAN) $(FLAGS) -c swaptypemod.f90
