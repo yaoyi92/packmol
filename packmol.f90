@@ -386,6 +386,11 @@ program packmol
             do iat = 2, maxkeywords
               read(keyword(iline,iat),*,iostat=ioerr) iiatom
               if ( ioerr /= 0 ) exit
+              if ( iiatom > natoms(itype) ) then
+                write(*,*) ' ERROR: atom selection with index greater than number of '
+                write(*,*) '        atoms in structure ', itype
+                stop
+              end if
               if(iatom.eq.iiatom) exit
             end do
             do while(keyword(iline,1).ne.'end'.and.&
