@@ -59,7 +59,7 @@ program packmol
   integer :: resntemp
   integer :: charl, ioerr
       
-  double precision, allocatable :: x(:) ! (nn)
+  double precision, allocatable :: x(:), xprint(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
   double precision :: rad, radscale
   double precision :: cmx, cmy, cmz, beta, gama, teta
@@ -89,7 +89,7 @@ program packmol
 
   ! Allocate local array
 
-  allocate(fixed(ntype),x(nn),xfull(nn))
+  allocate(fixed(ntype),x(nn),xprint(nn),xfull(nn))
 
   ! Start time computation
 
@@ -622,7 +622,7 @@ program packmol
 
         if(loop.eq.nloop.and.itype.eq.ntype+1) then
           write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
-          call checkpoint(n,x)
+          call checkpoint(n,xprint)
           stop
         end if
 
@@ -711,6 +711,9 @@ program packmol
           call output(n,x)
           write(*,*) ' Current solution written to file: ', trim(adjustl(xyzout))
           fprint = fx
+          do i = 1, n
+            xprint(i) = x(i)
+          end do
 
         ! If the user required printing even bad structures
         else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
