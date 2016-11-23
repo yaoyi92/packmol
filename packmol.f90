@@ -10,9 +10,6 @@
 !  
 !-----------------------------------------------------------------------------
 !
-! Packmol: A package for building initial configurations for
-! molecular dynamics simulations, to be published, 2008.
-!
 ! http://www.ime.unicamp.br/~martinez/packmol
 !
 ! Usage (see the page above for further information):
