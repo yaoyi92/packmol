@@ -537,7 +537,7 @@ program packmol
   main : do while(itype <= ntype)
     itype = itype + 1
  
-    ! Use larger tolerance than required to improove separation
+    ! Use larger tolerance than required to improve separation
 
     radscale = discale
     do i = 1, ntotat
