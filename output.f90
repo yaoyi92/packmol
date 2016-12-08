@@ -20,7 +20,7 @@ subroutine output(n,x)
   implicit none
   integer :: n, k, i, ilugan, ilubar, itype, imol, idatom,&
              irest, iimol, ichain, iatom, irec, ilres, ifres,&
-             iires, iconn, charl, irescount,&
+             iires, charl, irescount,&
              icart, i_ref_atom, ioerr
   integer :: nr, nres, imark  
   integer :: i_fixed, i_not_fixed
@@ -649,15 +649,10 @@ subroutine output(n,x)
 
           call eulerrmat(beta,gama,teta,v1,v2,v3) 
 
-          iconn = icart
- 
           idatom = idfirst(i_not_fixed) - 1      
           do iatom = 1, natoms(i_not_fixed) 
-
             icart = icart + 1
             idatom = idatom + 1
-            i_ref_atom = i_ref_atom + 1
-
             call compcart(icart,xbar,ybar,zbar,&
                           coor(idatom,1),coor(idatom,2),&
                           coor(idatom,3),&
@@ -665,14 +660,13 @@ subroutine output(n,x)
 
             ntcon(1) = nconnect(idatom, 1)
             do k = 2, maxcon(idatom)
-              ntcon(k) = nconnect(idatom, k) + iconn 
+              ntcon(k) = nconnect(idatom,k) + i_ref_atom
             end do
-  
-            write(30,tinker_atom_line) i_ref_atom,&
+            write(30,tinker_atom_line) i_ref_atom+iatom,&
                                        ele(idatom), (xcart(icart, k), k = 1, 3),&
-                                       ntcon(1),&
-                                       (ntcon(k) - natfix, k = 2, maxcon(idatom))
+                                       (ntcon(k), k = 1, maxcon(idatom))
           end do 
+          i_ref_atom = i_ref_atom + natoms(i_not_fixed)
  
           ilugan = ilugan + 3 
           ilubar = ilubar + 3 
@@ -683,21 +677,21 @@ subroutine output(n,x)
 
         i_fixed = i_fixed + 1
         idatom = idfirst(i_fixed) - 1
-
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
-          i_ref_atom = i_ref_atom + 1
           ntcon(1) = nconnect(iatom,1)
           do k = 2, maxcon(idatom)
             ntcon(k) = nconnect(idatom,k) + i_ref_atom
           end do
+          write(30,tinker_atom_line) i_ref_atom+iatom, ele(idatom),&
+                                     (coor(idatom,k), k = 1, 3),&
+                                     (ntcon(k), k = 1, maxcon(idatom))
         end do
-        write(30,tinker_atom_line) i_ref_atom, ele(idatom),&
-                                   (coor(idatom,k), k = 1, 3),&
-                                   (ntcon(k), k = 1, maxcon(idatom))
+        i_ref_atom = i_ref_atom + natoms(itype)
+
       end if
+
     end do             
- 
     close(30) 
   end if   
 
