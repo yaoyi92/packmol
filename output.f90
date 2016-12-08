@@ -687,7 +687,7 @@ subroutine output(n,x)
                                      (coor(idatom,k), k = 1, 3),&
                                      (ntcon(k), k = 1, maxcon(idatom))
         end do
-        i_ref_atom = i_ref_atom + natoms(itype)
+        i_ref_atom = i_ref_atom + natoms(i_fixed)
 
       end if
 
