@@ -677,7 +677,7 @@ subroutine output(n,x)
 
         i_fixed = i_fixed + 1
         idatom = idfirst(i_fixed) - 1
-        do iatom = 1, natoms(itype)
+        do iatom = 1, natoms(i_fixed)
           idatom = idatom + 1
           ntcon(1) = nconnect(iatom,1)
           do k = 2, maxcon(idatom)
