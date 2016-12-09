@@ -48,12 +48,22 @@ git push origin master tag $version
 
 today=`date +"%b %d, %Y"`
 changelog="https://github.com/leandromartinez98/$package/releases/tag/$version"
-newline="<tr><td width=190px valign=top><a href=$giturl/archive/$version.tar.gz> $file </a></td><td><a target=_blank_ href=$changelog> Released on $today. Change log at github </a></td></tr>"
+newline="<tr><td width=190px valign=top><a href=$giturl/archive/$version.tar.gz> $file </a></td><td> Released on $today - <a target=_blank_ href=$changelog> [change log at github] </a></td></tr>"
 htmlfile=$downloads
 
-wget https://github.com/leandromartinez98/topolink/archive/$version.tar.gz ~/Downloads/
-scp ~/Downloads/$version.tar.gz martinez@ssh.ime.unicamp.br:./public_html/packmol/
-\rm -f ~/Downloads/$version.tar.gz
+echo "------------------------------"
+echo "CREATING RELEASE IN HOME-PAGE:"
+echo "------------------------------"
+mkdir TEMP
+cd TEMP
+wget https://github.com/leandromartinez98/packmol/archive/$version.tar.gz 
+tar -xf $version.tar.gz
+mv packmol-$version packmol
+tar -cf packmol.tar ./packmol
+gzip packmol.tar
+scp packmol.tar.gz martinez@ssh.ime.unicamp.br:./public_html/packmol/
+cd ..
+\rm -rf ./TEMP
 
 writeline=yes
 while IFS= read -r line ; do
