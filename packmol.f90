@@ -494,10 +494,10 @@ program packmol
   if(n.eq.0) then
     call output(n,x)
     write(*,dash1_line)
-    write(*,*) ' There are only fixed molecules, therefore '
-    write(*,*) ' there is nothing to do. '
-    write(*,*) ' The output file contains the fixed molecule '
-    write(*,*) ' in the desired position. '
+    write(*,*) ' There are only fixed molecules, therefore there is nothing to do. '
+    write(*,*) ' The output file contains the fixed molecules in the desired positions. '
+    write(*,dash1_line)
+    write(*,*) ' Wrote output file: ', trim(adjustl(xyzout))
     write(*,dash1_line)
     stop
   end if
