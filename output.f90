@@ -658,7 +658,7 @@ subroutine output(n,x)
                           coor(idatom,3),&
                           v1,v2,v3)    
 
-            ntcon(1) = nconnect(idatom, 1)
+            ntcon(1) = nconnect(idatom,1)
             do k = 2, maxcon(idatom)
               ntcon(k) = nconnect(idatom,k) + i_ref_atom
             end do
@@ -679,7 +679,7 @@ subroutine output(n,x)
         idatom = idfirst(i_fixed) - 1
         do iatom = 1, natoms(i_fixed)
           idatom = idatom + 1
-          ntcon(1) = nconnect(iatom,1)
+          ntcon(1) = nconnect(idatom,1)
           do k = 2, maxcon(idatom)
             ntcon(k) = nconnect(idatom,k) + i_ref_atom
           end do
