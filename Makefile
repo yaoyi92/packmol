@@ -39,7 +39,8 @@ endif
 #
 GENCANFLAGS := $(FLAGS)
 ifeq ($(MAKECMDGOALS),devel)
-FLAGS = -Wall -fcheck=bounds
+FLAGS = -Wall -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow
+GENCANFLAGS = -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow 
 endif
 #
 # Files required
