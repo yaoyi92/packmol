@@ -54,7 +54,7 @@ program packmol
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
   integer :: loop
   integer :: resntemp
-  integer :: charl, ioerr
+  integer :: strlength, ioerr
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
@@ -241,7 +241,7 @@ program packmol
             coor(idatom, 3) = ztemp + cmz 
           end do
           record = name(itype)
-          write(*,*) ' Molecule ',record(1:charl(record)),'(',itype,') will be fixed.' 
+          write(*,*) ' Molecule ',record(1:strlength(record)),'(',itype,') will be fixed.' 
           fixed(itype) = .true.
           if(nmols(itype).gt.1) then
             write(*,*)' ERROR: Cannot set number > 1',' for fixed molecules. '
@@ -523,7 +523,7 @@ program packmol
 
   if(check) then
     call output(n,x)
-    write(*,*) ' Wrote initial point to output file: ', xyzout(1:charl(xyzout)) 
+    write(*,*) ' Wrote initial point to output file: ', xyzout(1:strlength(xyzout)) 
     stop
   end if
 
@@ -693,7 +693,7 @@ program packmol
           ! If solution was found for all system
           if ( fdist < precision .and. frest < precision ) then
             call output(n,x)
-            write(*,*) ' Solution written to file: ', xyzout(1:charl(xyzout))
+            write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
             call writesuccess(itype,fdist,frest,fx)
             write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
             write(*,*)

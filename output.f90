@@ -20,7 +20,7 @@ subroutine output(n,x)
   implicit none
   integer :: n, k, i, ilugan, ilubar, itype, imol, idatom,&
              irest, iimol, ichain, iatom, irec, ilres, ifres,&
-             iires, charl, irescount,&
+             iires, strlength, irescount,&
              icart, i_ref_atom, ioerr
   integer :: nr, nres, imark  
   integer :: i_fixed, i_not_fixed
@@ -261,7 +261,7 @@ subroutine output(n,x)
           xbar = dmin1(0.999999d0,xbar)     
           ybar = dmin1(0.999999d0,ybar)     
           zbar = dmin1(0.999999d0,zbar)     
-          write(30,"( a10,tr1,7(f12.6) )") record(1:charl(record)), xbar, ybar, zbar, &
+          write(30,"( a10,tr1,7(f12.6) )") record(1:strlength(record)), xbar, ybar, zbar, &
                          q0, q1, q2, q3
           ilugan = ilugan + 3 
           ilubar = ilubar + 3 
@@ -338,7 +338,7 @@ subroutine output(n,x)
         xcm = dmin1(0.999999d0,xcm)     
         ycm = dmin1(0.999999d0,ycm)     
         zcm = dmin1(0.999999d0,zcm)     
-        write(30,"( a10,tr1,7(f12.6) )") record(1:charl(record)),&
+        write(30,"( a10,tr1,7(f12.6) )") record(1:strlength(record)),&
                        xcm, ycm, zcm, q0, q1, q2, q3
       end if
     end do
@@ -401,7 +401,7 @@ subroutine output(n,x)
             if ( ioerr /= 0 ) then
               record = pdbfile(i_not_fixed)
               write(*,*) ' ERROR: Failed reading residue number ',&
-                         ' from PDB file: ', record(1:charl(record))
+                         ' from PDB file: ', record(1:strlength(record))
               write(*,*) ' Residue numbers are integers that must',&
                          ' be between columns 23 and 26. '
               write(*,*) ' Other characters within these columns',&
@@ -534,7 +534,7 @@ subroutine output(n,x)
             if ( ioerr /= 0 ) then
               record = pdbfile(i_not_fixed)
               write(*,*) ' ERROR: Failed reading residue number ',&
-                         ' from PDB file: ', record(1:charl(record))
+                         ' from PDB file: ', record(1:strlength(record))
               write(*,*) ' Residue numbers are integers that must',&
                          ' be between columns 23 and 26. ' 
               write(*,*) ' Other characters within these columns',&
