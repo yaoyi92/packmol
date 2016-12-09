@@ -153,6 +153,16 @@ subroutine initial(n,x)
         xcart(icart,1) = coor(idfatom,1)
         xcart(icart,2) = coor(idfatom,2)
         xcart(icart,3) = coor(idfatom,3)
+        fixedatom(icart) = .true.
+      end do
+    end do
+    icart = natfix
+    do itype = 1, ntype
+      do imol = 1, nmols(itype)
+        do iatom = 1, natoms(itype)
+          icart = icart + 1
+          fixedatom(icart) = .false.
+        end do
       end do
     end do
   end if
@@ -323,7 +333,7 @@ subroutine initial(n,x)
         latomfix(iboxx,iboxy,iboxz) = icart
         ibtype(icart) = iftype
         ibmol(icart) = 1
-        hasfixed(iboxx,  iboxy,  iboxz  ) = .true.
+        hasfixed(iboxx,iboxy,iboxz) = .true.
       end do
     end do
   end if

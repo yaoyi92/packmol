@@ -44,6 +44,7 @@ module compute_data
 
   logical, allocatable :: constrain_rot(:,:) ! (ntype,3)
   logical, allocatable :: comptype(:) ! (ntype)
+  logical, allocatable :: fixedatom(:) ! (ntotat)
   logical :: init1, move
 
   ! For linked lists

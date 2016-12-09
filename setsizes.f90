@@ -271,7 +271,7 @@ subroutine setsizes()
            radius(ntotat),radius_ini(ntotat),&
            gxcar(ntotat,3),&
            fatom(ntotat),latomnext(ntotat),&
-           fmol(ntotat),radiuswork(ntotat))
+           fmol(ntotat),radiuswork(ntotat),fixedatom(ntotat))
   allocate(ityperest(maxrest),restpars(maxrest,9))
   allocate(latomfirst(0:nbp+1,0:nbp+1,0:nbp+1),&
            latomfix(0:nbp+1,0:nbp+1,0:nbp+1))
