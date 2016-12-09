@@ -156,15 +156,6 @@ subroutine initial(n,x)
         fixedatom(icart) = .true.
       end do
     end do
-    icart = natfix
-    do itype = 1, ntype
-      do imol = 1, nmols(itype)
-        do iatom = 1, natoms(itype)
-          icart = icart + 1
-          fixedatom(icart) = .false.
-        end do
-      end do
-    end do
   end if
   ilubar = 0
   ilugan = ntotmol*3
@@ -185,6 +176,7 @@ subroutine initial(n,x)
         call compcart(icart,xbar,ybar,zbar,&
                       coor(idatom,1),coor(idatom,2),coor(idatom,3),&
                       v1,v2,v3)
+        fixedatom(icart) = .false.
       end do
     end do
   end do
