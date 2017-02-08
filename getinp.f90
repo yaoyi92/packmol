@@ -147,6 +147,7 @@ subroutine getinp()
              keyword(i,1) /= 'radius' .and. &
              keyword(i,1) /= 'resnumbers' .and. &
              keyword(i,1) /= 'changechains' .and. &
+             keyword(i,1) /= 'chain' .and. &
              keyword(i,1) /= 'discale' .and. &
              keyword(i,1) /= 'maxit' .and. &
              keyword(i,1) /= 'movebadrandom' .and. &
@@ -625,16 +626,6 @@ subroutine getinp()
     end if
   end do
 
-  ! Write the number of molecules of each type 
-
-  do itype = 1, ntype
-    write(*,*) ' Number of molecules of type ', itype, ': ', nmols(itype)
-    if(pdb.and.nmols(itype).gt.9999) then
-      write(*,*) ' Warning: There will be more than 9999 molecules of type ',itype
-      write(*,*) ' They will be divided into different chains in the PDB output file. '
-    end if
-  end do
-
   ! If pdb files, get the type of residue numbering output for each
   ! molecule
 
@@ -642,6 +633,7 @@ subroutine getinp()
     do itype = 1, ntype
       resnumbers(itype) = -1
       changechains(itype) = .false.
+      chain(itype) = "#"
       do iline = 1, nlines
         if(iline.gt.linestrut(itype,1).and.&
              iline.lt.linestrut(itype,2)) then
@@ -650,6 +642,9 @@ subroutine getinp()
           end if
           if(keyword(iline,1).eq.'resnumbers') then
             read(keyword(iline,2),*) resnumbers(itype)
+          end if
+          if(keyword(iline,1).eq.'chain') then
+            read(keyword(iline,2),*) chain(itype)
           end if
         end if
       end do
@@ -664,8 +659,29 @@ subroutine getinp()
                  resnumbers(itype)
       write(*,*) ' Swap chains of molecules of structure ',&
                  itype,':', changechains(itype) 
+      if ( chain(itype) /= "#" ) then
+        write(*,*) ' Specific chain identifier set for structure ',itype,':',chain(itype)
+      end if
+      if ( chain(itype) /= "#" .and. changechains(itype) ) then
+        write(*,*) " ERROR: 'changechains' and 'chain' input parameters are not compatible "
+        write(*,*) "        for a single structure. "
+        stop
+      end if
     end do
   end if
+
+  ! Write the number of molecules of each type 
+
+  do itype = 1, ntype
+    write(*,*) ' Number of molecules of type ', itype, ': ', nmols(itype)
+    if(pdb.and.nmols(itype).gt.9999) then
+      write(*,*) ' Warning: There will be more than 9999 molecules of type ',itype
+      write(*,*) '          Residue numbering is reset after 9999. '
+      if ( chain(itype) == "#" ) then
+        write(*,*) ' Each set be will be assigned a different chain in the PDB output file. '
+      end if
+    end if
+  end do
 
   ! Checking if restart files will be used for each structure or for the whole system
 

@@ -35,7 +35,7 @@ subroutine output(n,x)
   double precision :: xtemp, ytemp, ztemp
   double precision :: sxmin, symin, szmin, sxmax, symax, szmax
 
-  character :: chain, even_chain, odd_chain
+  character :: write_chain, even_chain, odd_chain
   character(len=64) :: title
   character(len=80) :: pdb_atom_line, pdb_hetatm_line, tinker_atom_line
   character(len=200) :: record
@@ -430,19 +430,23 @@ subroutine output(n,x)
             read(15,"( a80 )",iostat=ioerr) record
           end do
 
-          if(imol.eq.1.or.mod(imol,9999).eq.1) then
-            ichain = ichain + 1
-            if( changechains(i_not_fixed) ) then
-              call chainc(ichain,odd_chain)
+          if( chain(i_not_fixed) == "#" ) then
+            if(imol.eq.1.or.mod(imol,9999).eq.1) then
               ichain = ichain + 1
-              call chainc(ichain,even_chain)
-            else 
-              call chainc(ichain,even_chain)
-              odd_chain = even_chain
+              if( changechains(i_not_fixed) ) then
+                call chainc(ichain,odd_chain)
+                ichain = ichain + 1
+                call chainc(ichain,even_chain)
+              else 
+                call chainc(ichain,even_chain)
+                odd_chain = even_chain
+              end if
             end if
+            if ( mod(imol,2) == 0 ) write_chain = even_chain
+            if ( mod(imol,2) /= 0 ) write_chain = odd_chain
+          else
+            write_chain = chain(i_not_fixed)
           end if
-          if ( mod(imol,2) == 0 ) chain = even_chain
-          if ( mod(imol,2) /= 0 ) chain = odd_chain
 
           xbar = x(ilubar+1) 
           ybar = x(ilubar+2) 
@@ -497,7 +501,7 @@ subroutine output(n,x)
 
             if(record(1:4).eq.'ATOM') then
               write(30, pdb_atom_line) record(1:5), i_ref_atom,&
-                                       record(12:21), chain, iires,&
+                                       record(12:21), write_chain, iires,&
                                        record(27:27),&
                                        (xcart(icart,k), k = 1, 3),&
                                        record(55:80)
@@ -505,7 +509,7 @@ subroutine output(n,x)
 
             if(record(1:6).eq.'HETATM') then
                write(30,pdb_hetatm_line) record(1:6), i_ref_atom,&
-                                         record(12:21), chain, iires,&
+                                         record(12:21), write_chain, iires,&
                                          record(27:27),&
                                          (xcart(icart,k), k = 1, 3),&
                                          record(55:80)
@@ -590,9 +594,15 @@ subroutine output(n,x)
             iires = mod(iimol,9999)
           end if
 
+          if ( chain(i_fixed) == "#" ) then
+            write_chain = record(22:22)
+          else
+            write_chain = chain(i_fixed)
+          end if
+
           if(record(1:4).eq.'ATOM') then
             write(30,pdb_atom_line) record(1:5), i_ref_atom,&
-                                    record(12:21), record(22:22), iires,&
+                                    record(12:21), write_chain, iires,&
                                     record(27:27),&
                                     (coor(idatom,k), k = 1, 3),&
                                     record(55:80)
@@ -600,7 +610,7 @@ subroutine output(n,x)
 
           if(record(1:6).eq.'HETATM') then
             write(30,pdb_hetatm_line) record(1:6), i_ref_atom,&
-                                      record(12:21), record(22:22), iires,&
+                                      record(12:21), write_chain, iires,&
                                       record(27:27),&
                                       (coor(idatom,k), k = 1, 3),&
                                       record(55:80)

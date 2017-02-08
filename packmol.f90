@@ -69,10 +69,12 @@ program packmol
   
   character(len=200) :: record, restart_from_temp, restart_to_temp
   character(len=80) :: xyzfile
+  character(len=1) :: chain_tmp
 
   logical :: fixtmp
   logical :: rests
   logical :: movebadprint
+  logical :: changechains_tmp
 
   logical, allocatable :: fixed(:) ! ntype
 
@@ -296,6 +298,8 @@ program packmol
         if(pdb) xyzfile = pdbfile(itype)
         linesttmp1 = linestrut(itype,1)
         linesttmp2 = linestrut(itype,2)
+        changechains_tmp = changechains(itype)
+        chain_tmp = chain(itype)
         jtype = itype + 1
         if(.not.fixed(jtype)) then
           name(itype) = name(jtype)
@@ -316,6 +320,10 @@ program packmol
           natoms(jtype) = natemp
           resnumbers(itype) = resnumbers(jtype)
           resnumbers(jtype) = resntemp
+          changechains(itype) = changechains(jtype)
+          changechains(jtype) = changechains_tmp
+          chain(itype) = chain(jtype)
+          chain(jtype) = chain_tmp
           if(pdb) then
             pdbfile(itype) = pdbfile(jtype) 
             pdbfile(jtype) = xyzfile

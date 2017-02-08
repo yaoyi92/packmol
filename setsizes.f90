@@ -283,7 +283,7 @@ subroutine setsizes()
            amass(ntotat),charge(ntotat),ele(ntotat))
 
   allocate(irestline(maxrest),linestrut(ntype,2),resnumbers(ntype),&
-           input_itype(ntype),changechains(ntype),&
+           input_itype(ntype),changechains(ntype),chain(ntype),&
            fixedoninput(ntype),pdbfile(ntype),name(ntype))
 
   ! Allocate vectors for flashsort
