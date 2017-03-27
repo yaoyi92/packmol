@@ -17,11 +17,10 @@ in order that all features are available.
 <a href="./userguide.shtml#types">7. Types of constraints.</a><br>
 <a href="./userguide.shtml#pbc">8. Periodic boundary conditions.</a><br>
 <a href="./userguide.shtml#radii">9. Different radii for different atoms.</a><br>
-<a href="./userguide.shtml#solvate.tcl">10. Solvating a large molecule automatically.</a><br>
-<a href="./userguide.shtml#numb">11. Controlling residue numbering in PDB files.</a><br>
-<a href="./userguide.shtml#restart">12. Building very large systems: using restart files.</a><br>
-<a href="./userguide.shtml#conv">13. Convergence problems: what to try.</a><br>
-<a href="./userguide.shtml#add">14. Additional input options and keywords.</a>
+<a href="./userguide.shtml#numb">10. Controlling residue numbering in PDB files.</a><br>
+<a href="./userguide.shtml#restart">11. Building very large systems: using restart files.</a><br>
+<a href="./userguide.shtml#conv">12. Convergence problems: what to try.</a><br>
+<a href="./userguide.shtml#add">13. Additional input options and keywords.</a>
 <br><br>
 
 <!-- END SECTION -->
@@ -723,7 +722,7 @@ tolerance 2.0
 structure water.pdb
   number 500
   inside box 0. 0. 0. 30. 30. 30.
-  radius 1.5<br>
+  radius 1.5
 end structure
 </pre>
 the radius of the atoms of the water molecules will be 1.5. Note that
@@ -733,7 +732,7 @@ In this case, on the other side:<br><br>
 <pre>
 tolerance 2.0
 structure water.pdb
-  number 500<br>
+  number 500
   inside box 0. 0. 0. 30. 30. 30.
   atoms 1 2
     radius 1.5
@@ -755,69 +754,6 @@ Finally, currently the restrictions are set to be fulfilled by the
 might want to adjust the sizes of the boxes, spheres, etc., so that the
 whole atoms are within the desired regions. For standard all-atom
 simulations this is not usually an issue because the radii are small.
-<br><br>
-<!-- END SECTION -->
-
-<!-- START SECTION -->
-<a name="solvate.tcl"></a><b>Solvating large molecules automatically </b>
-<br><br>
-
-The Packmol distribution includes the <code>solvate.tcl</code> script,
-which is used to solvate large molecules, usually proteins, with water
-and ions (Na<sup>+</sup> and Cl<sup>-</sup>). Given the PDB file of the
-biomolecule, just run the script with: <br><br>
-<code>
-solvate.tcl PROTEIN.pdb
-</code><br><br>
-And the script will create a input file for packmol called
-<code>packmol_input.inp</code>. With this file, run Packmol with<br><br
-<code>
-packmol < packmol_input.inp
-</code><br><br>
-And your large molecule will be solvated by a shell of 15. Angs. of
-water, and ions to keep the system neutral and a physiological NaCl
-concentration of 0.16M. The script usually makes reasonable choices for
-every parameter (number of water molecules, number of ions, etc.), but
-these may be controlled manually with additional options, as described
-below:<br><br>
-<code>
-solvate.tcl structure.pdb -shell 15. -charge +5 -density 1.0 -i pack.inp
--o solvated.pdb
-</code>
-<br><br>
-<table>
-<tr><td class=tdclean0 valign=top>
-<em> Where: </em>
-</td><td class=tdclean0>
-        <code>structure.pdb</code> is the pdb file to be solvated (usually a protein)
-<br><br> 
-        "<code>15.</code>" is the size of the solvation shell. This
-        is an optional parameter. If not set, 15. will be used.
-<br><br> 
-        <code>+5</code> is the total charge of the system, to be neutralized.
-        This is also and optional parameter, if not used, the package
-        considers histidine residues as neutral, Arg and Lys as +1
-        and Glu and Asp as -1. The Na+ and Cl- concentrations are set
-        the closest possible to 0.16M, approximately the physiological
-        concentration.
-        Alternatively, use the <code>-noions</code> to not add any ions, just water.
-<br><br>
-        <code>1.0</code> is the desired density. Optional. If not set, the density
-        will be set to 1.0 g/ml.
-<br><br> 
-        <code>solvated.pdb</code>: is the (optional) name for the solvated system
-output file. If this argument is not provided, it will be the default
-        solvated.pdb file.
-<br><br> 
-
-        <code>pack.inp</code>: is the (optional) name for the packmol input file that
-        will be generated. If not provided, packmol_input.inp will be used.
-<br>
-</td></tr></table>
-<br>
-All these options are output when running the "solvate.tcl" script
-without any parameter. The script also outputs the size of the box and
-the suggested periodic boundary condition dimensions to be used.
 <br><br>
 <!-- END SECTION -->
 
@@ -952,7 +888,7 @@ positions of 800 molecules.
 <br><br>
 Sometimes Packmol is not able to find an adequate packing solution. Here
 are some tips to try to overcome these difficulties:<br><br>
-<table>
+<table border=0>
 <tr><td class=tdclean0>&bull; Look at the best solution obtained, many times it is good enough to
 be used. </td></tr>
 <tr><td class=tdclean0>&bull; Simulate the same problem with only a few molecules of each type. For
