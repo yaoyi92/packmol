@@ -8,19 +8,19 @@ in order that all features are available.
 <b> Contents </b>
 
 <br>
-<a href="./userguide.shtml#need">1. What do you need?</a><br>
-<a href="./userguide.shtml#comp">2. How to compile Packmol.</a><br>
-<a href="./userguide.shtml#run">3. Running Packmol.</a><br>
-<a href="./userguide.shtml#basic">4. Basic input structure.</a><br>
-<a href="./userguide.shtml#more">5. More types of molecules.</a><br>
-<a href="./userguide.shtml#atom">6. Atom selections.</a><br>
-<a href="./userguide.shtml#types">7. Types of constraints.</a><br>
-<a href="./userguide.shtml#pbc">8. Periodic boundary conditions.</a><br>
-<a href="./userguide.shtml#radii">9. Different radii for different atoms.</a><br>
-<a href="./userguide.shtml#numb">10. Controlling residue numbering in PDB files.</a><br>
-<a href="./userguide.shtml#restart">11. Building very large systems: using restart files.</a><br>
-<a href="./userguide.shtml#conv">12. Convergence problems: what to try.</a><br>
-<a href="./userguide.shtml#add">13. Additional input options and keywords.</a>
+<a href="./README.md#need">1. What do you need?</a><br>
+<a href="./README.md#comp">2. How to compile Packmol.</a><br>
+<a href="./README.md#run">3. Running Packmol.</a><br>
+<a href="./README.md#basic">4. Basic input structure.</a><br>
+<a href="./README.md#more">5. More types of molecules.</a><br>
+<a href="./README.md#atom">6. Atom selections.</a><br>
+<a href="./README.md#types">7. Types of constraints.</a><br>
+<a href="./README.md#pbc">8. Periodic boundary conditions.</a><br>
+<a href="./README.md#radii">9. Different radii for different atoms.</a><br>
+<a href="./README.md#numb">10. Controlling residue numbering in PDB files.</a><br>
+<a href="./README.md#restart">11. Building very large systems: using restart files.</a><br>
+<a href="./README.md#conv">12. Convergence problems: what to try.</a><br>
+<a href="./README.md#add">13. Additional input options and keywords.</a>
 <br><br>
 
 <!-- END SECTION -->
@@ -245,14 +245,14 @@ ordered systems can be built in such a way. The constraints  are:
 <table align="center" width="80%">
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 1. </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom" align="right" width="20" height="30"> 1. </td>
+<td valign="bottom"><tt>
 fixed
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Usage: <tt>fixed </tt><i>x   y   z  a   b   g</i><br><br>
 This options holds the molecule
 fixed in the position specified by the parameters. <i>x, y, z, a, b,
@@ -283,16 +283,16 @@ the origin and no rotation.
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 2. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 inside cube
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Usage: <tt>inside cube </tt><i>x<sub>min</sub>&nbsp; y<sub>min</sub>&nbsp; z<sub>min</sub>&nbsp;    d</i><br><br>
 
 <i>x<sub>min</sub> ,  y<sub>min</sub> ,  z<sub>min</sub></i> and <i>d</i>
@@ -311,16 +311,16 @@ by this option will satisfy, at the solution:
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 3. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 outside cube
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Usage: <tt>outside cube </tt><i>x<sub>min</sub>&nbsp; y<sub>min</sub>&nbsp; z<sub>min</sub>&nbsp;    d</i><br><br>
 
 <i>x<sub>min</sub> ,  y<sub>min</sub> ,  z<sub>min</sub></i> and <i>d</i>
@@ -339,16 +339,16 @@ by this option will satisfy, at the solution:
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 4. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 inside box
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Usage: <tt>inside box</tt>&nbsp; 
 <i>x<sub>min</sub>&nbsp;
 y<sub>min</sub>&nbsp;
@@ -380,16 +380,16 @@ solution:
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 5. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 outside box
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Usage: <tt>outside box</tt>&nbsp; 
 <i>x<sub>min</sub>&nbsp;
 y<sub>min</sub>&nbsp;
@@ -419,15 +419,15 @@ solution:
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 6. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 inside (or outside) sphere
 </tt></td>
 </tr>
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Spheres are defined by equations of the general form <br><br>
 <center>
 <img src=./imgs/img31.png>
@@ -458,16 +458,16 @@ atoms will be placed outside the defined sphere.
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 7. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 inside (or outside) ellipsoid 
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 Ellipsoids are defined by the general equation
 <br><br>
 <center>
@@ -520,16 +520,16 @@ for a small <i>d</i>.
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 8. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 over (or below) plane 
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 The planes are defined by the general equation
 <br><br>
 <center>
@@ -555,15 +555,15 @@ the <tt>below</tt> keyword will make the atoms satisfy
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 9. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 inside (or outside) cylinder
 </tt></td>
 </tr>
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 
 In order to define a cylinder, it is necessary first to define a
 line oriented in space. This line is defined in <tt>Packmol</tt> by the
@@ -628,16 +628,16 @@ oriented in space in anyway.
 
 <!-- START CONSTRAINT -->
 <tr>
-<td class=tdclean0 valign="bottom" align="right" width="20" height="30"> 
+<td valign="bottom" align="right" width="20" height="30"> 
 10. 
 </td>
-<td class=tdclean0 valign="bottom"><tt>
+<td valign="bottom"><tt>
 Constrain rotations
 </tt></td>
 </tr>
 
-<tr><td class=tdclean0></td>
-<td class=tdclean0>
+<tr><td></td>
+<td>
 It is possible to constrain rotations of all molecules of each type, so
 that they have some average orientation in space.
 <br><br>
@@ -888,36 +888,36 @@ positions of 800 molecules.
 <br><br>
 Sometimes Packmol is not able to find an adequate packing solution. Here
 are some tips to try to overcome these difficulties:<br><br>
-<table border=0>
-<tr><td class=tdclean0>&bull; Look at the best solution obtained, many times it is good enough to
+<table>
+<tr><td>&bull; Look at the best solution obtained, many times it is good enough to
 be used. </td></tr>
-<tr><td class=tdclean0>&bull; Simulate the same problem with only a few molecules of each type. For
+<tr><td>&bull; Simulate the same problem with only a few molecules of each type. For
 example, instead of using 20 thousand water molecules, put 300, and see
 if they are in the correct regions. </td></tr>
-<tr><td class=tdclean0>&bull; If you have large molecules, try running the program twice, one to
+<tr><td>&bull; If you have large molecules, try running the program twice, one to
 pack these molecules, and then use the solution as fixed molecule for
 the next packing, in which solvation is included. This may be
 particularly useful for building solvated membranes. Build the membrane
 first and then use it as a fixed molecule for a solvation run.</td></tr>
-<tr><td class=tdclean0>&bull; You can change some options of the packing procedure to try
+<tr><td>&bull; You can change some options of the packing procedure to try
 improve the optimization: 
 <table width=90% align=center>
-<tr><td class=tdclean0 valign=top>1.</td>
-<td class=tdclean0><tt>discale [real]</tt><br>
+<tr><td valign=top>1.</td>
+<td><tt>discale [real]</tt><br>
 This option controls the distance tolerance actually used in the
 local optimization method. It was found that using larger distances
 helps sometimes. Try setting <tt>discale</tt> to 1.5, for example.
 </td></tr>
 
-<tr><td class=tdclean0 valign=top>2.</td>
-<td class=tdclean0><tt>maxit [integer]</tt><br>
+<tr><td valign=top>2.</td>
+<td><tt>maxit [integer]</tt><br>
 This is the maximum number of iterations of the local optimizer (GENCAN)
 per loop. The default value is currently 20, changing it may improve (or
 worse) the convergence.
 </td></tr>
 
-<tr><td class=tdclean0 valign=top>2.</td>
-<td class=tdclean0><tt>movebadrandom</tt><br>
+<tr><td valign=top>2.</td>
+<td><tt>movebadrandom</tt><br>
  One of the convergence heuristics of Packmol consists in moving
  molecules that are badly placed. If this option is set, the molecules
 will be placed in new random position in the box. If not (default), the
