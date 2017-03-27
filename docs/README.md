@@ -39,13 +39,10 @@ coordinate files may be in the PDB, TINKER, MOLDEN or MOLDY format.
 Of course, you also need the <tt>Packmol</tt> package, which you can get from
 <pre><tt>  http://www.ime.unicamp.br/~martinez/packmol
 </tt></pre>
-by clicking on the <a target="contents" href="./download.shtml">
-Download </a> link. By following this link you will download the file
+or by clicking on the <a target="contents" href="https://github.com/leandromartinez98/packmol/releases/latest">
+[Latest Release]</a> link. By following this link you will download the file
 <tt>packmol.tar.gz</tt> which contains the whole source code of
 Packmol. 
-<br><br>
-If you plan to use MOLDY as your MD package, read 
-<a href=./read-MOLDY.shtml onClick="return popup(this, 'Help')">THIS</a>.
 <br><br>
 
 <!-- END SECTION -->
@@ -61,9 +58,10 @@ Expanding the files:
 <pre><tt>  tar -xvzf packmol.tar.gz</tt></pre>
 This will create a directory called <tt>packmol</tt> inside which you can find
 the source code. You can build the executable by:
-<pre><tt>  cd packmol
+<pre>
+  cd packmol
   make
-</tt></pre>
+</pre>
 That's it, if no error was reported the packmol executable was 
 built.
 <br><br>
@@ -101,16 +99,14 @@ Were packmol.inp is the input file (you can obtain example files by
 clicking at the 'Input examples' link on the left). <br><br> 
 A successful packing will end with something like
 <tt><br><br>
-<center>
-------------------------------
-<br>
-Success!<br>
-Final objective function value: .22503E-01<br>
-Maximum violation of target distance:   0.000000<br>
-Maximum violation of the constraints: .78985E-02<br>
-<br>
-------------------------------
-</center>
+<pre>
+-------------------------------------------------
+                Success!
+Final objective function value: .22503E-01
+Maximum violation of target distance:   0.000000
+Maximum violation of the constraints: .78985E-02
+-------------------------------------------------
+</pre>
 <br><br></tt>
 Where the maximum violation of the target distance indicates the
 difference between the minimum distance between atoms required by
@@ -128,7 +124,10 @@ input file (available since 28 Feb 2008).
 <hr><br>
 <u>Common issues:</u> <br><br>
  - If you get "Command not found" when running Packmol, use <br>
-<tt>./packmol < packmol.inp</tt><br>
+<pre>
+./packmol < packmol.inp
+</pre>
+<br>
 (with a "./" before "packmol") 
 or add the directory where the packmol executable is located to your path.
 <br><br>
@@ -146,7 +145,7 @@ again.
 
 The minimal input file must contain the distance tolerance required (for
 systems at room temperature and pressure and coordinates in Angstroms,
-2.0 Å is a good value <a href=./tolerance-note.shtml onClick="return popup(this, 'Help')">[note]</a>). This is specified with
+2.0 Å is a good value. This is specified with
 <br><br>
 <tt>tolerance 2.0</tt>
 <br><br>
@@ -217,14 +216,14 @@ hydrophilic  part of the surfactants must be pointing to the aqueous
 environment, for example. For the 10 atoms molecule, this is done by
 using the keyword atoms, as in
 <br><br>
-<tt>
-structure molecule.pdb           <br> 
-&nbsp;&nbsp;inside cube 0. 0. 0. 20.         <br> 
-&nbsp;&nbsp;atoms 9 10                       <br> 
-&nbsp;&nbsp;&nbsp;&nbsp;inside box 0. 0. 15. 20. 20. 20. <br> 
-&nbsp;&nbsp;end atoms                        <br> 
+<pre>
+structure molecule.pdb     
+  inside cube 0. 0. 0. 20.
+  atoms 9 10              
+    inside box 0. 0. 15. 20. 20. 20.
+  end atoms 
 end structure                     
-</tt>
+</pre>
 <br><br>
 In this case, all the atoms of the molecule will be put inside the
 defined cube, but atoms 9 and 10 will be restrained to be inside the
