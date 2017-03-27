@@ -8,19 +8,19 @@ in order that all features are available.
 <b> Contents </b>
 
 <br>
-<a href="./README.md#need">1. What do you need?</a><br>
-<a href="./README.md#comp">2. How to compile Packmol.</a><br>
-<a href="./README.md#run">3. Running Packmol.</a><br>
-<a href="./README.md#basic">4. Basic input structure.</a><br>
-<a href="./README.md#more">5. More types of molecules.</a><br>
-<a href="./README.md#atom">6. Atom selections.</a><br>
-<a href="./README.md#types">7. Types of constraints.</a><br>
-<a href="./README.md#pbc">8. Periodic boundary conditions.</a><br>
-<a href="./README.md#radii">9. Different radii for different atoms.</a><br>
-<a href="./README.md#numb">10. Controlling residue numbering in PDB files.</a><br>
-<a href="./README.md#restart">11. Building very large systems: using restart files.</a><br>
-<a href="./README.md#conv">12. Convergence problems: what to try.</a><br>
-<a href="./README.md#add">13. Additional input options and keywords.</a>
+<a href="#need">1. What do you need?</a><br>
+<a href="#comp">2. How to compile Packmol.</a><br>
+<a href="#run">3. Running Packmol.</a><br>
+<a href="#basic">4. Basic input structure.</a><br>
+<a href="#more">5. More types of molecules.</a><br>
+<a href="#atom">6. Atom selections.</a><br>
+<a href="#types">7. Types of constraints.</a><br>
+<a href="#pbc">8. Periodic boundary conditions.</a><br>
+<a href="#radii">9. Different radii for different atoms.</a><br>
+<a href="#numb">10. Controlling residue numbering in PDB files.</a><br>
+<a href="#restart">11. Building very large systems: using restart files.</a><br>
+<a href="#conv">12. Convergence problems: what to try.</a><br>
+<a href="#add">13. Additional input options and keywords.</a>
 <br><br>
 
 <!-- END SECTION -->
