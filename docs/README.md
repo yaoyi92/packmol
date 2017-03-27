@@ -166,12 +166,12 @@ At least one type of molecule must be present. This is set by the
 file containing the coordinates of a single water molecule, you could
 add to your input file something like
 <br><br>
-<tt>
-structure water.pdb     <br>
-&nbsp;&nbsp;number 2000   <br>
-&nbsp;&nbsp;inside cube 0. 0. 0. 40.  <br>
+<pre>
+structure water.pdb
+  number 2000
+  inside cube 0. 0. 0. 40. 
 end structure
-</tt>
+</pre>
 <br><br>
 This section specifies that 2000 molecules of the <tt>water.pdb</tt> type, will
 be placed inside a cube with minimum coordinates
@@ -179,15 +179,15 @@ be placed inside a cube with minimum coordinates
 maximum coordinates (40,40,40). Therefore, this minimum input file must
 be:
 <br><br>
-<tt>
-tolerance 2.0 <br>
-output test.pdb <br>
-filetype pdb <br>
-structure water.pdb <br>
-&nbsp;&nbsp;number 2000 <br>
-&nbsp;&nbsp;inside cube 0. 0. 0. 40.  <br>
+<pre>
+tolerance 2.0
+output test.pdb
+filetype pdb
+structure water.pdb
+  number 2000 
+  inside cube 0. 0. 0. 40. 
 end structure
-</tt>
+</pre>
 <br><br>
 Running Packmol with this input file will fill a cube of side 40.0 Å
 with 2000 water molecules. Every pair of atoms of different molecules
@@ -718,28 +718,28 @@ within a molecule. Just add the "<code>radius</code>" keyword within the
 within <code>atoms ... end atoms</code> section of an atom selection.
 <br><br>
 For example, in this case:<br><br>
-<code>
-tolerance 2.0<br>
-structure water.pdb<br>
-&nbsp;&nbsp;number 500<br>
-&nbsp;&nbsp;inside box 0. 0. 0. 30. 30. 30.<br>
-&nbsp;&nbsp;radius 1.5<br>
-end structure<br><br>
-</code>
+<pre>
+tolerance 2.0
+structure water.pdb
+  number 500
+  inside box 0. 0. 0. 30. 30. 30.
+  radius 1.5<br>
+end structure
+</pre>
 the radius of the atoms of the water molecules will be 1.5. Note that
 this implies a distance tolerance of 3.0 within water molecules.
 <br><br>
 In this case, on the other side:<br><br>
-<code>
-tolerance 2.0<br>
-structure water.pdb<br>
-&nbsp;&nbsp;number 500<br>
-&nbsp;&nbsp;inside box 0. 0. 0. 30. 30. 30.<br>
-&nbsp;&nbsp;atoms 1 2<br>
-&nbsp;&nbsp&nbsp;&nbsp;radius 1.5<br>
-&nbsp;&nbsp;end atoms<br>
-end structure<br><br>
-</code>
+<pre>
+tolerance 2.0
+structure water.pdb
+  number 500<br>
+  inside box 0. 0. 0. 30. 30. 30.
+  atoms 1 2
+    radius 1.5
+  end atoms
+end structure
+</pre>
 only atoms 1 and 2 of the water molecule (as listed in the water.pdb
 file) will have a radius of 1.5, while atom 3 will have a radius of 1.0,
 as defined by the tolerance of 2.0 
@@ -906,24 +906,26 @@ created. It is possible to write restart files for the whole system, if
 the keyword is put outside <tt>structure...end structure</tt> sections,
 or to write a restart file for a specific part of the system, using, for
 instance:
-<pre><tt>structure water.pdb
+<pre>
+structure water.pdb
   number 1000
   inside cube 0. 0. 0. 40.
   restart_to water1.pack
 end structure
-</tt></pre>
+</pre>
 This will generate a restart file for the water molecules only.
 <br><br>
 
 These restart files can be used to start a new execution of Packmol with
 more molecules. The <tt>restart_from</tt> keyword must then be used. For
 example: 
-<pre><tt>structure water.pdb
+<pre>
+structure water.pdb
   number 1000
   inside cube 0. 0. 0. 40.
   restart_from water1.pack
 end structure
-</tt></pre>
+</pre>
 The new input file might contain other molecules, as a regular Packmol
 input file, and these water molecules will be packed together with the
 new molecules, but starting from the previous runs. This can be used,
