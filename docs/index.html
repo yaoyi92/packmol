@@ -1163,9 +1163,13 @@ time.
 <br><br>
 
 Use a truly random initial point for the minimization (the default
-option is to generate an homogeneous-density initial point with no
-overlaps to fixed molecules): <br>
+option is to generate an homogeneous-density initial): <br>
 Usage: <tt> randominitialpoint </tt> <br><br>
+
+Avoid, or not, overlap with fixed molecules at initial point
+(avoiding this overlaps is generally recommended, but sometimes
+generates gaps that are too large):<br>
+Usage: <tt> avoid_overlap yes/no </tt> <br><br>
 
 Change the maximum number of Gencan iterations per loop:<br>
 Usage: <tt> maxit [integer] </tt> <br><br>
