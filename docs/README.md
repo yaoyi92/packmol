@@ -1,4 +1,4 @@
-https://github.com/leandromartinez98/packmol/raw/master/docs/imgs/pbc.jpg
+<!-- https://github.com/leandromartinez98/packmol/raw/master/docs/imgs/pbc.jpg -->
 
 <h3>User guide</h3>
 <i>Important:</i> always download the latest version of Packmol
@@ -432,7 +432,7 @@ inside (or outside) sphere
 <tr><td></td>
 <td>
 Spheres are defined by equations of the general form <br><br>
-<center>
+center>
 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img31.png>
 </center>
 <br>
@@ -695,7 +695,6 @@ minimization and equilibration.
 <center>
 <br>
 <img src="https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/pbc.jpg">
-voltar
 </center>
 <br><br>
 <!-- END SECTION -->
