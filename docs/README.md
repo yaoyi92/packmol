@@ -429,8 +429,7 @@ inside (or outside) sphere
 <td>
 Spheres are defined by equations of the general form <br><br>
 <center>
-<!--<img src=./imgs/img31.png>-->
-<img src=http://leandromartinez98.github.io/packmol/imgs/img31.png>
+<img src=./imgs/img31.png>
 </center>
 <br>
 and, therefore, you must provide four real parameters <i>a</i>,
