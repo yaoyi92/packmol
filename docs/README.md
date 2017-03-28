@@ -268,13 +268,13 @@ are the position of the baricenter (not really the center of mass,
 because we suppose that all atoms have the same mass). Therefore this
 keyword must be used in the following context:
 <br><br>
-<tt>
-structure molecule.pdb   <br>
-&nbsp;&nbsp;number 1                 <br>
-&nbsp;&nbsp;center            <br>
-&nbsp;&nbsp;fixed 0. 0. 0. 0. 0. 0.  <br>
+<pre>
+structure molecule.pdb
+  number 1  
+  center    
+  fixed 0. 0. 0. 0. 0. 0.
 end structure
-</tt>
+</pre>
 <br><br>
 In this example, the molecule will be fixed with its center 
 the origin and no rotation.
@@ -542,7 +542,7 @@ And it is possible to restrict atoms to be over or below the plane. The syntax i
 over plane 2.5 3.2 1.2 6.2
 
 below plane 2.5 3.2 1.2 6.2
-<pre><br>
+</pre><br>
 where the <tt>over</tt> keyword will make the atoms satisfy the condition
 <br><center>
 2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=./imgs/img37.png> 0
