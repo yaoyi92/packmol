@@ -693,7 +693,7 @@ minimization and equilibration.
 
 <center>
 <br>
-<img src="./docs/imgs/pbc.jpg">
+<img src="./imgs/pbc.jpg">
 voltar
 </center>
 <br><br>
