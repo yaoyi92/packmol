@@ -694,6 +694,7 @@ minimization and equilibration.
 <center>
 <br>
 <img src=pbc.jpg width=300>
+<img src="https://raw.githubusercontent.com/leandromartinez98/packmol/master/docs/imgs/img39.png"/>
 </center>
 <br><br>
 <!-- END SECTION -->
