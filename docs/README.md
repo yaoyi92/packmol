@@ -693,7 +693,7 @@ minimization and equilibration.
 
 <center>
 <br>
-<img src=imgs/pbc.jpg width=300>
+<img src="./imgs/pbc.jpg" width=300>
 </center>
 <br><br>
 <!-- END SECTION -->
