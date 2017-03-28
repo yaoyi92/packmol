@@ -1,3 +1,5 @@
+{::nomarkdown}
+
 <!-- https://github.com/leandromartinez98/packmol/raw/master/docs/imgs/pbc.jpg -->
 
 <h3>User guide</h3>
@@ -433,7 +435,7 @@ inside (or outside) sphere
 <td>
 Spheres are defined by equations of the general form <br><br>
 <center>
-<img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img31.png\>
+<img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img31.png>
 </center>
 <br>
 and, therefore, you must provide four real parameters <i>a</i>,
@@ -1016,3 +1018,4 @@ Usage: <tt>chkgrad</tt>
 <br><br>
 <!-- END SECTION -->
 
+{:/nomarkdown}
