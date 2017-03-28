@@ -696,6 +696,7 @@ minimization and equilibration.
 <img src=./imgs/pbc.jpg width=300>
 <img src="https://raw.githubusercontent.com/leandromartinez98/packmol/master/docs/imgs/img39.png"/>
 <img src="{{ site.baseurl }}/imgs/img39.png">
+[[./imgs/img39.pnb]]
 </center>
 <br><br>
 <!-- END SECTION -->
