@@ -699,6 +699,7 @@ minimization and equilibration.
 <img src="imgs/pbc.jpg" width=300>
 <img src="https://raw.githubusercontent.com/leandromartinez98/packmol/master/docs/imgs/img39.png"/>
 <img src="{{ site.url }}/imgs/img39.png">
+<img src="{{ site.baseurl }}/imgs/img39.png">
 voltar
 </center>
 <br><br>
