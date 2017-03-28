@@ -1,3 +1,4 @@
+https://github.com/leandromartinez98/packmol/raw/master/docs/imgs/pbc.jpg
 
 <h3>User guide</h3>
 <i>Important:</i> always download the latest version of Packmol
@@ -432,7 +433,7 @@ inside (or outside) sphere
 <td>
 Spheres are defined by equations of the general form <br><br>
 <center>
-<img src=./docs/imgs/img31.png>
+<img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img31.png>
 </center>
 <br>
 and, therefore, you must provide four real parameters <i>a</i>,
@@ -444,14 +445,14 @@ inside sphere 2.30 3.40 4.50 8.0
 and therefore the coordinates of the atoms will satisfy the equation
 <br><br>
 <center>
-<img src=./docs/imgs/img36.png>
+<img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img36.png>
 </center><br>  
 Other input alternative would be:
 <br><br><tt>
 outside sphere 2.30 3.40 4.50 8.0
 </tt><br><br>
 The <tt>outside</tt> parameter is similar to the <tt>inside</tt> parameter, but the
-equation above uses <img src=./docs/imgs/img37.png>  instead of  <img src=./docs/imgs/img38.png> 
+equation above uses <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img37.png>  instead of  <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img38.png> 
 and, therefore, the
 atoms will be placed outside the defined sphere.
 <br><br></td></tr>
@@ -473,7 +474,7 @@ inside (or outside) ellipsoid
 Ellipsoids are defined by the general equation
 <br><br>
 <center>
-<img src=./docs/imgs/img39.png>
+<img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img39.png>
 </center>
 <br>
 The parameters must be given as in the sphere example, but now they are
@@ -545,11 +546,11 @@ below plane 2.5 3.2 1.2 6.2
 </pre><br>
 where the <tt>over</tt> keyword will make the atoms satisfy the condition
 <br><center>
-2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=./docs/imgs/img37.png> 0
+2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img37.png> 0
 </center><br><br>
 the <tt>below</tt> keyword will make the atoms satisfy
 <br><br><center>
-2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=./docs/imgs/img38.png> 0
+2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img38.png> 0
 </center><br>
 <br><br></td></tr>
 <!-- END CONSTRAINT -->
@@ -693,7 +694,7 @@ minimization and equilibration.
 
 <center>
 <br>
-<img src="./imgs/pbc.jpg">
+<img src="https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/pbc.jpg">
 voltar
 </center>
 <br><br>
