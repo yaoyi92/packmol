@@ -64,7 +64,7 @@ the source code. You can build the executable by:
 </pre>
 That's it, if no error was reported the packmol executable was 
 built.
-<br><br>
+<br>
 -----
 <br><br>
 If you have problems, let the configure script find a suitable
