@@ -700,7 +700,7 @@ minimization and equilibration.
 <img src="https://raw.githubusercontent.com/leandromartinez98/packmol/master/docs/imgs/img39.png"/>
 <img src="{{ site.url }}/imgs/img39.png">
 <img src="{{ site.baseurl }}/imgs/img39.png">
-<img src="./imgs/pbc.jpg">
+<img src="./docs/imgs/pbc.jpg">
 voltar
 </center>
 <br><br>
