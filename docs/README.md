@@ -432,7 +432,7 @@ inside (or outside) sphere
 <tr><td></td>
 <td>
 Spheres are defined by equations of the general form <br><br>
-center>
+<center>
 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img31.png\>
 </center>
 <br>
