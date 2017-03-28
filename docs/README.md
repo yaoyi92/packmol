@@ -1,3 +1,6 @@
+<head>
+<base href="https://raw.githubusercontent.com/leandromartinez98/packmol/master/docs">
+</head>
 
 <h3>User guide</h3>
 <i>Important:</i> always download the latest version of Packmol
@@ -696,7 +699,7 @@ minimization and equilibration.
 <img src=./imgs/pbc.jpg width=300>
 <img src="https://raw.githubusercontent.com/leandromartinez98/packmol/master/docs/imgs/img39.png"/>
 <img src="{{ site.baseurl }}/imgs/img39.png">
-!(./imgs/img39.png)
+voltar
 </center>
 <br><br>
 <!-- END SECTION -->
