@@ -55,16 +55,17 @@ Once you have downloaded the <tt>packmol.tar.gz</tt> file from the home-page,
 you need to expand the files and compile the package. This is done by:
 <br><br>
 Expanding the files:
-<pre><tt>  tar -xvzf packmol.tar.gz</tt></pre>
+<pre>tar -xvzf packmol.tar.gz</pre>
 This will create a directory called <tt>packmol</tt> inside which you can find
 the source code. You can build the executable by:
 <pre>
   cd packmol
   make
 </pre>
+<br>
 That's it, if no error was reported the packmol executable was 
 built.
-<br>
+<br><br>
 -----
 <br><br>
 If you have problems, let the configure script find a suitable
@@ -92,13 +93,15 @@ detected, an executable called packmol is now ready.
 <br><br>
 
 Once you have compiled and built your input file, run Packmol  with
-<br><br><tt>
+<br>
+<pre>
 packmol < packmol.inp
-<br><br></tt>
+</pre>
+<br>
 Were packmol.inp is the input file (you can obtain example files by
 clicking at the 'Input examples' link on the left). <br><br> 
 A successful packing will end with something like
-<tt><br><br>
+<br>
 <pre>
 -------------------------------------------------
                 Success!
@@ -107,7 +110,7 @@ Maximum violation of target distance:   0.000000
 Maximum violation of the constraints: .78985E-02
 -------------------------------------------------
 </pre>
-<br><br></tt>
+<br>
 Where the maximum violation of the target distance indicates the
 difference between the minimum distance between atoms required by
 the user and that of the solution. It will not be greater than 10<sup>-2</sup> 
@@ -121,13 +124,13 @@ are within the desired regions (but do not expect a good structure
 at this point!). Just add the word "check" to any line of your
 input file (available since 28 Feb 2008).
 <br><br>
-<hr><br>
+<hr
+><br>
 <u>Common issues:</u> <br><br>
  - If you get "Command not found" when running Packmol, use <br>
 <pre>
 ./packmol < packmol.inp
 </pre>
-<br>
 (with a "./" before "packmol") 
 or add the directory where the packmol executable is located to your path.
 <br><br>
@@ -163,20 +166,20 @@ At least one type of molecule must be present. This is set by the
 <tt>water.pdb</tt> is the
 file containing the coordinates of a single water molecule, you could
 add to your input file something like
-<br><br>
+<br>
 <pre>
 structure water.pdb
   number 2000
   inside cube 0. 0. 0. 40. 
 end structure
 </pre>
-<br><br>
+<br>
 This section specifies that 2000 molecules of the <tt>water.pdb</tt> type, will
 be placed inside a cube with minimum coordinates
 (<i>x</i>,<i>y</i>,<i>z</i>) = (0,0,0) and
 maximum coordinates (40,40,40). Therefore, this minimum input file must
 be:
-<br><br>
+<br>
 <pre>
 tolerance 2.0
 output test.pdb
@@ -186,7 +189,7 @@ structure water.pdb
   inside cube 0. 0. 0. 40. 
 end structure
 </pre>
-<br><br>
+<br>
 Running Packmol with this input file will fill a cube of side 40.0 Å
 with 2000 water molecules. Every pair of atoms of different molecules
 will be separated by, at least, 2.0 Å and the molecules will be
@@ -215,7 +218,7 @@ region of the space. This is useful for building vesicles where the
 hydrophilic  part of the surfactants must be pointing to the aqueous
 environment, for example. For the 10 atoms molecule, this is done by
 using the keyword atoms, as in
-<br><br>
+<br>
 <pre>
 structure molecule.pdb     
   inside cube 0. 0. 0. 20.
@@ -224,7 +227,7 @@ structure molecule.pdb
   end atoms 
 end structure                     
 </pre>
-<br><br>
+<br>
 In this case, all the atoms of the molecule will be put inside the
 defined cube, but atoms 9 and 10 will be restrained to be inside the
 box.
@@ -535,15 +538,15 @@ The planes are defined by the general equation
 <i>ax</i> + <i>by</i> + <i>cz</i> - <i>d</i> = 0
 </center><br>
 And it is possible to restrict atoms to be over or below the plane. The syntax is
-<br><br><tt>
+<br><pre>
 over plane 2.5 3.2 1.2 6.2
-<br><br>
+
 below plane 2.5 3.2 1.2 6.2
-<br><br></tt>
+<pre><br>
 where the <tt>over</tt> keyword will make the atoms satisfy the condition
-<br><br><center>
+<br><center>
 2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=./imgs/img37.png> 0
-</center><br>
+</center><br><br>
 the <tt>below</tt> keyword will make the atoms satisfy
 <br><br><center>
 2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=./imgs/img38.png> 0
@@ -609,9 +612,9 @@ Here, the first three parameters define the point where the cylinder
 starts, and <i>l</i> defines the length of the cylinder. <i>d</i> defines de
 radius of the cylinder. The simpler example is a cylinder oriented in
 the <i>x</i> axis and starting at the origin, such as
-<br><br><tt>
+<br><br><pre>
 inside cylinder 0. 0. 0. 1. 0. 0. 10. 20.
-<br><br></tt>
+</pre><br><br>
 This cylinder is specified by the points that have a distance of 10. to
 the <i>x</i> axis (the cylinder has a radius of 10.). Furthermore, it starts at
 the origin, therefore no atom restricted by this cylinder will have an
@@ -641,10 +644,11 @@ It is possible to constrain rotations of all molecules of each type, so
 that they have some average orientation in space.
 <br><br>
 The keywords to be used are, within a structure...end structure section:
-<br><br><tt>
-constrain_rotation x 180. 20. <br>
-constrain_rotation y 180. 20. <br>
-constrain_rotation z 180. 20. </tt> 
+<br><br><pre>
+constrain_rotation x 180. 20. 
+constrain_rotation y 180. 20. 
+constrain_rotation z 180. 20. 
+</pre>
 <br><br>
 Each of these keywords restricts the possible rotation angles around
 each axis to be within 180&plusmn;20 degrees (or any other value). For a
@@ -657,10 +661,10 @@ other two.
 <br><br>
 For example, to constrain the rotation of your molecule along the
 <tt>z</tt> axis, use something like:
-<br><br><tt>
-constrain_rotation x 0. 20. <br>
-constrain_rotation y 0. 20. <br>
-<br></tt>
+<br><br><pre>
+constrain_rotation x 0. 20. 
+constrain_rotation y 0. 20. 
+</pre><br>
 Note that these rotations are defined relative to the molecule in the
 orientation which was provided by the user, in the input PDB file.
 Therefore, it is a good idea to orient the molecule in a reasonable way
