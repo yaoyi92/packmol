@@ -61,7 +61,7 @@ program packmol
   double precision :: rad, radscale
   double precision :: cmx, cmy, cmz, beta, gama, teta
   double precision :: xtemp, ytemp, ztemp
-  double precision :: fx, bestf, flast, fprint, ftype
+  double precision :: fx, bestf, flast, fprint, all_type_fx
   double precision :: fimp, fimprov
   double precision, parameter :: pi=4.d0*datan(1.d0)
 
@@ -522,10 +522,9 @@ program packmol
   do i = 1, ntotat
     radius_ini(i) = radius(i)
   end do
-  call computef(n,x,fx)
-  write(*,*) ' Objective function at initial point: ', fx
-  bestf = fx
-  fprint = 1.d40
+  call computef(n,x,all_type_fx)
+  write(*,*) ' Objective function at initial point: ', all_type_fx
+  fprint = all_type_fx
 
   ! Stop if only checking the initial approximation
 
@@ -665,10 +664,9 @@ program packmol
                   &'  Best function value before: f = ', e10.5,           /&
                   &'  Improvement from best function value: ', f8.2, ' %',/&
                   &'  Improvement from last loop: ', f8.2, ' %',          /&
-                  &'  Maximum violation of target distance: ', f12.6,/&
+                  &'  Maximum violation of target distance: ', f12.6,     /&
                   &'  Maximum violation of the constraints: ', e10.5       &
                   &)") fx, bestf, fimprov, fimp, fdist, frest
-        write(*,dash3_line)
         flast = fx
 
         !
@@ -676,6 +674,13 @@ program packmol
         !
         
         if ( itype <= ntype ) then
+
+          ! Save best function value for this packing
+
+          if ( fx < bestf ) bestf = fx
+
+          ! Check if this point is a solution
+
           call swaptype(n,x,itype,2) ! Save this type current point 
           ! If the solution was found for this type
           if( fdist < precision .and. frest < precision ) then
@@ -684,20 +689,18 @@ program packmol
             write(*,*) ' Current structure written to file: ', trim(adjustl(xyzout))
             call writesuccess(itype,fdist,frest,fx)
             exit gencanloop
-          else
-            call swaptype(n,x,itype,3) ! Restore all-molecule vectors
-            fx = 0.d0
-            do i = 1, ntype
-              call swaptype(n,x,i,1) ! Compute function value for this type
-              call computef(n,x,ftype)
-              fx = fx + ftype
-              call swaptype(n,x,itype,3) ! Restore all-molecule vectors
-            end do
-            if ( fx < bestf ) bestf = fx
-            !write(*,*) ' Type-independent function value sum: ', fx
           end if
+
+          ! Compute and report function value for all-type packing
+
+          call swaptype(n,x,itype,3) ! Restore all molecule vectors
+          call computef(n,x,all_type_fx)
+          write(*,"('  All-type function value: ', e10.5 )") all_type_fx
+
         else
+
           call computef(n,x,fx)
+          if ( fx < bestf ) bestf = fx
           ! If solution was found for all system
           if ( fdist < precision .and. frest < precision ) then
             call output(n,x)
@@ -706,16 +709,16 @@ program packmol
             write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
             write(*,*)
             stop 
-          else
-            if ( fx < bestf ) bestf = fx
           end if
+
         end if
+        write(*,dash3_line)
 
         ! If this is the best structure so far
-        if( mod(loop+1,writeout) == 0 .and. fx < fprint ) then
+        if( mod(loop+1,writeout) == 0 .and. all_type_fx < fprint ) then
           call output(n,x)
           write(*,*) ' Current solution written to file: ', trim(adjustl(xyzout))
-          fprint = fx
+          fprint = all_type_fx
           do i = 1, n
             xprint(i) = x(i)
           end do
