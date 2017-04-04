@@ -65,6 +65,7 @@ oall = cenmass.o \
        polartocart.o \
        resetboxes.o \
        tobar.o \
+       setijk.o \
        setibox.o \
        restmol.o \
        swaptype.o \
@@ -163,6 +164,8 @@ resetboxes.o : resetboxes.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c resetboxes.f90
 tobar.o : tobar.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c tobar.f90
+setijk.o : setijk.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c setijk.f90
 setibox.o : setibox.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c setibox.f90
 restmol.o : restmol.f90 $(modules)   

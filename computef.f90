@@ -18,7 +18,7 @@ subroutine computef(n,x,f)
   use compute_data
   implicit none
 
-  integer :: n, i, j, k
+  integer :: n, i, j, k, ibox
   integer :: ilugan, ilubar, icart, itype, imol, iatom, idatom, &
              iboxx, iboxy, iboxz 
 
@@ -105,8 +105,19 @@ subroutine computef(n,x,f)
           if(iboxy.gt.nboxes(2)) iboxy = nboxes(2)
           if(iboxz.gt.nboxes(3)) iboxz = nboxes(3)
 
+          ! Atom linked list
+
           latomnext(icart) = latomfirst(iboxx,iboxy,iboxz)
           latomfirst(iboxx,iboxy,iboxz) = icart
+
+          ! Box with atoms linked list
+
+          if ( .not. hasfree(iboxx,iboxy,iboxz) ) then
+            hasfree(iboxx,iboxy,iboxz) = .true.
+            call ijk_to_ibox(iboxx,iboxy,iboxz,ibox)
+            lboxnext(ibox) = lboxfirst
+            lboxfirst = ibox
+          end if
 
           ibtype(icart) = itype
           ibmol(icart) = imol
@@ -126,56 +137,56 @@ subroutine computef(n,x,f)
 
   ! Minimum distance function evaluation
 
-  do i = 1, nboxes(1)
-    do j = 1, nboxes(2)
-      do k = 1, nboxes(3)
+  ibox = lboxfirst
+  do while( ibox > 0 )
 
-        icart = latomfirst(i,j,k)
-        do while ( icart .ne. 0 ) 
+    call ibox_to_ijk(ibox,i,j,k)
 
-          if(comptype(ibtype(icart))) then
+    icart = latomfirst(i,j,k)
+    do while( icart > 0 )
 
-            ! Vector that keeps the value for this atom
+      if(comptype(ibtype(icart))) then
 
-            if(move) flast = f 
+        ! Vector that keeps the value for this atom
 
-            ! Interactions inside box
+        if(move) flast = f
 
-            f = f + fparc(icart,latomnext(icart))
+        ! Interactions inside box
 
-            ! Interactions of boxes that share faces
+        f = f + fparc(icart,latomnext(icart))
 
-            f = f + fparc(icart,latomfirst(i+1,j,k))
-            f = f + fparc(icart,latomfirst(i,j+1,k))
-            f = f + fparc(icart,latomfirst(i,j,k+1))
+        ! Interactions of boxes that share faces
 
-            ! Interactions of boxes that share axes
+        f = f + fparc(icart,latomfirst(i+1,j,k))
+        f = f + fparc(icart,latomfirst(i,j+1,k))
+        f = f + fparc(icart,latomfirst(i,j,k+1))
 
-            f = f + fparc(icart,latomfirst(i+1,j+1,k))
-            f = f + fparc(icart,latomfirst(i+1,j,k+1))
-            f = f + fparc(icart,latomfirst(i+1,j-1,k))
-            f = f + fparc(icart,latomfirst(i+1,j,k-1))
-            f = f + fparc(icart,latomfirst(i,j+1,k+1))
-            f = f + fparc(icart,latomfirst(i,j+1,k-1))
+        ! Interactions of boxes that share axes
 
-            ! Interactions of boxes that share vertices
+        f = f + fparc(icart,latomfirst(i+1,j+1,k))
+        f = f + fparc(icart,latomfirst(i+1,j,k+1))
+        f = f + fparc(icart,latomfirst(i+1,j-1,k))
+        f = f + fparc(icart,latomfirst(i+1,j,k-1))
+        f = f + fparc(icart,latomfirst(i,j+1,k+1))
+        f = f + fparc(icart,latomfirst(i,j+1,k-1))
 
-            f = f + fparc(icart,latomfirst(i+1,j+1,k+1))
-            f = f + fparc(icart,latomfirst(i+1,j+1,k-1))
-            f = f + fparc(icart,latomfirst(i+1,j-1,k+1))
-            f = f + fparc(icart,latomfirst(i+1,j-1,k-1))
+        ! Interactions of boxes that share vertices
 
-            ! If going to move bad molecules, update fatom
+        f = f + fparc(icart,latomfirst(i+1,j+1,k+1))
+        f = f + fparc(icart,latomfirst(i+1,j+1,k-1))
+        f = f + fparc(icart,latomfirst(i+1,j-1,k+1))
+        f = f + fparc(icart,latomfirst(i+1,j-1,k-1))
 
-            if(move) fatom(icart) = fatom(icart) + f - flast
+        ! If going to move bad molecules, update fatom
 
-          end if
+        if(move) fatom(icart) = fatom(icart) + f - flast
 
-          icart = latomnext(icart)
-        end do
-  
-      end do
+      end if
+
+      icart = latomnext(icart)
     end do
+
+    ibox = lboxnext(ibox)
   end do
 
   return

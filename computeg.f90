@@ -20,7 +20,7 @@ subroutine computeg(n,x,g)
   integer :: n
   integer :: idatom, iatom, irest 
   integer :: i, j, k, ilubar, ilugan, icart, itype, imol
-  integer :: iboxx, iboxy, iboxz
+  integer :: ibox, iboxx, iboxy, iboxz
   integer :: k1, k2
   integer :: iratcount
 
@@ -105,8 +105,19 @@ subroutine computeg(n,x,g)
           if(iboxy.gt.nboxes(2)) iboxy = nboxes(2)
           if(iboxz.gt.nboxes(3)) iboxz = nboxes(3)
 
+          ! Atom linked list
+
           latomnext(icart) = latomfirst(iboxx,iboxy,iboxz)
           latomfirst(iboxx,iboxy,iboxz) = icart
+
+          ! Box with atoms linked list
+
+          if ( .not. hasfree(iboxx,iboxy,iboxz) ) then
+            hasfree(iboxx,iboxy,iboxz) = .true.
+            call ijk_to_ibox(iboxx,iboxy,iboxz,ibox)
+            lboxnext(ibox) = lboxfirst
+            lboxfirst = ibox
+          end if
 
           ibtype(icart) = itype
           ibmol(icart) = imol  
@@ -125,49 +136,50 @@ subroutine computeg(n,x,g)
     ! Gradient relative to minimum distance
     !
 
-    do i = 1, nboxes(1)
-      do j = 1, nboxes(2)
-        do k = 1, nboxes(3)
+    ibox = lboxfirst
+    do while( ibox > 0 )
 
-          icart = latomfirst(i,j,k)
-          do while ( icart .ne. 0 ) 
+      call ibox_to_ijk(ibox,i,j,k)
 
-            if(comptype(ibtype(icart))) then
+      icart = latomfirst(i,j,k)
+      do while ( icart .ne. 0 )
 
-              ! Interactions inside box
+        if(comptype(ibtype(icart))) then
 
-              call gparc(icart,latomnext(icart))
+          ! Interactions inside box
 
-              ! Interactions of boxes that share faces
+          call gparc(icart,latomnext(icart))
 
-              call gparc(icart,latomfirst(i+1,j,k))
-              call gparc(icart,latomfirst(i,j+1,k))
-              call gparc(icart,latomfirst(i,j,k+1))
+          ! Interactions of boxes that share faces
 
-              ! Interactions of boxes that share axes
+          call gparc(icart,latomfirst(i+1,j,k))
+          call gparc(icart,latomfirst(i,j+1,k))
+          call gparc(icart,latomfirst(i,j,k+1))
 
-              call gparc(icart,latomfirst(i+1,j+1,k))
-              call gparc(icart,latomfirst(i+1,j,k+1))
-              call gparc(icart,latomfirst(i+1,j-1,k))
-              call gparc(icart,latomfirst(i+1,j,k-1))
-              call gparc(icart,latomfirst(i,j+1,k+1))
-              call gparc(icart,latomfirst(i,j+1,k-1))
+          ! Interactions of boxes that share axes
 
-              ! Interactions of boxes that share vertices
+          call gparc(icart,latomfirst(i+1,j+1,k))
+          call gparc(icart,latomfirst(i+1,j,k+1))
+          call gparc(icart,latomfirst(i+1,j-1,k))
+          call gparc(icart,latomfirst(i+1,j,k-1))
+          call gparc(icart,latomfirst(i,j+1,k+1))
+          call gparc(icart,latomfirst(i,j+1,k-1))
 
-              call gparc(icart,latomfirst(i+1,j+1,k+1))
-              call gparc(icart,latomfirst(i+1,j+1,k-1))
-              call gparc(icart,latomfirst(i+1,j-1,k+1))
-              call gparc(icart,latomfirst(i+1,j-1,k-1))
+          ! Interactions of boxes that share vertices
 
-            end if
+          call gparc(icart,latomfirst(i+1,j+1,k+1))
+          call gparc(icart,latomfirst(i+1,j+1,k-1))
+          call gparc(icart,latomfirst(i+1,j-1,k+1))
+          call gparc(icart,latomfirst(i+1,j-1,k-1))
 
-            icart = latomnext(icart)
-          end do
-    
-        end do
+        end if
+
+        icart = latomnext(icart)
       end do
-    end do                          
+
+      ibox = lboxnext(ibox)
+    end do
+
   end if
 
   ! Computing the gradient using chain rule 

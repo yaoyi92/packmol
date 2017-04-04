@@ -27,7 +27,7 @@ double precision function fparc(icart,firstjcart)
 
   fparc = 0.0d0
   jcart = firstjcart
-  do while ( jcart .ne. 0 )
+  do while ( jcart > 0 )
     !
     ! Cycle if this type is not to be computed
     !

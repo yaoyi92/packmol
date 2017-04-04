@@ -198,6 +198,7 @@ subroutine initial(n,x)
       if(nb.gt.nbp) nb = nbp
       boxl(i) = dmax1(xlength/dfloat(nb),dbox)
       nboxes(i) = nb
+      nb2(i) = nboxes(i) + 2
     end do
     call comparegrad(n,x)
     stop
@@ -296,6 +297,7 @@ subroutine initial(n,x)
     if(nb.gt.nbp) nb = nbp
     boxl(i) = dmax1(xlength/dfloat(nb),dbox)
     nboxes(i) = nb
+    nb2(i) = nboxes(i) + 2
   end do
 
   ! Reseting latomfix array
@@ -305,6 +307,7 @@ subroutine initial(n,x)
       do k = 0, nbp + 1
         latomfix(i,j,k) = 0
         hasfixed(i,j,k) = .false.
+        hasfree(i,j,k) = .false.
       end do
     end do
   end do   
