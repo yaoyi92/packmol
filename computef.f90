@@ -16,6 +16,7 @@ subroutine computef(n,x,f)
       
   use sizes
   use compute_data
+  use input, only : fix
   implicit none
 
   integer :: n, i, j, k, ibox
@@ -117,6 +118,30 @@ subroutine computef(n,x,f)
             call ijk_to_ibox(iboxx,iboxy,iboxz,ibox)
             lboxnext(ibox) = lboxfirst
             lboxfirst = ibox
+
+            ! Add boxes with fixed atoms which are vicinal to this box, and
+            ! are behind 
+
+            if ( fix ) then
+
+              call add_box_behind(iboxx-1,iboxy,iboxz)
+              call add_box_behind(iboxx,iboxy-1,iboxz)
+              call add_box_behind(iboxx,iboxy,iboxz-1)
+
+              call add_box_behind(iboxx,iboxy-1,iboxz+1)
+              call add_box_behind(iboxx,iboxy-1,iboxz-1)
+              call add_box_behind(iboxx-1,iboxy+1,iboxz)
+              call add_box_behind(iboxx-1,iboxy,iboxz+1)
+              call add_box_behind(iboxx-1,iboxy-1,iboxz)
+              call add_box_behind(iboxx-1,iboxy,iboxz-1)
+
+              call add_box_behind(iboxx-1,iboxy+1,iboxz+1)
+              call add_box_behind(iboxx-1,iboxy+1,iboxz-1)
+              call add_box_behind(iboxx-1,iboxy-1,iboxz+1)
+              call add_box_behind(iboxx-1,iboxy-1,iboxz-1)
+
+            end if
+
           end if
 
           ibtype(icart) = itype
@@ -191,4 +216,20 @@ subroutine computef(n,x,f)
 
   return
 end subroutine computef
+
+subroutine add_box_behind(i,j,k)
+
+  use sizes
+  use compute_data
+  implicit none
+  integer :: ibox, i, j, k
+
+  if ( .not. hasfree(i,j,k) .and. latomfix(i,j,k) /= 0 ) then
+    hasfree(i,j,k) = .true.
+    call ijk_to_ibox(i,j,k,ibox)
+    lboxnext(ibox) = lboxfirst
+    lboxfirst = ibox
+  end if
+
+end subroutine add_box_behind
 

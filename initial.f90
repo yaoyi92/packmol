@@ -188,22 +188,6 @@ subroutine initial(n,x)
     radmax = dmax1(radmax,2.d0*radius(i))
   end do
 
-  ! Compare analytical and finite-difference gradients
-
-  if(chkgrad) then
-    dbox = discale * radmax + 0.01d0 * radmax
-    do i = 1, 3
-      xlength = sizemax(i) - sizemin(i)
-      nb = int(xlength/dbox + 1.d0)  
-      if(nb.gt.nbp) nb = nbp
-      boxl(i) = dmax1(xlength/dfloat(nb),dbox)
-      nboxes(i) = nb
-      nb2(i) = nboxes(i) + 2
-    end do
-    call comparegrad(n,x)
-    stop
-  end if
-
   ! Performing some steps of optimization for the restrictions only
   
   write(*,hash3_line)
@@ -306,6 +290,7 @@ subroutine initial(n,x)
     do j = 0, nbp + 1
       do k = 0, nbp + 1
         latomfix(i,j,k) = 0
+        latomfirst(i,j,k) = 0
         hasfixed(i,j,k) = .false.
         hasfree(i,j,k) = .false.
       end do
@@ -326,11 +311,28 @@ subroutine initial(n,x)
                      sizemin,boxl,nboxes,iboxx,iboxy,iboxz)
         latomnext(icart) = latomfix(iboxx,iboxy,iboxz)
         latomfix(iboxx,iboxy,iboxz) = icart
+        latomfirst(iboxx,iboxy,iboxz) = icart
         ibtype(icart) = iftype
         ibmol(icart) = 1
         hasfixed(iboxx,iboxy,iboxz) = .true.
       end do
     end do
+  end if
+
+  ! Compare analytical and finite-difference gradients
+
+  if(chkgrad) then
+    dbox = discale * radmax + 0.01d0 * radmax
+    do i = 1, 3
+      xlength = sizemax(i) - sizemin(i)
+      nb = int(xlength/dbox + 1.d0)  
+      if(nb.gt.nbp) nb = nbp
+      boxl(i) = dmax1(xlength/dfloat(nb),dbox)
+      nboxes(i) = nb
+      nb2(i) = nboxes(i) + 2
+    end do
+    call comparegrad(n,x)
+    stop
   end if
 
   ! Reseting mass centers to be within the regions

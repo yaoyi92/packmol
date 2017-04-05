@@ -20,11 +20,6 @@ subroutine resetboxes()
   implicit none
   integer :: i, j, k, ibox
 
-
-  ! Reset boxes
-
-  latomfirst = 0 ! Reset all boxes - three dimensional array
-
   ! Reset data for boxes that contain fixed atom
 
   ibox = lboxfirst

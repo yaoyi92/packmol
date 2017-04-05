@@ -15,6 +15,7 @@ subroutine computeg(n,x,g)
 
   use sizes
   use compute_data
+  use input, only : fix
   implicit none
 
   integer :: n
@@ -117,6 +118,30 @@ subroutine computeg(n,x,g)
             call ijk_to_ibox(iboxx,iboxy,iboxz,ibox)
             lboxnext(ibox) = lboxfirst
             lboxfirst = ibox
+
+            ! Add boxes with fixed atoms which are vicinal to this box, and
+            ! are behind 
+
+            if ( fix ) then
+
+              call add_box_behind(iboxx-1,iboxy,iboxz)
+              call add_box_behind(iboxx,iboxy-1,iboxz)
+              call add_box_behind(iboxx,iboxy,iboxz-1)
+
+              call add_box_behind(iboxx,iboxy-1,iboxz+1)
+              call add_box_behind(iboxx,iboxy-1,iboxz-1)
+              call add_box_behind(iboxx-1,iboxy+1,iboxz)
+              call add_box_behind(iboxx-1,iboxy,iboxz+1)
+              call add_box_behind(iboxx-1,iboxy-1,iboxz)
+              call add_box_behind(iboxx-1,iboxy,iboxz-1)
+
+              call add_box_behind(iboxx-1,iboxy+1,iboxz+1)
+              call add_box_behind(iboxx-1,iboxy+1,iboxz-1)
+              call add_box_behind(iboxx-1,iboxy-1,iboxz+1)
+              call add_box_behind(iboxx-1,iboxy-1,iboxz-1)
+
+            end if                                 
+
           end if
 
           ibtype(icart) = itype
