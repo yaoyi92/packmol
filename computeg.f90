@@ -43,7 +43,7 @@ subroutine computeg(n,x,g)
 
   ! Reset boxes
 
-  call resetboxes()
+  if(.not.init1) call resetboxes()
 
   ! Transform baricenter and angles into cartesian coordinates 
 
