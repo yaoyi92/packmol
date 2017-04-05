@@ -42,6 +42,10 @@ ifeq ($(MAKECMDGOALS),devel)
 FLAGS = -Wall -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow
 GENCANFLAGS = -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow 
 endif
+ifeq ($(MAKECMDGOALS),perf)
+FLAGS = -g -pg
+GENCANFLAGS = -g -pg
+endif
 #
 # Files required
 #
@@ -97,6 +101,7 @@ all : $(oall)
 #
 # Compiling with flags for development
 #
+perf : devel
 devel : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
