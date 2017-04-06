@@ -137,8 +137,6 @@ subroutine computef(n,x,f)
 
             ! Vector that keeps the value for this atom
 
-            if(move) flast = f 
-
             ! Interactions inside box
 
             f = f + fparc(icart,latomnext(icart))
@@ -166,8 +164,6 @@ subroutine computef(n,x,f)
             f = f + fparc(icart,latomfirst(i+1,j-1,k-1))
 
             ! If going to move bad molecules, update fatom
-
-            if(move) fatom(icart) = fatom(icart) + f - flast
 
           end if
 
