@@ -319,22 +319,6 @@ subroutine initial(n,x)
     end do
   end if
 
-  ! Compare analytical and finite-difference gradients
-
-  if(chkgrad) then
-    dbox = discale * radmax + 0.01d0 * radmax
-    do i = 1, 3
-      xlength = sizemax(i) - sizemin(i)
-      nb = int(xlength/dbox + 1.d0)  
-      if(nb.gt.nbp) nb = nbp
-      boxl(i) = dmax1(xlength/dfloat(nb),dbox)
-      nboxes(i) = nb
-      nb2(i) = nboxes(i) + 2
-    end do
-    call comparegrad(n,x)
-    stop
-  end if
-
   ! Reseting mass centers to be within the regions
 
   write(*,*) ' Reseting center of mass... '
@@ -399,7 +383,12 @@ subroutine initial(n,x)
   write(*,*) ' Setting initial trial coordinates ... '
   write(*,dash2_line)
 
-  ! Setting random center of mass coordinates, withing size limits
+  if ( chkgrad ) then 
+     write(*,*) ' For checking gradient, will set avoidoverlap to false. '
+     avoidoverlap = .false. 
+  end if
+
+  ! Setting random center of mass coordinates, within size limits
 
   ilubar = 0
   do itype = 1, ntype
@@ -499,6 +488,22 @@ subroutine initial(n,x)
       ilugan = ilugan + 3
     end do
   end do
+
+  ! Compare analytical and finite-difference gradients
+
+  if(chkgrad) then
+    dbox = discale * radmax + 0.01d0 * radmax
+    do i = 1, 3
+      xlength = sizemax(i) - sizemin(i)
+      nb = int(xlength/dbox + 1.d0)  
+      if(nb.gt.nbp) nb = nbp
+      boxl(i) = dmax1(xlength/dfloat(nb),dbox)
+      nboxes(i) = nb
+      nb2(i) = nboxes(i) + 2
+    end do
+    call comparegrad(n,x)
+    stop
+  end if
 
   !
   ! Reading restart files of specific molecule types, if available
