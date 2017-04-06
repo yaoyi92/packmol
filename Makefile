@@ -21,7 +21,7 @@ FORTRAN = /usr/bin/gfortran
 #
 # Change the flags of the compilation if you want:
 #
-FLAGS= -O3
+FLAGS= -O3 --fast-math
  
 ###################################################################
 #                                                                 #
