@@ -27,6 +27,7 @@ subroutine movebad(n,x,fx,movebadprint)
   integer :: n, i, j, icart, itype, iatom, imol, ilubar, ilugan, &
              ilubar2, ilugan2, nbad, igood, ibad, nmove
   double precision :: x(n), fx, rnd, frac
+  double precision :: fdist_mol, frest_mol
   logical :: movebadprint, hasbad
 
   if(movebadprint) write(*,*) ' Moving worst molecules ... ' 
@@ -39,7 +40,8 @@ subroutine movebad(n,x,fx,movebadprint)
       do imol = 1, nmols(itype)
         do iatom = 1, natoms(itype)
           icart = icart + 1
-          fatom(icart) = 0.d0
+          fdist_atom(icart) = 0.d0
+          frest_atom(icart) = 0.d0
         end do
       end do
     end if
@@ -67,14 +69,20 @@ subroutine movebad(n,x,fx,movebadprint)
 
       nbad = 0                                             
       do imol = 1, nmols(itype)
-        fmol(imol) = 0.d0
+        fdist_mol = 0.d0
+        frest_mol = 0.d0
         do iatom = 1, natoms(itype)
           icart = icart + 1
-          fmol(imol) = fmol(imol) + fatom(icart)
+          fdist_mol = dmax1(fdist_mol,fdist_atom(icart))
+          frest_mol = dmax1(frest_mol,frest_atom(icart))
         end do
-        if(fmol(imol).gt.precision) then 
+        if(fdist_mol > precision .or. &
+           frest_mol > precision ) then 
           hasbad = .true.
           nbad = nbad + 1
+          fmol(imol) = fdist_mol + frest_mol
+        else
+          fmol(imol) = 0.d0
         end if
       end do
       frac = dfloat(nbad)/dfloat(nmols(itype))

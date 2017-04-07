@@ -37,7 +37,7 @@ module compute_data
   double precision, allocatable :: radius(:), radius_ini(:) ! (ntotat)
   double precision, allocatable :: gxcar(:,:) ! (ntotat,3)
   
-  double precision, allocatable :: fatom(:) ! (ntotat)
+  double precision, allocatable :: fdist_atom(:), frest_atom(:) ! (ntotat)
   double precision, allocatable :: dmax(:) ! (ntype)
   double precision, allocatable :: cmxmin(:), cmymin(:), cmzmin(:) ! (ntype)
   double precision, allocatable :: cmxmax(:), cmymax(:), cmzmax(:) ! (ntype)

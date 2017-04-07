@@ -277,8 +277,10 @@ subroutine setsizes()
            ibtype(ntotat),xcart(ntotat,3),coor(ntotat,3),&
            radius(ntotat),radius_ini(ntotat),&
            gxcar(ntotat,3),&
-           fatom(ntotat),latomnext(ntotat),&
-           fmol(ntotat),radiuswork(ntotat),fixedatom(ntotat))
+           latomnext(ntotat),&
+           fdist_atom(ntotat), frest_atom(ntotat),&
+           fmol(ntotat),radiuswork(ntotat),&
+           fixedatom(ntotat))
   allocate(ityperest(maxrest),restpars(maxrest,9))
   allocate(xmol(nn))
 

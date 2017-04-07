@@ -29,7 +29,6 @@ subroutine computef(n,x,f)
   double precision :: xtemp, ytemp, ztemp
   double precision :: xbar, ybar, zbar
   double precision :: beta, gama, teta
-  double precision :: flast
 
   ! Reset function value
 
@@ -85,7 +84,7 @@ subroutine computef(n,x,f)
         call comprest(icart,fplus)
         f = f + fplus
         frest = dmax1(frest,fplus)
-        if(move) fatom(icart) = fatom(icart) + fplus
+        if(move) frest_atom(icart) = frest_atom(icart) + fplus
 
         ! Putting atoms in their boxes
 
