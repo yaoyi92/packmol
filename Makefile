@@ -1,4 +1,5 @@
 # configure generated Makefile
+# configure generated Makefile
 #
 # Makefile for Packmol: Read the comments if you have some
 #                       problem while compiling.

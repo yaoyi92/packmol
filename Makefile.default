@@ -1,3 +1,4 @@
+# configure generated Makefile
 #
 # Makefile for Packmol: Read the comments if you have some
 #                       problem while compiling.
@@ -20,7 +21,7 @@ FORTRAN = AUTO
 #
 # Change the flags of the compilation if you want:
 #
-FLAGS= -O3 -ffast-math 
+FLAGS= -O3 --fast-math
  
 ###################################################################
 #                                                                 #
@@ -40,6 +41,10 @@ GENCANFLAGS := $(FLAGS)
 ifeq ($(MAKECMDGOALS),devel)
 FLAGS = -Wall -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow
 GENCANFLAGS = -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow 
+endif
+ifeq ($(MAKECMDGOALS),perf)
+FLAGS = -g -pg
+GENCANFLAGS = -g -pg
 endif
 #
 # Files required
@@ -64,6 +69,7 @@ oall = cenmass.o \
        polartocart.o \
        resetboxes.o \
        tobar.o \
+       setijk.o \
        setibox.o \
        restmol.o \
        swaptype.o \
@@ -80,7 +86,6 @@ oall = cenmass.o \
        computef.o \
        computeg.o \
        input.o
-
 #
 # Linking 
 #
@@ -97,6 +102,7 @@ all : $(oall)
 #
 # Compiling with flags for development
 #
+perf : devel
 devel : $(oall)
 	@echo " ------------------------------------------------------ " 
 	@echo " Compiling packmol with $(FORTRAN) " 
@@ -163,6 +169,8 @@ resetboxes.o : resetboxes.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c resetboxes.f90
 tobar.o : tobar.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c tobar.f90
+setijk.o : setijk.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c setijk.f90
 setibox.o : setibox.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c setibox.f90
 restmol.o : restmol.f90 $(modules)   
@@ -185,7 +193,6 @@ computef.o : computef.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c computef.f90
 computeg.o : computeg.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c computeg.f90
-
 #
 # Clean build files
 #
@@ -196,4 +203,3 @@ clean:
 #
 cleanall:  
 	@\rm -f ./packmol ./*.o ./*.mod
-
