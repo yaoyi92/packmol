@@ -1,5 +1,3 @@
-# configure generated Makefile
-# configure generated Makefile
 #
 # Makefile for Packmol: Read the comments if you have some
 #                       problem while compiling.
@@ -16,9 +14,7 @@
 # If you want to compile with some specific fortran compiler, you must 
 # change the line below to the path of your fortran compiler. 
 #
-FORTRAN = /usr/bin/gfortran
-#
-# Change "AUTO" to the fortran command you want. 
+FORTRAN=/usr/bin/gfortran
 #
 # Change the flags of the compilation if you want:
 #
@@ -29,12 +25,6 @@ FLAGS= -O3 --fast-math
 # Generally no modifications are required after this.             #
 #                                                                 #
 ###################################################################
-#
-# Get the default fortran compiler
-#
-ifeq ($(FORTRAN),AUTO)
-FORTRAN = $(FC)
-endif 
 #
 # Flags for compiling development version
 #
