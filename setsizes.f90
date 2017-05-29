@@ -220,6 +220,10 @@ subroutine setsizes()
         write(*,*) ' ERROR: Error reading number of molecules of type ', itype
         stop  
       end if
+      if ( nmols(itype) < 1 ) then
+        write(*,*) ' ERROR: Number of molecules of type ', itype, ' set to less than 1 '
+        stop
+      end if
     end if
 
   end do
