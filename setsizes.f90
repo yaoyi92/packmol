@@ -23,7 +23,7 @@ subroutine setsizes()
   integer :: i, ival, ilast, iline, itype
   integer :: ioerr
   integer :: strlength
-  character(len=200) :: record, word, blank
+  character(len=200) :: record, word, blank, alltospace
 
   ! Instructions on how to run packmol
 
@@ -44,6 +44,11 @@ subroutine setsizes()
   ntype = 0
   do
     read(5,"(a200)",iostat=ioerr) record
+
+    ! Replace any strange blank character by spaces
+
+    record = alltospace(record)
+
     if ( ioerr /= 0 ) exit
 
     ! Remove comments
@@ -91,6 +96,10 @@ subroutine setsizes()
   do
     read(5,"(a200)",iostat=ioerr) record
     if ( ioerr /= 0 ) exit
+
+    ! Convert all strange blank characters to spaces
+
+    record = alltospace(record)
 
     ! Remove comments
 

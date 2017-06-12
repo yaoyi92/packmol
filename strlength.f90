@@ -41,4 +41,25 @@ function empty_char(ch)
     empty_char = .true.
   end if
 end function empty_char
+
+!
+! Function that replaces all non-space empty characters by spaces
+!
  
+function alltospace(record)
+
+  implicit none
+  integer :: i
+  logical :: empty_char
+  character(len=200) :: alltospace, record
+
+  do i = 1, 200
+    if ( empty_char(record(i:i)) ) then
+      alltospace(i:i) = " "
+    else
+      alltospace(i:i) = record(i:i)
+    end if
+  end do
+
+end function alltospace
+
