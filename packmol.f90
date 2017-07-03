@@ -390,7 +390,14 @@ program packmol
             iiatom = -1
             do iat = 2, maxkeywords
               read(keyword(iline,iat),*,iostat=ioerr) iiatom
-              if ( ioerr /= 0 ) exit
+              if ( ioerr /= 0 ) then
+                if ( iiatom == -1 ) then 
+                  write(*,*) ' ERROR: Could not read atom selection for type: ', itype
+                  stop
+                else
+                  exit
+                end if
+              end if
               if ( iiatom > natoms(itype) ) then
                 write(*,*) ' ERROR: atom selection with index greater than number of '
                 write(*,*) '        atoms in structure ', itype
