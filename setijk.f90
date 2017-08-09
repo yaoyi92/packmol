@@ -3,11 +3,6 @@
 !  Copyright (c) 2009-2011, Leandro Martínez, Jose Mario Martinez,
 !  Ernesto G. Birgin.
 !  
-!  This program is free software; you can redistribute it and/or
-!  modify it under the terms of the GNU General Public License
-!  as published by the Free Software Foundation; either version 2
-!  of the License, or (at your option) any later version.
-!  
 ! Subroutines that set the indexes of a three-dimensional array
 ! given the undimensional counter of the vector (for an array
 ! with dimensions (0:nboxes(1)+1,0:nboxes(2)+1,0:nboxes(3)+1), and
