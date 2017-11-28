@@ -588,10 +588,6 @@ program packmol
         write(*,*) ' Current point written to file: ', trim(adjustl(xyzout))
       end if
       call writesuccess(itype,fdist,frest,fx)
-      if ( itype == ntype + 1 ) then
-        write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
-        stop 
-      end if
 
     ! Otherwise, pack the molecules
     
@@ -629,7 +625,7 @@ program packmol
         if(loop.eq.nloop.and.itype.eq.ntype+1) then
           write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
           call checkpoint(n,xprint)
-          stop
+          exit main
         end if
 
         write(*,dash3_line)
@@ -708,9 +704,7 @@ program packmol
             call output(n,x)
             write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
             call writesuccess(itype,fdist,frest,fx)
-            write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
-            write(*,*)
-            stop 
+            exit main
           end if
 
         end if
@@ -759,6 +753,9 @@ program packmol
     end if
 
   end do main
+
+  write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
+  write(*,*) 
 
 end program packmol
 
