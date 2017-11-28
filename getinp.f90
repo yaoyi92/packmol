@@ -47,6 +47,7 @@ subroutine getinp()
   sidemax = 1000.d0
   ioerr = 0
   avoidoverlap = .true.
+  packall = .false.
   do i = 1, nlines
     if(keyword(i,1).eq.'seed') then
       read(keyword(i,2),*,iostat=ioerr) seed
@@ -106,6 +107,9 @@ subroutine getinp()
         avoidoverlap = .false.
         write(*,*) ' Will NOT avoid overlap to fixed molecules at initial point. '
       end if
+    else if(keyword(i,1).eq.'packall') then
+      packall = .true.
+      write(*,*) ' Will pack all molecule types from the beginning. '
     else if(keyword(i,1).eq.'add_box_sides') then
       add_box_sides = .true.
       write(*,*) ' Will print BOX SIDE informations. '

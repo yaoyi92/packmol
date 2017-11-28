@@ -51,6 +51,7 @@ module input
   logical :: add_box_sides
   logical :: fix
   logical :: avoidoverlap
+  logical :: packall
 
   logical, allocatable :: changechains(:) ! (ntype)
   logical, allocatable :: fixedoninput(:) ! (ntype)

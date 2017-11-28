@@ -545,6 +545,7 @@ program packmol
   itype = 0
   main : do while(itype <= ntype)
     itype = itype + 1
+    if ( packall ) itype = ntype + 1
  
     ! Use larger tolerance than required to improve separation
 
