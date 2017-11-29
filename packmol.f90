@@ -699,12 +699,14 @@ program packmol
         else
 
           call computef(n,x,fx)
+          all_type_fx = fx
           if ( fx < bestf ) bestf = fx
           ! If solution was found for all system
           if ( fdist < precision .and. frest < precision ) then
             call output(n,x)
-            write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
             call writesuccess(itype,fdist,frest,fx)
+            write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
+            write(*,dash3_line)
             exit main
           end if
 
@@ -756,6 +758,7 @@ program packmol
   end do main
 
   write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
+  write(*,dash3_line)
   write(*,*) 
 
 end program packmol
