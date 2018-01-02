@@ -267,7 +267,7 @@ program packmol
 
   ! Setting the array that contains the restrictions per atom
 
-  icart = natfix
+  icart = 0
   do itype = 1, ntype
     rests = .false.
     do imol = 1, nmols(itype)
@@ -411,7 +411,7 @@ program packmol
   ! but not atom-specific, first
 
   icart = 0
-  do itype = 1, ntype
+  do itype = 1, ntfix
     iline = linestrut(itype,1)
     iline_atoms = 0 
     do while( iline <= linestrut(itype,2) )
@@ -451,7 +451,7 @@ program packmol
   ! the general radius defined for the molecule
 
   icart = 0
-  do itype = 1, ntype
+  do itype = 1, ntfix
     iline = linestrut(itype,1)
     iline_atoms = 0 
     do while( iline <= linestrut(itype,2) )

@@ -98,7 +98,7 @@ subroutine output(n,x)
     write(30,*) title 
     ilubar = 0 
     ilugan = ntotmol*3 
-    icart = natfix
+    icart = 0
     i_not_fixed = 0
     i_fixed = ntype
     do itype = 1, ntfix
@@ -373,7 +373,7 @@ subroutine output(n,x)
       
     ilubar = 0 
     ilugan = ntotmol*3 
-    icart = natfix
+    icart = 0
     i_ref_atom = 0
     iimol = 0
     ichain = 0
@@ -633,7 +633,7 @@ subroutine output(n,x)
 
     ilubar = 0 
     ilugan = ntotmol*3 
-    icart = natfix
+    icart = 0
     i_ref_atom = 0
     i_not_fixed = 0
     i_fixed = ntype
