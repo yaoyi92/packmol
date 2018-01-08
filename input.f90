@@ -14,7 +14,7 @@ module input
   integer :: nlines
   integer :: nrest
   integer :: seed
-  integer :: nloop
+  integer :: nloop, nloop_all
   integer :: writeout
   integer :: ntfix
   integer :: ntcon(9) 
@@ -25,6 +25,7 @@ module input
   integer, allocatable :: resnumbers(:) ! (ntype)
   integer, allocatable :: maxcon(:) ! (ntotat)
   integer, allocatable :: input_itype(:) ! (ntype)
+  integer, allocatable :: nloop_type(:) ! (ntype)
 
   double precision :: dism
   double precision :: precison

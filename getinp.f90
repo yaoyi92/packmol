@@ -18,6 +18,7 @@ subroutine getinp()
              imark, strlength, ioerr
   double precision :: clen
   character(len=200) :: record, blank
+  logical :: inside_structure
 
   ! Clearing the blank character arrays
 
@@ -48,7 +49,15 @@ subroutine getinp()
   ioerr = 0
   avoidoverlap = .true.
   packall = .false.
+
+  inside_structure = .false.
+
   do i = 1, nlines
+
+    if ( keyword(i,1).eq.'structure') inside_structure = .true.
+    if ( keyword(i,1).eq.'end' .and. &
+         keyword(i,2).eq.'structure') inside_structure = .false.
+
     if(keyword(i,1).eq.'seed') then
       read(keyword(i,2),*,iostat=ioerr) seed
       if ( ioerr /= 0 ) exit
@@ -81,9 +90,10 @@ subroutine getinp()
       if ( ioerr /= 0 ) exit
       write(*,*) ' User defined GENCAN number of iterations: ', maxit
     else if(keyword(i,1).eq.'nloop') then
-      read(keyword(i,2),*,iostat=ioerr) nloop
-      if ( ioerr /= 0 ) exit
-      write(*,*) ' User defined numer of GENCAN loops: ', nloop
+      if( .not. inside_structure ) then
+        read(keyword(i,2),*,iostat=ioerr) nloop
+        if ( ioerr /= 0 ) exit
+      end if
     else if(keyword(i,1).eq.'discale') then
       read(keyword(i,2),*,iostat=ioerr) discale
       if ( ioerr /= 0 ) exit
@@ -409,7 +419,20 @@ subroutine getinp()
     write(*,*) ' Structure ', itype, ':',record(1:strlength(record)),&
                '(',natoms(itype),' atoms)'
   end do
-  if(nloop.eq.0) nloop = 200*ntype
+
+  if(nloop.eq.0) then
+    nloop_all = 200*ntype
+  else
+    nloop_all = nloop
+  end if
+  write(*,*) ' Maximum number of GENCAN loops for all molecule packing: ', nloop_all
+  do itype = 1, ntype
+    if ( nloop_type(itype) == 0 ) then
+      nloop_type(itype) = nloop_all
+    else
+      write(*,*) ' Maximum number of GENCAN loops for type: ', itype, ': ', nloop_type(itype)
+    end if
+  end do
       
   ! Reading the restrictions that were set
 
