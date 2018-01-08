@@ -18,7 +18,7 @@ subroutine initial(n,x)
   implicit none
   integer :: n, i, j, k, idatom, iatom, ilubar, ilugan, icart, itype, &
              imol, ntry, nb, iboxx, iboxy, iboxz, ifatom, &
-             idfatom, iftype, jatom, ioerr
+             idfatom, iftype, jatom, ioerr, nloop_rest
 
   double precision :: x(n), cmx, cmy, beta, gamma, theta, &
                       cmz, fx, xlength, dbox, rnd, &
@@ -182,6 +182,10 @@ subroutine initial(n,x)
     radmax = dmax1(radmax,2.d0*radius(i))
   end do
 
+  ! The minimum number of loops
+
+  nloop_rest = max(5,nloop/10)
+
   ! Performing some steps of optimization for the restrictions only
   
   write(*,hash3_line)
@@ -206,13 +210,13 @@ subroutine initial(n,x)
     i = 0
     hasbad = .true.
     call computef(n,x,fx)
-    do while( frest > precision .and. i.le. (nloop/10-1) .and. hasbad)
+    do while( frest > precision .and. i.le. nloop_rest-1 .and. hasbad)
       i = i + 1 
       write(*,prog1_line)
       call pgencan(n,x,fx)
       call computef(n,x,fx)
       if(frest > precision) then 
-        write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
+        write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop_rest
         movebadprint = .true.
         call movebad(n,x,fx,movebadprint) 
       end if
@@ -232,7 +236,7 @@ subroutine initial(n,x)
       write(*,*) '        at all. '
       write(*,*) '        Please check the spatial constraints and' 
       write(*,*) '        try again.'
-      if ( i .ge. nloop/10-1 ) then
+      if ( i .ge. nloop_rest-1 ) then
       end if
         write(*,*) ' >The maximum number of cycles (',nloop,') was achieved.' 
         write(*,*) '  You may try increasing it with the',' nloop keyword, as in: nloop 1000 '
@@ -562,13 +566,13 @@ subroutine initial(n,x)
     i = 0
     call computef(n,x,fx)
     hasbad = .true.
-    do while( frest > precision .and. i <= (nloop/10-1) .and. hasbad)
+    do while( frest > precision .and. i <= nloop_rest-1 .and. hasbad)
       i = i + 1 
       write(*,prog1_line)
       call pgencan(n,x,fx)
       call computef(n,x,fx)
       if(frest > precision) then
-        write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop/10
+        write(*,"( a,i6,a,i6 )")'  Fixing bad orientations ... ', i,' of ',nloop_rest
         movebadprint = .true.
         call movebad(n,x,fx,movebadprint)
       end if

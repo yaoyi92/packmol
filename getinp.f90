@@ -422,6 +422,7 @@ subroutine getinp()
 
   if(nloop.eq.0) then
     nloop_all = 200*ntype
+    nloop = nloop_all
   else
     nloop_all = nloop
   end if
