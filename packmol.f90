@@ -595,7 +595,7 @@ program packmol
     else 
 
       loop = -1
-      gencanloop : do while(loop.le.nloop)
+      gencanloop : do while(loop.lt.nloop)
         loop = loop + 1
 
         ! Reseting the parameters relative to the improvement of the function
@@ -623,11 +623,6 @@ program packmol
           flast = fx
         end if
 
-        if(loop.eq.nloop.and.itype.eq.ntype+1) then
-          write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
-          call checkpoint(n,xprint)
-          exit main
-        end if
 
         write(*,dash3_line)
         write(*,*) ' Starting GENCAN loop: ', loop
@@ -748,6 +743,16 @@ program packmol
             do i = 1, ntotat
               radius(i) = dmax1(radius_ini(i),0.9d0*radius(i))
             end do
+          end if
+        end if
+
+        if(loop.eq.nloop) then
+          if ( itype .eq. ntype+1 ) then
+            write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
+            call checkpoint(n,xprint)
+            exit main
+          else
+            write(*,*)' Maximum number of GENCAN loops achieved.'
           end if
         end if
 
