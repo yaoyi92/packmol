@@ -168,7 +168,8 @@ subroutine setsizes()
            cmxmin(ntype),cmymin(ntype),cmzmin(ntype),&
            cmxmax(ntype),cmymax(ntype),cmzmax(ntype),&
            comptype(ntype),compsafe(ntype),&
-           restart_from(0:ntype),restart_to(0:ntype),nloop_type(ntype))
+           restart_from(0:ntype),restart_to(0:ntype),&
+           nloop_type(ntype),nloop0_type(ntype))
 
   ! Reading the number of molecules of each type, and the number of atoms
   ! of each molecule type
@@ -182,6 +183,7 @@ subroutine setsizes()
       natoms(itype) = 0
       nmols(itype) = 0
       nloop_type(itype) = 0
+      nloop0_type(itype) = 0
 
       ! Read the number of atoms of this type of molecule
 
@@ -248,6 +250,22 @@ subroutine setsizes()
         end if
         if ( nloop_type(itype) < 1 ) then
           write(*,*) ' ERROR: Number of loops of type ', itype, ' set to less than 1 '
+          stop
+        end if
+      end if
+    end if 
+
+    ! Read the (optional) number of gencan loops for initial setup for this molecule
+
+    if ( keyword(iline,1) == "nloop0" ) then
+      if ( inside_structure ) then
+        read(keyword(iline,2),*,iostat=ioerr) nloop0_type(itype)
+        if ( ioerr /= 0 ) then
+          write(*,*) ' ERROR: Error reading number of loops-0 of type ', itype
+          stop  
+        end if
+        if ( nloop0_type(itype) < 1 ) then
+          write(*,*) ' ERROR: Number of loops-0 of type ', itype, ' set to less than 1 '
           stop
         end if
       end if

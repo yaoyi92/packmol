@@ -15,7 +15,7 @@ subroutine getinp()
 
   implicit none
   integer :: i, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
-             imark, strlength, ioerr
+             imark, strlength, ioerr, nloop0
   double precision :: clen
   character(len=200) :: record, blank
   logical :: inside_structure
@@ -38,6 +38,7 @@ subroutine getinp()
   writeout = 10
   maxit = 20
   nloop = 0
+  nloop0 = 0
   movefrac = 0.05
   movebadrandom = .false.
   precision = 1.d-2
@@ -92,6 +93,11 @@ subroutine getinp()
     else if(keyword(i,1).eq.'nloop') then
       if( .not. inside_structure ) then
         read(keyword(i,2),*,iostat=ioerr) nloop
+        if ( ioerr /= 0 ) exit
+      end if
+    else if(keyword(i,1).eq.'nloop0') then
+      if( .not. inside_structure ) then
+        read(keyword(i,2),*,iostat=ioerr) nloop0
         if ( ioerr /= 0 ) exit
       end if
     else if(keyword(i,1).eq.'discale') then
@@ -166,6 +172,7 @@ subroutine getinp()
              keyword(i,1) /= 'restart_from' .and. &
              keyword(i,1) /= 'restart_to' .and. &
              keyword(i,1) /= 'nloop' .and. &
+             keyword(i,1) /= 'nloop0' .and. &
              keyword(i,1) /= 'writeout' .and. &
              keyword(i,1) /= 'writebad' .and. &
              keyword(i,1) /= 'check' .and. &
@@ -420,6 +427,8 @@ subroutine getinp()
                '(',natoms(itype),' atoms)'
   end do
 
+  ! Setting the vectors for the number of GENCAN loops 
+
   if(nloop.eq.0) then
     nloop_all = 200*ntype
     nloop = nloop_all
@@ -432,6 +441,21 @@ subroutine getinp()
       nloop_type(itype) = nloop_all
     else
       write(*,*) ' Maximum number of GENCAN loops for type: ', itype, ': ', nloop_type(itype)
+    end if
+  end do
+
+  ! nloop0 are the number of loops for the initial phase packing
+      
+  if(nloop0.eq.0) then
+    nloop0 = 20*ntype
+  else
+    write(*,*) ' Maximum number of GENCAN loops-0 for all molecule packing: ', nloop0
+  end if
+  do itype = 1, ntype
+    if ( nloop0_type(itype) == 0 ) then
+      nloop0_type(itype) = nloop0
+    else
+      write(*,*) ' Maximum number of GENCAN loops-0 for type: ', itype, ': ', nloop0_type(itype)
     end if
   end do
       
