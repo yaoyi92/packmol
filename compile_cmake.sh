@@ -7,6 +7,9 @@ export FFLAGS="-g -O2 -Wall"
 #export FFLAGS="-g -O2 -Wall -fbounds-check"
 #export FFLAGS="-g -O0 -Wall -fbounds-check"
 
+# Installation directory
+export target=$(pwd) # this installs packmol under bin/ in the present directory
+
 # Number of parallel processes in build
 export npar=4
 
