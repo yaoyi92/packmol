@@ -48,4 +48,5 @@ add_executable(packmol
        input.f90
 )
 
-
+# Installation directive
+install (TARGETS packmol DESTINATION bin)
