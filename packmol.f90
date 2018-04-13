@@ -48,7 +48,7 @@ program packmol
   integer :: ntmol, n, iftype, icart, imol, iicart, iline_atoms
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
   integer :: loop
-  integer :: resntemp
+  integer :: resntemp, nloop_tmp
   integer :: strlength, ioerr
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
@@ -197,6 +197,7 @@ program packmol
         linesttmp2 = linestrut(itype,2)
         changechains_tmp = changechains(itype)
         chain_tmp = chain(itype)
+        nloop_tmp = nloop_type(itype)
         jtype = itype + 1
         if(.not.fixed(jtype)) then
           name(itype) = name(jtype)
@@ -221,6 +222,8 @@ program packmol
           changechains(jtype) = changechains_tmp
           chain(itype) = chain(jtype)
           chain(jtype) = chain_tmp
+          nloop_type(itype) = nloop_type(jtype)
+          nloop_type(jtype) = nloop_tmp
           if(pdb) then
             pdbfile(itype) = pdbfile(jtype) 
             pdbfile(jtype) = xyzfile
