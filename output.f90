@@ -32,7 +32,8 @@ subroutine output(n,x)
 
   character :: write_chain, even_chain, odd_chain
   character(len=64) :: title
-  character(len=80) :: pdb_atom_line, pdb_hetatm_line, tinker_atom_line
+  character(len=80) :: pdb_atom_line, pdb_hetatm_line, tinker_atom_line, format_line,&
+                       pdb_atom_line_hex, pdb_hetatm_line_hex
   character(len=200) :: record
 
   ! Job title
@@ -347,9 +348,15 @@ subroutine output(n,x)
     pdb_atom_line = "( t1,a5,t7,i5,t12,a10,t22,a1,t23,&
                       &i4,t27,a1,t31,f8.3,t39,f8.3,t47,&
                       &f8.3,t55,a26 )"
+    pdb_atom_line_hex = "( t1,a5,t7,z5,t12,a10,t22,a1,t23,&
+                          &i4,t27,a1,t31,f8.3,t39,f8.3,t47,&
+                          &f8.3,t55,a26 )"
     pdb_hetatm_line = "( t1,a6,t7,i5,t12,a10,t22,a1,&
                         &t23,i4,t27,a1,t31,f8.3,t39,&
                         &f8.3,t47,f8.3,t55,a26 )"
+    pdb_hetatm_line_hex = "( t1,a6,t7,z5,t12,a10,t22,a1,&
+                            &t23,i4,t27,a1,t31,f8.3,t39,&
+                            &f8.3,t47,f8.3,t55,a26 )"
 
     open(30,file=xyzout,status='unknown') 
  
@@ -485,19 +492,23 @@ subroutine output(n,x)
             ! Writing output line
 
             if(record(1:4).eq.'ATOM') then
-              write(30, pdb_atom_line) record(1:5), i_ref_atom,&
-                                       record(12:21), write_chain, iires,&
-                                       record(27:27),&
-                                       (xcart(icart,k), k = 1, 3),&
-                                       record(55:80)
+              format_line = pdb_atom_line
+              if ( i_ref_atom > 99999 ) format_line = pdb_atom_line_hex
+              write(30,format_line) record(1:5), i_ref_atom,&
+                                    record(12:21), write_chain, iires,&
+                                    record(27:27),&
+                                    (xcart(icart,k), k = 1, 3),&
+                                    record(55:80)
             end if
 
             if(record(1:6).eq.'HETATM') then
-               write(30,pdb_hetatm_line) record(1:6), i_ref_atom,&
-                                         record(12:21), write_chain, iires,&
-                                         record(27:27),&
-                                         (xcart(icart,k), k = 1, 3),&
-                                         record(55:80)
+              format_line = pdb_atom_line
+              if ( i_ref_atom > 99999 ) format_line = pdb_atom_line_hex
+              write(30,format_line) record(1:6), i_ref_atom,&
+                                    record(12:21), write_chain, iires,&
+                                    record(27:27),&
+                                    (xcart(icart,k), k = 1, 3),&
+                                    record(55:80)
             end if
           end do
           irescount = irescount + nres
