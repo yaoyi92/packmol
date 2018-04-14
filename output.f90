@@ -502,8 +502,8 @@ subroutine output(n,x)
             end if
 
             if(record(1:6).eq.'HETATM') then
-              format_line = pdb_atom_line
-              if ( i_ref_atom > 99999 ) format_line = pdb_atom_line_hex
+              format_line = pdb_hetatm_line
+              if ( i_ref_atom > 99999 ) format_line = pdb_hetatm_line_hex
               write(30,format_line) record(1:6), i_ref_atom,&
                                     record(12:21), write_chain, iires,&
                                     record(27:27),&
