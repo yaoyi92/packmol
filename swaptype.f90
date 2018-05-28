@@ -3,8 +3,7 @@
 !  Copyright (c) 2009-2011, Leandro Martínez, Jose Mario Martinez,
 !  Ernesto G. Birgin.
 !  
-!  Subroutine that swaps indexes for packing molecules once
-!  at a time
+!  Subroutine that swaps indexes for packing molecules one at a time
 !
 
 subroutine swaptype(n,x,itype,action)
