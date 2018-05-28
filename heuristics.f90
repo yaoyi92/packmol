@@ -3,8 +3,7 @@
 !  Copyright (c) 2009-2011, Leandro Martínez, Jose Mario Martinez,
 !  Ernesto G. Birgin.
 !  
-! subroutine movebad: Move the worst molecules to new
-!            positions
+! subroutine movebad: Move the worse molecules to new positions
 !
 
 subroutine movebad(n,x,fx,movebadprint)
