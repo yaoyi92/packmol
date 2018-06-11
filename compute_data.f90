@@ -28,7 +28,7 @@ module compute_data
   double precision, allocatable :: coor(:,:) ! (ntotat,3)
   double precision, allocatable :: restpars(:,:) ! (maxrest,9)
   double precision, allocatable :: rot_bound(:,:,:) ! (ntype,3,2)
-  double precision, allocatable :: radius(:), radius_ini(:) ! (ntotat)
+  double precision, allocatable :: radius(:), radius_ini(:), fscale(:) ! (ntotat)
   double precision, allocatable :: gxcar(:,:) ! (ntotat,3)
   
   double precision, allocatable :: fdist_atom(:), frest_atom(:) ! (ntotat)

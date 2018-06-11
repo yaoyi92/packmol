@@ -408,6 +408,7 @@ program packmol
 
   do i = 1, ntotat
     radius(i) = dism/2.d0
+    fscale(i) = 1.d0
   end do
 
   ! Setting the radius defined for atoms of each molecule, 
@@ -441,6 +442,20 @@ program packmol
             do iatom = 1, natoms(itype)
               iicart = iicart + 1
               radius(iicart) = rad 
+            end do
+          end do
+        end if
+        if ( keyword(iline,1) == "fscale" ) then
+          read(keyword(iline,2),*,iostat=ioerr) rad
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read fscale value from keyword. '
+            stop
+          end if
+          iicart = icart
+          do imol = 1, nmols(itype)
+            do iatom = 1, natoms(itype)
+              iicart = iicart + 1
+              fscale(iicart) = rad 
             end do
           end do
         end if
@@ -489,6 +504,25 @@ program packmol
             ival = ival + 1
           end do
         end if
+        if ( keyword(iline,1) == "fscale" ) then
+          read(keyword(iline,2),*,iostat=ioerr) rad
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read fscale value from keyword. '
+            stop
+          end if
+          ival = 2
+          do
+            read(keyword(iline_atoms,ival),*,iostat=ioerr) iat
+            if ( ioerr /= 0 ) exit
+            if ( iat > natoms(itype) ) then
+              write(*,*) ' ERROR: atom selection with index greater than number of '
+              write(*,*) '        atoms in structure ', itype
+              stop
+            end if
+            fscale(icart+iat) = rad
+            ival = ival + 1
+          end do
+        end if
       end if
       iline = iline + 1
     end do
@@ -498,6 +532,7 @@ program packmol
       do iatom = 1, natoms(itype)
         icart = icart + 1
         radius(icart) = radius(iicart+iatom)
+        fscale(icart) = fscale(iicart+iatom)
       end do
     end do
   end do

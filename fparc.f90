@@ -54,7 +54,7 @@ double precision function fparc(icart,firstjcart)
     datom = a1 * a1 + a2 * a2 + a3 * a3
     tol = (radius(icart)+radius(jcart))**2
     a1 = dmin1(datom - tol, 0.d0)
-    fparc = fparc + a1*a1
+    fparc = fparc + fscale(icart)*fscale(jcart)*a1*a1
     tol = (radius_ini(icart)+radius_ini(jcart))**2
     fdist = dmax1(tol-datom,fdist)
     if ( move ) then

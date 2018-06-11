@@ -5,6 +5,5 @@ type input_file
   integer :: nlines
   character(len=200), allocatable :: line(:)
   character(len=200), allocatable :: keyword(:,:)
-  
 
 end type input_file

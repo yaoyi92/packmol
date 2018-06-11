@@ -159,6 +159,7 @@ subroutine getinp()
              keyword(i,1) /= 'below' .and. &
              keyword(i,1) /= 'constrain_rotation' .and. &
              keyword(i,1) /= 'radius' .and. &
+             keyword(i,1) /= 'fscale' .and. &
              keyword(i,1) /= 'resnumbers' .and. &
              keyword(i,1) /= 'changechains' .and. &
              keyword(i,1) /= 'chain' .and. &
