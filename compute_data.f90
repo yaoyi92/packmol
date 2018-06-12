@@ -23,6 +23,7 @@ module compute_data
   double precision :: fdist, frest 
   double precision :: sizemin(3), sizemax(3)
   double precision :: boxl(3)
+  double precision :: short_tol_dist, short_tol_scale
 
   double precision, allocatable :: xcart(:,:) ! (ntotat,3)
   double precision, allocatable :: coor(:,:) ! (ntotat,3)
@@ -40,6 +41,7 @@ module compute_data
   logical, allocatable :: comptype(:) ! (ntype)
   logical, allocatable :: fixedatom(:) ! (ntotat)
   logical :: init1, move
+  logical :: use_short_tol
 
   ! For linked lists
   integer, allocatable :: latomnext(:) ! (ntotat)

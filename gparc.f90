@@ -55,7 +55,7 @@ subroutine gparc(icart,firstjcart)
       if(a2.lt.tol) then
         a3 = xcart(icart, 3)-xcart(jcart, 3)
         datom = a2 + a3 * a3 
-        if(datom.lt.tol) then 
+        if(datom < tol) then 
           dtemp = fscale(icart)*fscale(jcart) * 4.d0 * (datom - tol)
           xdiff = dtemp*(xcart(icart,1) - xcart(jcart,1)) 
           gxcar(icart,1)= gxcar(icart,1) + xdiff
@@ -66,6 +66,20 @@ subroutine gparc(icart,firstjcart)
           xdiff = dtemp*(xcart(icart,3) - xcart(jcart,3)) 
           gxcar(icart,3)= gxcar(icart,3) + xdiff
           gxcar(jcart,3)= gxcar(jcart,3) - xdiff 
+        end if
+        if ( use_short_tol ) then
+          if ( datom < short_tol_dist ) then
+            dtemp = fscale(icart)*fscale(jcart) * 4.d0 * short_tol_scale*(datom - short_tol_dist)
+            xdiff = dtemp*(xcart(icart,1) - xcart(jcart,1)) 
+            gxcar(icart,1)= gxcar(icart,1) + xdiff
+            gxcar(jcart,1)= gxcar(jcart,1) - xdiff 
+            xdiff = dtemp*(xcart(icart,2) - xcart(jcart,2)) 
+            gxcar(icart,2)= gxcar(icart,2) + xdiff
+            gxcar(jcart,2)= gxcar(jcart,2) - xdiff 
+            xdiff = dtemp*(xcart(icart,3) - xcart(jcart,3)) 
+            gxcar(icart,3)= gxcar(icart,3) + xdiff
+            gxcar(jcart,3)= gxcar(jcart,3) - xdiff 
+          end if
         end if
       end if
     end if 
