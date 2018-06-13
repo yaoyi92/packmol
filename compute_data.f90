@@ -23,13 +23,13 @@ module compute_data
   double precision :: fdist, frest 
   double precision :: sizemin(3), sizemax(3)
   double precision :: boxl(3)
-  double precision :: short_tol_dist, short_tol_scale
 
   double precision, allocatable :: xcart(:,:) ! (ntotat,3)
   double precision, allocatable :: coor(:,:) ! (ntotat,3)
   double precision, allocatable :: restpars(:,:) ! (maxrest,9)
   double precision, allocatable :: rot_bound(:,:,:) ! (ntype,3,2)
   double precision, allocatable :: radius(:), radius_ini(:), fscale(:) ! (ntotat)
+  double precision, allocatable :: short_radius(:), short_radius_scale(:) ! ntotat
   double precision, allocatable :: gxcar(:,:) ! (ntotat,3)
   
   double precision, allocatable :: fdist_atom(:), frest_atom(:) ! (ntotat)
@@ -40,8 +40,8 @@ module compute_data
   logical, allocatable :: constrain_rot(:,:) ! (ntype,3)
   logical, allocatable :: comptype(:) ! (ntype)
   logical, allocatable :: fixedatom(:) ! (ntotat)
+  logical, allocatable :: use_short_radius(:) ! ntotat
   logical :: init1, move
-  logical :: use_short_tol
 
   ! For linked lists
   integer, allocatable :: latomnext(:) ! (ntotat)

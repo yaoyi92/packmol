@@ -17,7 +17,8 @@ subroutine gparc(icart,firstjcart)
 
   ! LOCAL SCALARS
   integer :: jcart
-  double precision :: a1,a2,a3,datom,dtemp,xdiff,tol
+  double precision :: a1, a2, a3, datom, dtemp, xdiff, tol, &
+                      short_tol, short_tol_scale
 
   jcart = firstjcart
   do while ( jcart .ne. 0 )
@@ -67,9 +68,12 @@ subroutine gparc(icart,firstjcart)
           gxcar(icart,3)= gxcar(icart,3) + xdiff
           gxcar(jcart,3)= gxcar(jcart,3) - xdiff 
         end if
-        if ( use_short_tol ) then
-          if ( datom < short_tol_dist ) then
-            dtemp = fscale(icart)*fscale(jcart) * 4.d0 * short_tol_scale*(datom - short_tol_dist)
+        if ( use_short_radius(icart) .or. use_short_radius(jcart) ) then
+          short_tol = ( short_radius(icart) + short_radius(jcart) )**2
+          if ( datom < short_tol ) then
+            short_tol_scale = dsqrt(short_radius_scale(icart)*short_radius_scale(jcart))
+            short_tol_scale = short_tol_scale*( tol**2 / short_tol**2 )
+            dtemp = fscale(icart)*fscale(jcart) * 4.d0 * short_tol_scale*(datom - short_tol)
             xdiff = dtemp*(xcart(icart,1) - xcart(jcart,1)) 
             gxcar(icart,1)= gxcar(icart,1) + xdiff
             gxcar(jcart,1)= gxcar(jcart,1) - xdiff 

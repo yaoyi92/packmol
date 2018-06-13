@@ -49,7 +49,7 @@ subroutine comparegrad(n,x)
   do i = 1, n
     if(etime(tarray)-time0.gt.10.) then
       time0 = etime(tarray)
-      write(*,*) ' Computing the ',i,'th of ',n,' components. '
+      write(*,*) ' Computing the ',i,'th of ',n,' components. Worst error: ', eworst
     end if
     error = 1.d20
     step = 1.d-2
@@ -67,7 +67,7 @@ subroutine comparegrad(n,x)
       end if
       step = step / 10.d0
     end do
-    write(98,"(i10,4(tr2,d13.7))") i, g(i), gbest, error, stepbest 
+    write(98,"(i10,5(tr2,d13.7))") i, g(i), gbest, error, stepbest
     if(error.gt.eworst) then
       iworst = i
       eworst = error

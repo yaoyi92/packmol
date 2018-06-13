@@ -53,7 +53,7 @@ program packmol
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
-  double precision :: rad, radscale
+  double precision :: radscale, value
   double precision :: cmx, cmy, cmz, beta, gama, teta
   double precision :: xtemp, ytemp, ztemp
   double precision :: fx, bestf, flast, fprint, all_type_fx
@@ -404,11 +404,18 @@ program packmol
     end do
   end do
  
-  ! Setting the vector that contains the default tolerance
+  ! Setting the vector that contains the default tolerances
 
   do i = 1, ntotat
     radius(i) = dism/2.d0
     fscale(i) = 1.d0
+    if ( use_short_tol ) then
+      use_short_radius(i) = .true.
+    else
+      use_short_radius(i) = .false.
+    end if
+    short_radius(i) = short_tol_dist/2.d0
+    short_radius_scale(i) = short_tol_scale
   end do
 
   ! Setting the radius defined for atoms of each molecule, 
@@ -431,8 +438,11 @@ program packmol
         cycle
       end if
       if ( iline_atoms == 0 ) then
+        !
+        ! Read radius
+        !
         if ( keyword(iline,1) == "radius" ) then
-          read(keyword(iline,2),*,iostat=ioerr) rad
+          read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read radius from keyword. '
             stop
@@ -441,12 +451,15 @@ program packmol
           do imol = 1, nmols(itype)
             do iatom = 1, natoms(itype)
               iicart = iicart + 1
-              radius(iicart) = rad 
+              radius(iicart) = value
             end do
           end do
         end if
+        !
+        ! Read minimum-distance function scale
+        !
         if ( keyword(iline,1) == "fscale" ) then
-          read(keyword(iline,2),*,iostat=ioerr) rad
+          read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read fscale value from keyword. '
             stop
@@ -455,7 +468,43 @@ program packmol
           do imol = 1, nmols(itype)
             do iatom = 1, natoms(itype)
               iicart = iicart + 1
-              fscale(iicart) = rad 
+              fscale(iicart) = value
+            end do
+          end do
+        end if
+        !
+        ! Read short_radius
+        !  
+        if ( keyword(iline,1) == "short_radius" ) then
+          read(keyword(iline,2),*,iostat=ioerr) value
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read short_radius value from keyword. '
+            stop
+          end if
+          iicart = icart
+          do imol = 1, nmols(itype)
+            do iatom = 1, natoms(itype)
+              iicart = iicart + 1
+              short_radius(iicart) = value
+              use_short_radius(iicart) = .true.
+            end do
+          end do
+        end if
+        !
+        ! Read short_radius scale
+        !  
+        if ( keyword(iline,1) == "short_radius_scale" ) then
+          read(keyword(iline,2),*,iostat=ioerr) value
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read short_radius_scale value from keyword. '
+            stop
+          end if
+          iicart = icart
+          do imol = 1, nmols(itype)
+            do iatom = 1, natoms(itype)
+              iicart = iicart + 1
+              short_radius_scale(iicart) = value
+              use_short_radius(iicart) = .true.
             end do
           end do
         end if
@@ -464,7 +513,7 @@ program packmol
     end do
     icart = icart + nmols(itype)*natoms(itype)
   end do
- 
+
   ! If some radius was defined using atom-specific definitions, overwrite
   ! the general radius defined for the molecule
 
@@ -485,8 +534,11 @@ program packmol
         cycle
       end if
       if ( iline_atoms /= 0 ) then
+        !
+        ! Read atom specific radius
+        !
         if ( keyword(iline,1) == "radius" ) then
-          read(keyword(iline,2),*,iostat=ioerr) rad
+          read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read radius from keyword. '
             stop
@@ -500,12 +552,15 @@ program packmol
               write(*,*) '        atoms in structure ', itype
               stop
             end if
-            radius(icart+iat) = rad
+            radius(icart+iat) = value
             ival = ival + 1
           end do
         end if
+        !
+        ! Read atom specific function scale
+        !
         if ( keyword(iline,1) == "fscale" ) then
-          read(keyword(iline,2),*,iostat=ioerr) rad
+          read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read fscale value from keyword. '
             stop
@@ -519,7 +574,53 @@ program packmol
               write(*,*) '        atoms in structure ', itype
               stop
             end if
-            fscale(icart+iat) = rad
+            fscale(icart+iat) = value
+            ival = ival + 1
+          end do
+        end if
+        !
+        ! Read atom specific short radius
+        !
+        if ( keyword(iline,1) == "short_radius" ) then
+          read(keyword(iline,2),*,iostat=ioerr) value
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read short_radius value from keyword. '
+            stop
+          end if
+          ival = 2
+          do
+            read(keyword(iline_atoms,ival),*,iostat=ioerr) iat
+            if ( ioerr /= 0 ) exit
+            if ( iat > natoms(itype) ) then
+              write(*,*) ' ERROR: atom selection with index greater than number of '
+              write(*,*) '        atoms in structure ', itype
+              stop
+            end if
+            short_radius(icart+iat) = value
+            use_short_radius(icart+iat) = .true.
+            ival = ival + 1
+          end do
+        end if
+        !
+        ! Read atom specific short radius function scale
+        !
+        if ( keyword(iline,1) == "short_radius_scale" ) then
+          read(keyword(iline,2),*,iostat=ioerr) value
+          if ( ioerr /= 0 ) then
+            write(*,*) ' ERROR: Could not read short_radius_scale value from keyword. '
+            stop
+          end if
+          ival = 2
+          do
+            read(keyword(iline_atoms,ival),*,iostat=ioerr) iat
+            if ( ioerr /= 0 ) exit
+            if ( iat > natoms(itype) ) then
+              write(*,*) ' ERROR: atom selection with index greater than number of '
+              write(*,*) '        atoms in structure ', itype
+              stop
+            end if
+            short_radius_scale(icart+iat) = value
+            use_short_radius(icart+iat) = .true.
             ival = ival + 1
           end do
         end if
@@ -533,8 +634,24 @@ program packmol
         icart = icart + 1
         radius(icart) = radius(iicart+iatom)
         fscale(icart) = fscale(iicart+iatom)
+        short_radius(icart) = short_radius(iicart+iatom)
+        short_radius_scale(icart) = short_radius_scale(iicart+iatom)
+        use_short_radius(icart) = use_short_radius(iicart+iatom)
       end do
     end do
+  end do
+
+  ! Check if the short radii were set correctly, if the case
+
+  ioerr = 0
+  do i = 1, ntotat
+    if ( use_short_radius(i) ) then
+     if ( short_radius(i) >= radius(i) ) then 
+       write(*,*) ' ERROR: The short radius must be smaller than the default radius. '
+       write(*,*) '        (the default radius is one half of the default tolerance).'
+       stop
+     end if
+   end if
   end do
 
   ! If there are no variables (only fixed molecules, stop)

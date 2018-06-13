@@ -9,8 +9,7 @@
 subroutine getinp()
 
   use sizes
-  use compute_data, only : ntype, natoms, idfirst, nmols, ityperest, coor, restpars, &
-                           short_tol_dist, short_tol_scale, use_short_tol
+  use compute_data, only : ntype, natoms, idfirst, nmols, ityperest, coor, restpars
   use input
   use usegencan
 
@@ -163,6 +162,8 @@ subroutine getinp()
              keyword(i,1) /= 'constrain_rotation' .and. &
              keyword(i,1) /= 'radius' .and. &
              keyword(i,1) /= 'fscale' .and. &
+             keyword(i,1) /= 'short_radius' .and. &
+             keyword(i,1) /= 'short_radius_scale' .and. &
              keyword(i,1) /= 'resnumbers' .and. &
              keyword(i,1) /= 'changechains' .and. &
              keyword(i,1) /= 'chain' .and. &
@@ -656,9 +657,14 @@ subroutine getinp()
 
   ioerr = 1
   use_short_tol = .false.
-  short_tol_dist = 1.d0
+  short_tol_dist = dism/2.d0
   short_tol_scale = 3.d0
   do iline = 1, nlines
+    ! Reading use/not short_tol
+    if ( keyword(iline,1).eq.'use_short_tol') then
+      use_short_tol = .true.
+    end if
+    ! Reading short_tol_dist
     if(keyword(iline,1).eq.'short_tol_dist') then
       read(keyword(iline,2),*,iostat=ioerr) short_tol_dist
       if ( ioerr /= 0 ) then
@@ -669,11 +675,11 @@ subroutine getinp()
         write(*,*) ' ERROR: The short_tol_dist parameter must be smaller than the tolerance. '
         stop
       end if
-      use_short_tol = .true.
       write(*,*) ' User defined short tolerance distance: ', short_tol_dist
       short_tol_dist = short_tol_dist**2
       exit
     end if
+    ! Reading short_tol_scale
     if(keyword(iline,1).eq.'short_tol_scale') then
       read(keyword(iline,2),*,iostat=ioerr) short_tol_scale
       if ( ioerr /= 0 ) then
@@ -684,12 +690,10 @@ subroutine getinp()
         write(*,*) ' ERROR: The short_tol_scale parameter must be positive. '
         stop
       end if
-      use_short_tol = .true.
       write(*,*) ' User defined short tolerance scale: ', short_tol_scale
       exit
     end if
   end do
-  short_tol_scale = short_tol_scale*(dism**4/short_tol_dist**4)
 
   ! Assigning the input lines that correspond to each structure
 

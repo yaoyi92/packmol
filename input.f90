@@ -36,6 +36,8 @@ module input
   double precision :: add_sides_fix    
   double precision :: precision
   double precision :: fbins
+  double precision :: short_tol_dist
+  double precision :: short_tol_scale
 
   double precision, allocatable :: amass(:) ! (ntotat)
   double precision, allocatable :: charge(:) ! (ntotat)
@@ -54,6 +56,7 @@ module input
   logical :: fix
   logical :: avoidoverlap
   logical :: packall
+  logical :: use_short_tol
 
   logical, allocatable :: changechains(:) ! (ntype)
   logical, allocatable :: fixedoninput(:) ! (ntype)

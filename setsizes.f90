@@ -325,6 +325,7 @@ subroutine setsizes()
   allocate(nratom(ntotat),iratom(ntotat,mrperatom),ibmol(ntotat),&
            ibtype(ntotat),xcart(ntotat,3),coor(ntotat,3),&
            radius(ntotat),radius_ini(ntotat),fscale(ntotat),&
+           use_short_radius(ntotat), short_radius(ntotat), short_radius_scale(ntotat),&
            gxcar(ntotat,3),&
            latomnext(ntotat),&
            fdist_atom(ntotat), frest_atom(ntotat),&
