@@ -50,6 +50,7 @@ subroutine getinp()
   ioerr = 0
   avoidoverlap = .true.
   packall = .false.
+  use_short_tol = .false.
 
   inside_structure = .false.
 
@@ -126,6 +127,9 @@ subroutine getinp()
     else if(keyword(i,1).eq.'packall') then
       packall = .true.
       write(*,*) ' Will pack all molecule types from the beginning. '
+    else if(keyword(i,1).eq.'use_short_tol') then
+      use_short_tol = .true.
+      write(*,*) ' Will use a short distance penalty for all atoms. '
     else if(keyword(i,1).eq.'add_box_sides') then
       add_box_sides = .true.
       write(*,*) ' Will print BOX SIDE informations. '
@@ -656,14 +660,9 @@ subroutine getinp()
   ! Reading, if defined, the short distance penalty parameters
 
   ioerr = 1
-  use_short_tol = .false.
   short_tol_dist = dism/2.d0
   short_tol_scale = 3.d0
   do iline = 1, nlines
-    ! Reading use/not short_tol
-    if ( keyword(iline,1).eq.'use_short_tol') then
-      use_short_tol = .true.
-    end if
     ! Reading short_tol_dist
     if(keyword(iline,1).eq.'short_tol_dist') then
       read(keyword(iline,2),*,iostat=ioerr) short_tol_dist
