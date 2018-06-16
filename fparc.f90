@@ -18,7 +18,7 @@ double precision function fparc(icart,firstjcart)
 
   ! LOCAL SCALARS
   integer :: jcart
-  double precision :: a1, a2, a3, datom, tol, short_tol, short_tol_penalty, short_tol_scale
+  double precision :: datom, tol, short_tol, short_tol_penalty, short_tol_scale
 
   fparc = 0.0d0
   jcart = firstjcart
@@ -48,19 +48,21 @@ double precision function fparc(icart,firstjcart)
     !
     ! Otherwise, compute distance and evaluate function for this pair
     !
-    a1 = xcart(icart, 1)-xcart(jcart, 1) 
-    a2 = xcart(icart, 2)-xcart(jcart, 2) 
-    a3 = xcart(icart, 3)-xcart(jcart, 3) 
-    datom = a1 * a1 + a2 * a2 + a3 * a3
+    datom = ( xcart(icart,1)-xcart(jcart,1) )**2 + &
+            ( xcart(icart,2)-xcart(jcart,2) )**2 + &
+            ( xcart(icart,3)-xcart(jcart,3) )**2
     tol = (radius(icart)+radius(jcart))**2
-    a1 = dmin1(datom - tol, 0.d0)
-    fparc = fparc + fscale(icart)*fscale(jcart)*a1*a1
-    if ( use_short_radius(icart) .or. use_short_radius(jcart) ) then
-      short_tol = (short_radius(icart)+short_radius(jcart))**2
-      short_tol_penalty = dmin1( datom - short_tol, 0.d0 ) 
-      short_tol_scale = dsqrt(short_radius_scale(icart)*short_radius_scale(jcart))
-      short_tol_scale = short_tol_scale*(tol**2/short_tol**2)
-      fparc = fparc + fscale(icart)*fscale(jcart)*short_tol_scale*short_tol_penalty**2
+    if ( datom < tol ) then
+      fparc = fparc + fscale(icart)*fscale(jcart)*(datom-tol)**2
+      if ( use_short_radius(icart) .or. use_short_radius(jcart) ) then
+        short_tol = (short_radius(icart)+short_radius(jcart))**2
+        if ( datom < short_tol ) then
+          short_tol_penalty = datom-short_tol 
+          short_tol_scale = dsqrt(short_radius_scale(icart)*short_radius_scale(jcart))
+          short_tol_scale = short_tol_scale*(tol**2/short_tol**2)
+          fparc = fparc + fscale(icart)*fscale(jcart)*short_tol_scale*short_tol_penalty**2
+        end if
+      end if
     end if
     tol = (radius_ini(icart)+radius_ini(jcart))**2
     fdist = dmax1(tol-datom,fdist)
