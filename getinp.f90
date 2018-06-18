@@ -661,9 +661,8 @@ subroutine getinp()
 
   ioerr = 1
   short_tol_dist = dism/2.d0
-  short_tol_scale = 3.d0
+  ! Reading short_tol_dist
   do iline = 1, nlines
-    ! Reading short_tol_dist
     if(keyword(iline,1).eq.'short_tol_dist') then
       read(keyword(iline,2),*,iostat=ioerr) short_tol_dist
       if ( ioerr /= 0 ) then
@@ -678,7 +677,10 @@ subroutine getinp()
       short_tol_dist = short_tol_dist**2
       exit
     end if
-    ! Reading short_tol_scale
+  end do
+  ! Reading short_tol_scale
+  short_tol_scale = 3.d0
+  do iline = 1, nlines
     if(keyword(iline,1).eq.'short_tol_scale') then
       read(keyword(iline,2),*,iostat=ioerr) short_tol_scale
       if ( ioerr /= 0 ) then
