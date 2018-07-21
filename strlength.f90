@@ -1,6 +1,6 @@
 !  
 !  Written by Leandro Martínez, 2009-2011.
-!  Copyright (c) 2009-2011, Leandro Martínez, Jose Mario Martinez,
+!  Copyright (c) 2009-2018, Leandro Martínez, Jose Mario Martinez,
 !  Ernesto G. Birgin.
 !  
 ! Function that determines the length of a string (better than 

@@ -1,6 +1,6 @@
 !  
 !  Written by Ernesto G. Birgin, 2009-2011.
-!  Copyright (c) 2009-2011, Jose Mario Martinez,
+!  Copyright (c) 2009-2018, Jose Mario Martinez,
 !  Ernesto G. Birgin.
 !  
 ! Subroutine pgencan: This is only a interface to set some
