@@ -101,7 +101,7 @@ Once you have compiled and built your input file, run Packmol  with
 packmol < packmol.inp
 </pre>
 <br>
-Were packmol.inp is the input file (you can obtain example files by
+Where <code>packmol.inp</code> is the input file (you can obtain example files by
 clicking at the 'Input examples' link on the left). <br><br> 
 A successful packing will end with something like
 <br>
