@@ -39,12 +39,12 @@ of water and ions, you will need a coordinate file for <i>one</i>  water
 molecule, and independent coordinates files for each of the ions. This
 coordinate files may be in the PDB, TINKER, MOLDEN or MOLDY format.
 <br><br>
-Of course, you also need the <tt>Packmol</tt> package, which you can get from
-<pre><tt>  http://www.ime.unicamp.br/~martinez/packmol
-</tt></pre>
+Of course, you also need the <code>Packmol</code> package, which you can get from
+<pre><code>  http://www.ime.unicamp.br/~martinez/packmol
+</code></pre>
 or by clicking on the <a target="contents" href="https://github.com/leandromartinez98/packmol/releases/latest">
 [Latest Release]</a> link. By following this link you will download the file
-<tt>packmol.tar.gz</tt> which contains the whole source code of
+<code>packmol.tar.gz</code> which contains the whole source code of
 Packmol. 
 <br><br>
 
@@ -54,12 +54,12 @@ Packmol.
 <a name="comp"></a><b>How to compile Packmol </b>
 <br><br>
 
-Once you have downloaded the <tt>packmol.tar.gz</tt> file from the home-page,
+Once you have downloaded the <code>packmol.tar.gz</code> file from the home-page,
 you need to expand the files and compile the package. This is done by:
 <br><br>
 Expanding the files:
 <pre>tar -xvzf packmol.tar.gz</pre>
-This will create a directory called <tt>packmol</tt> inside which you can find
+This will create a directory called <code>packmol</code> inside which you can find
 the source code. You can build the executable by:
 <pre>
   cd packmol
@@ -73,18 +73,18 @@ built.
 <br><br>
 If you have problems, let the configure script find a suitable
 compiler for you:<br><br>
-<tt>chmod +x ./configure </tt>  (this makes the script executable)
+<code>chmod +x ./configure </code>  (this makes the script executable)
 <br><br>
-<tt>./configure </tt> (this executes the script)
+<code>./configure </code> (this executes the script)
 <br><br>
 If the script was not able to find a suitable compiler, then
 you can manually set the compiler by:
 <br><br>
-<tt>./configure /path/to/your/compiler/yourcompiler</tt>
+<code>./configure /path/to/your/compiler/yourcompiler</code>
 <br><br>
 Then, run the "make" command again:
 <br><br>
-<tt>make</tt>
+<code>make</code>
 <br><br>
 If no error was
 detected, an executable called packmol is now ready.
@@ -101,7 +101,7 @@ Once you have compiled and built your input file, run Packmol  with
 packmol < packmol.inp
 </pre>
 <br>
-Were packmol.inp is the input file (you can obtain example files by
+Where <code>packmol.inp</code> is the input file (you can obtain example files by
 clicking at the 'Input examples' link on the left). <br><br> 
 A successful packing will end with something like
 <br>
@@ -153,20 +153,20 @@ The minimal input file must contain the distance tolerance required (for
 systems at room temperature and pressure and coordinates in Angstroms,
 2.0 Å is a good value. This is specified with
 <br><br>
-<tt>tolerance 2.0</tt>
+<code>tolerance 2.0</code>
 <br><br>
 The file must contain also the name of the output file to be created,
 specified with
 <br><br>
-<tt>output test.pdb</tt>
+<code>output test.pdb</code>
 <br><br>
 and the file type (pdb, tinker, xyz or moldy, pdb is the default value),
 <br><br>
-<tt>filetype pdb</tt>
+<code>filetype pdb</code>
 <br><br>
 At least one type of molecule must be present. This is set by the
-<tt>structure ... end structure</tt> section, for example, if
-<tt>water.pdb</tt> is the
+<code>structure ... end structure</code> section, for example, if
+<code>water.pdb</code> is the
 file containing the coordinates of a single water molecule, you could
 add to your input file something like
 <br>
@@ -177,7 +177,7 @@ structure water.pdb
 end structure
 </pre>
 <br>
-This section specifies that 2000 molecules of the <tt>water.pdb</tt> type, will
+This section specifies that 2000 molecules of the <code>water.pdb</code> type, will
 be placed inside a cube with minimum coordinates
 (<i>x</i>,<i>y</i>,<i>z</i>) = (0,0,0) and
 maximum coordinates (40,40,40). Therefore, this minimum input file must
@@ -205,8 +205,8 @@ randomly distributed inside de cube.
 <br><br>
 
 You can add more types of molecules to the same region, or to different
-regions of the space, simply adding other <tt>structure ... end
-structure</tt>
+regions of the space, simply adding other <code>structure ... end
+structure</code>
 section to the input file.
 <br><br>
 <!-- END SECTION -->
@@ -251,14 +251,14 @@ ordered systems can be built in such a way. The constraints  are:
 <!-- START CONSTRAINT -->
 <tr>
 <td valign="bottom" align="right" width="20" height="30"> 1. </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 fixed
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
 <td>
-Usage: <tt>fixed </tt><i>x   y   z  a   b   g</i><br><br>
+Usage: <code>fixed </code><i>x   y   z  a   b   g</i><br><br>
 This options holds the molecule
 fixed in the position specified by the parameters. <i>x, y, z, a, b,
 g,</i>
@@ -266,7 +266,7 @@ which are six real numbers. The first three determine the translation of
 the molecule relative to its position in the coordinate file. The former
 three parameters are rotation angles (in radians). For this option it is
 required that only one molecule is set. It may be accompanied by the
-keyword <tt>center</tt>. If this keyword is present the first three numbers
+keyword <code>center</code>. If this keyword is present the first three numbers
 are the position of the baricenter (not really the center of mass,
 because we suppose that all atoms have the same mass). Therefore this
 keyword must be used in the following context:
@@ -291,14 +291,14 @@ the origin and no rotation.
 <td valign="bottom" align="right" width="20" height="30"> 
 2. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 inside cube
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
 <td>
-Usage: <tt>inside cube </tt><i>x<sub>min</sub>&nbsp; y<sub>min</sub>&nbsp; z<sub>min</sub>&nbsp;    d</i><br><br>
+Usage: <code>inside cube </code><i>x<sub>min</sub>&nbsp; y<sub>min</sub>&nbsp; z<sub>min</sub>&nbsp;    d</i><br><br>
 
 <i>x<sub>min</sub> ,  y<sub>min</sub> ,  z<sub>min</sub></i> and <i>d</i>
 are four real numbers. The coordinates (<i>x</i>,<i>y</i>,<i>z</i>) of the atoms restrained
@@ -319,14 +319,14 @@ by this option will satisfy, at the solution:
 <td valign="bottom" align="right" width="20" height="30"> 
 3. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 outside cube
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
 <td>
-Usage: <tt>outside cube </tt><i>x<sub>min</sub>&nbsp; y<sub>min</sub>&nbsp; z<sub>min</sub>&nbsp;    d</i><br><br>
+Usage: <code>outside cube </code><i>x<sub>min</sub>&nbsp; y<sub>min</sub>&nbsp; z<sub>min</sub>&nbsp;    d</i><br><br>
 
 <i>x<sub>min</sub> ,  y<sub>min</sub> ,  z<sub>min</sub></i> and <i>d</i>
 are four real numbers. The coordinates (<i>x</i>,<i>y</i>,<i>z</i>) of the atoms restrained
@@ -347,14 +347,14 @@ by this option will satisfy, at the solution:
 <td valign="bottom" align="right" width="20" height="30"> 
 4. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 inside box
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
 <td>
-Usage: <tt>inside box</tt>&nbsp; 
+Usage: <code>inside box</code>&nbsp; 
 <i>x<sub>min</sub>&nbsp;
 y<sub>min</sub>&nbsp;
 z<sub>min</sub>&nbsp;
@@ -388,14 +388,14 @@ solution:
 <td valign="bottom" align="right" width="20" height="30"> 
 5. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 outside box
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
 <td>
-Usage: <tt>outside box</tt>&nbsp; 
+Usage: <code>outside box</code>&nbsp; 
 <i>x<sub>min</sub>&nbsp;
 y<sub>min</sub>&nbsp;
 z<sub>min</sub>&nbsp;
@@ -427,9 +427,9 @@ solution:
 <td valign="bottom" align="right" width="20" height="30"> 
 6. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 inside (or outside) sphere
-</tt></td>
+</code></td>
 </tr>
 <tr><td></td>
 <td>
@@ -441,19 +441,19 @@ Spheres are defined by equations of the general form <br><br>
 and, therefore, you must provide four real parameters <i>a</i>,
 <i>b</i>, <i>c</i> and <i>d</i>  in
 order to define it. The input syntax is, for example,
-<br><br><tt>
+<br><br><code>
 inside sphere 2.30 3.40 4.50 8.0
-</tt><br><br>
+</code><br><br>
 and therefore the coordinates of the atoms will satisfy the equation
 <br><br>
 <center>
 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img36.png>
 </center><br>  
 Other input alternative would be:
-<br><br><tt>
+<br><br><code>
 outside sphere 2.30 3.40 4.50 8.0
-</tt><br><br>
-The <tt>outside</tt> parameter is similar to the <tt>inside</tt> parameter, but the
+</code><br><br>
+The <code>outside</code> parameter is similar to the <code>inside</code> parameter, but the
 equation above uses <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img37.png>  instead of  <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img38.png> 
 and, therefore, the
 atoms will be placed outside the defined sphere.
@@ -466,9 +466,9 @@ atoms will be placed outside the defined sphere.
 <td valign="bottom" align="right" width="20" height="30"> 
 7. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 inside (or outside) ellipsoid 
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
@@ -481,8 +481,8 @@ Ellipsoids are defined by the general equation
 <br>
 The parameters must be given as in the sphere example, but now they are
 7, and must be entered in the following order:
-<br><br><tt>
-inside ellipsoid</tt> <i>&nbsp;
+<br><br><code>
+inside ellipsoid</code> <i>&nbsp;
 a<sub>1</sub>&nbsp;  
 b<sub>1</sub>&nbsp;  
 c<sub>1</sub>&nbsp;  
@@ -498,8 +498,8 @@ coordinates
 (<i>a<sub>2</sub></i>,<i>b<sub>2</sub></i>,<i>c<sub>2</sub></i>) 
 will define the relative size of the axes and <i>d</i>
 will define the volume of the ellipsoid. Of course, the commands
-<br><br><tt>
-outside ellipsoid</tt> <i>&nbsp;
+<br><br><code>
+outside ellipsoid</code> <i>&nbsp;
 a<sub>1</sub>&nbsp;  
 b<sub>1</sub>&nbsp;  
 c<sub>1</sub>&nbsp;  
@@ -528,9 +528,9 @@ for a small <i>d</i>.
 <td valign="bottom" align="right" width="20" height="30"> 
 8. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 over (or below) plane 
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
@@ -546,11 +546,11 @@ over plane 2.5 3.2 1.2 6.2
 
 below plane 2.5 3.2 1.2 6.2
 </pre><br>
-where the <tt>over</tt> keyword will make the atoms satisfy the condition
+where the <code>over</code> keyword will make the atoms satisfy the condition
 <br><center>
 2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img37.png> 0
 </center><br><br>
-the <tt>below</tt> keyword will make the atoms satisfy
+the <code>below</code> keyword will make the atoms satisfy
 <br><br><center>
 2.5<i>x</i> + 3.2<i>y</i> + 1.2<i>z</i> - 6.2 <img src=https://github.com/leandromartinez98/packmol/raw/master/docs//imgs/img38.png> 0
 </center><br>
@@ -563,15 +563,15 @@ the <tt>below</tt> keyword will make the atoms satisfy
 <td valign="bottom" align="right" width="20" height="30"> 
 9. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 inside (or outside) cylinder
-</tt></td>
+</code></td>
 </tr>
 <tr><td></td>
 <td>
 
 In order to define a cylinder, it is necessary first to define a
-line oriented in space. This line is defined in <tt>Packmol</tt> by the
+line oriented in space. This line is defined in <code>Packmol</code> by the
 parametric equation
 <br><br><center>
 <i>p</i> = (
@@ -636,9 +636,9 @@ oriented in space in anyway.
 <td valign="bottom" align="right" width="20" height="30"> 
 10. 
 </td>
-<td valign="bottom"><tt>
+<td valign="bottom"><code>
 Constrain rotations
-</tt></td>
+</code></td>
 </tr>
 
 <tr><td></td>
@@ -655,15 +655,15 @@ constrain_rotation z 180. 20.
 <br><br>
 Each of these keywords restricts the possible rotation angles around
 each axis to be within 180&plusmn;20 degrees (or any other value). For a
-technical reason the rotation around the <tt>z</tt> axis will, alone, be
-identical to the rotation around the <tt>y</tt> axis (we hope to fix
+technical reason the rotation around the <code>z</code> axis will, alone, be
+identical to the rotation around the <code>y</code> axis (we hope to fix
 this some day). Constraining the three rotations will constrain
 completely the rotations. Note that to have your molecules oriented
 parallel to an axis, you need to constrain the rotations relative to the
 other two.
 <br><br>
 For example, to constrain the rotation of your molecule along the
-<tt>z</tt> axis, use something like:
+<code>z</code> axis, use something like:
 <br><br><pre>
 constrain_rotation x 0. 20. 
 constrain_rotation y 0. 20. 
@@ -673,7 +673,7 @@ orientation which was provided by the user, in the input PDB file.
 Therefore, it is a good idea to orient the molecule in a reasonable way
 in order to understand the rotations. For example, if the molecule is
 elongated in one direction, a good idea is to provide the molecule with
-the larger dimension oriented along the <tt>z</tt> axis.<br><br>
+the larger dimension oriented along the <code>z</code> axis.<br><br>
 <br><br></td></tr>
 <!-- END CONSTRAINT -->
 </table>
@@ -770,50 +770,50 @@ simulations this is not usually an issue because the radii are small.
 Since Packmol will create one or more copies of your molecules in a
 new PDB file, there are some options on how residue numbers are set to
 these new molecules. There are four options, which are set with the
-<tt>resnumbers</tt> keyword. This keyword may assume three values, 0, 1,
-2 or 3, and may be inserted within the <tt>structure ... end structure</tt>
+<code>resnumbers</code> keyword. This keyword may assume three values, 0, 1,
+2 or 3, and may be inserted within the <code>structure ... end structure</code>
 section of each type of molecule. The options are: <br><br>
-<tt>
+<code>
 resnumbers 0 
-</tt><br><br>
+</code><br><br>
 In this case the residue numbers of all residues will correspond to the
 molecule of each type, independently of the residue
 numbering of the original pdb file. This means that if you pack 10
 water molecules and 10 ethanol molecules, the water molecules will be numbered 
 1 to 10, and the ethanol molecules will be numbered 1 to 10. 
 <br><br>
-<tt>
+<code>
 resnumbers 1
-</tt><br><br>
+</code><br><br>
 In this case, the residue numbers of the original pdb files are kept
 unmodified. This means that if you pack 10 proteins of 5 residues, the
 residue numbers will be preserved and, therefore, they will be
 repeated for equivalent residues in each molecule of the same protein.
 <br><br>
-<tt>
+<code>
 resnumbers 2
-</tt><br><br>
+</code><br><br>
 In this case, the residue numbers of all residues for this structure
 will be numbered sequentially according to the number of residues that
 are printed previously in the same file. This means that if you pack
 10 proteins of 5 residues, there will be residue numbers ranging
 from 1 to 50.
 <br><br>
-<tt>
+<code>
 resnumbers 3
-</tt><br><br>
+</code><br><br>
 In this case, the numbering of the residues will correspond to the
 sequential numbering of all residues in the file. That is, if you
 pack a protein with 150 residues followed by 10 water molecules, the
 water molecules will be numbered from 151 to 161.
 <br><br>
 For example, this keyword may be used as in:
-<pre><tt>structure peptide.pdb  
+<pre><code>structure peptide.pdb  
   number 10               
   resnumbers 1            
   inside box 0. 0. 0. 20. 20. 20.
 end structure        
-</tt></pre>
+</code></pre>
 <em>Default:</em> The default behavior is to use 0 for structures with
 only one residue and 1 for structures with more than one residue.
 <br><br>
@@ -840,12 +840,12 @@ where "D" is the desired identifier (Do not use "#").
 From version 16.143 on, it is possible to build the system from multiple
 and independent executions of Packmol by the use of restart files. In
 order to write a restart file, the following keyword must be used:
-<tt>
+<code>
 restart_to restart.pack
-</tt>
-where <tt>restart.pack</tt> is the name of the restart file to be
+</code>
+where <code>restart.pack</code> is the name of the restart file to be
 created. It is possible to write restart files for the whole system, if
-the keyword is put outside <tt>structure...end structure</tt> sections,
+the keyword is put outside <code>structure...end structure</code> sections,
 or to write a restart file for a specific part of the system, using, for
 instance:
 <pre>
@@ -859,7 +859,7 @@ This will generate a restart file for the water molecules only.
 <br><br>
 
 These restart files can be used to start a new execution of Packmol with
-more molecules. The <tt>restart_from</tt> keyword must then be used. For
+more molecules. The <code>restart_from</code> keyword must then be used. For
 example: 
 <pre>
 structure water.pdb
@@ -883,7 +883,7 @@ For instance, if a new molecule is introduced
 inside a previous set of molecules (a lipid bilayer, for instance), you
 can tell Packmol to pack less molecules of the original set, in order to
 provide space for the new structure, while using the original restart
-file of more molecules. That is, a <tt> restart_from water1.pack </tt>
+file of more molecules. That is, a <code> restart_from water1.pack </code>
 similar to the ones of the example above could be used to restart the
 positions of 800 molecules.  
 <br><br>
@@ -909,21 +909,21 @@ first and then use it as a fixed molecule for a solvation run.</td></tr>
 improve the optimization: 
 <table width=90% align=center>
 <tr><td valign=top>1.</td>
-<td><tt>discale [real]</tt><br>
+<td><code>discale [real]</code><br>
 This option controls the distance tolerance actually used in the
 local optimization method. It was found that using larger distances
-helps sometimes. Try setting <tt>discale</tt> to 1.5, for example.
+helps sometimes. Try setting <code>discale</code> to 1.5, for example.
 </td></tr>
 
 <tr><td valign=top>2.</td>
-<td><tt>maxit [integer]</tt><br>
+<td><code>maxit [integer]</code><br>
 This is the maximum number of iterations of the local optimizer (GENCAN)
 per loop. The default value is currently 20, changing it may improve (or
 worse) the convergence.
 </td></tr>
 
 <tr><td valign=top>2.</td>
-<td><tt>movebadrandom</tt><br>
+<td><code>movebadrandom</code><br>
  One of the convergence heuristics of Packmol consists in moving
  molecules that are badly placed. If this option is set, the molecules
 will be placed in new random position in the box. If not (default), the
@@ -947,10 +947,10 @@ general user, but may be useful in specific contexts. These keywords may
 be added in the input file in any position.<br><br>
 
 Add the TER flag betwen every molecule (AMBER uses this): <br>
-Usage: <tt> add_amber_ter </tt> <br><br>
+Usage: <code> add_amber_ter </code> <br><br>
 
 Add box side information to output PDB File (GROMACS uses this): <br>
-Usage: <tt> add_box_sides 1.0 </tt> <br>
+Usage: <code> add_box_sides 1.0 </code> <br>
 Where the "1.0" is an optional real number that will be added to
 the length of each side, if the actual sides of your simulation box
 will not be exactly the same as the maximum and minimum coordinates
@@ -960,61 +960,61 @@ at the boundary).
 <br><br>
 
 Increase maximum system dimensions: <br>
-Usage: <tt> sidemax [real] </tt> (ex: sidemax 2000.d0) <br>
-"<tt>sidemax</tt>" is used to build an initial approximation of the molecular
-distribution. Increase "<tt>sidemax</tt>" if your system is very large, or your
+Usage: <code> sidemax [real] </code> (ex: sidemax 2000.d0) <br>
+"<code>sidemax</code>" is used to build an initial approximation of the molecular
+distribution. Increase "<code>sidemax</code>" if your system is very large, or your
 system may look cut out by this maximum dimension. All system
-coordinates must fit within <tt>-sidemax</tt> and <tt>+sidemax</tt>, and
-using a <tt>sidemax</tt>
+coordinates must fit within <code>-sidemax</code> and <code>+sidemax</code>, and
+using a <code>sidemax</code>
 that approximately fits your system may accelerate a little bit the
 packing calculation. The default value is 1000.d0. <br><br>
 
 Change random number generator seed: <br>
-Usage: <tt> seed [integer] </tt> (ex: seed 191917) <br>
-Use <tt> seed -1 </tt> to generate a seed automatically from the computer
+Usage: <code> seed [integer] </code> (ex: seed 191917) <br>
+Use <code> seed -1 </code> to generate a seed automatically from the computer
 time.
 <br><br>
 
 Use a truly random initial point for the minimization (the default
 option is to generate an homogeneous-density initial): <br>
-Usage: <tt> randominitialpoint </tt> <br><br>
+Usage: <code> randominitialpoint </code> <br><br>
 Avoid, or not, overlap with fixed molecules at initial point
 (avoiding this overlaps is generally recommended, but sometimes
 generates gaps that are too large):<br>
-Usage: <tt> avoid_overlap yes/no </tt> <br><br>
-Change the maximum number of Gencan iterations per loop:<br> Usage: <tt>
-maxit [integer] </tt> <br><br>
+Usage: <code> avoid_overlap yes/no </code> <br><br>
+Change the maximum number of Gencan iterations per loop:<br> Usage: <code>
+maxit [integer] </code> <br><br>
 
 Change the maximum number of loops:<br>
-Usage: <tt> nloop [integer] </tt><br><br>
+Usage: <code> nloop [integer] </code><br><br>
 
 Change the frequency of output file writing: <br>
-Usage: <tt> writeout [integer] </tt><br><br>
+Usage: <code> writeout [integer] </code><br><br>
 
 Write the current point to output file even if it is worst than the the
 best point so far (used for checking purposes only): <br>
-Usage: <tt> writebad </tt><br><br>
+Usage: <code> writebad </code><br><br>
 
 Check the initial point: This is only for testing purposes,
 just build the initial approximation, writes it to the output
 file and exits. <br>
-Usage: <tt>check</tt><br><br>
+Usage: <code>check</code><br><br>
 
 Change the optimization subroutine printing output: <br>
-Usage: <tt> iprint1 [integer] </tt> and/or <tt> iprint2 [integer]
-</tt><br>
+Usage: <code> iprint1 [integer] </code> and/or <code> iprint2 [integer]
+</code><br>
 where the integer must be 0, 1, 2 or 3.
 <br><br>
 
 Change the number of bins of the linked-cell method (technical): <br>
-Usage: <tt> fbins [real] </tt> 
-</tt><br>
+Usage: <code> fbins [real] </code> 
+</code><br>
 The default value is the square root of three.
 <br><br>
 
 Compare analytical and finite-difference gradients: This is only for
 testing purposes. Writes chkgrad.log file containing the comparison.<br>
-Usage: <tt>chkgrad</tt>
+Usage: <code>chkgrad</code>
 <br><br>
 <!-- END SECTION -->
 
