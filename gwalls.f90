@@ -270,11 +270,11 @@ subroutine gwalls(icart,irest)
         -(xcart(icart,3)-restpars(irest,5))
     if(d.gt.0.d0) then
       d = scale * d
-      gxcar(icart,1) = gxcar(icart,1) - d*(xcart(icart,1)-restpars(irest,1)) &
+      gxcar(icart,1) = gxcar(icart,1) - 2.d0*d*(xcart(icart,1)-restpars(irest,1)) &
       * (d+(xcart(icart,3)-restpars(irest,5))) / restpars(irest,3)**2 
-      gxcar(icart,2) = gxcar(icart,2) - d*(xcart(icart,2)-restpars(irest,2)) &
+      gxcar(icart,2) = gxcar(icart,2) - 2.d0*d*(xcart(icart,2)-restpars(irest,2)) &
       * (d+(xcart(icart,3)-restpars(irest,5))) / restpars(irest,4)**2 
-      gxcar(icart,3) = gxcar(icart,3) - d
+      gxcar(icart,3) = gxcar(icart,3) - 2.d0*d
     end if
   else if(ityperest(irest).eq.15) then
     d = restpars(irest,6)*exp( &
@@ -285,11 +285,11 @@ subroutine gwalls(icart,irest)
         -(xcart(icart,3)-restpars(irest,5))
     if(d.lt.0.d0) then
       d = scale * d
-      gxcar(icart,1) = gxcar(icart,1) - d*(xcart(icart,1)-restpars(irest,1)) &
+      gxcar(icart,1) = gxcar(icart,1) - 2.d0*d*(xcart(icart,1)-restpars(irest,1)) &
       * (d+(xcart(icart,3)-restpars(irest,5))) / restpars(irest,3)**2
-      gxcar(icart,2) = gxcar(icart,2) - d*(xcart(icart,2)-restpars(irest,2)) &
+      gxcar(icart,2) = gxcar(icart,2) - 2.d0*d*(xcart(icart,2)-restpars(irest,2)) &
       * (d+(xcart(icart,3)-restpars(irest,5))) / restpars(irest,4)**2 
-      gxcar(icart,3) = gxcar(icart,3) - d
+      gxcar(icart,3) = gxcar(icart,3) - 2.d0*d
     end if
   end if
       
