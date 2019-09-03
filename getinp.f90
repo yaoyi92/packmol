@@ -613,15 +613,15 @@ subroutine getinp()
       read(keyword(iline,4),*,iostat=ioerr) restpars(irest,2)
       read(keyword(iline,5),*,iostat=ioerr) restpars(irest,3)
       read(keyword(iline,6),*,iostat=ioerr) restpars(irest,4)
-      ! Check if the surface is a 2D Gaussian, else plane
-      if(keyword(iline,2).eq.'xygauss') then
+      ! Check if the surface is a plane or 2D Gaussian
+      if (keyword(iline,2).eq.'plane') then
+        ityperest(irest) = 10
+      else if(keyword(iline,2).eq.'xygauss') then
         ityperest(irest) = 14
         read(keyword(iline,7),*,iostat=ioerr) restpars(irest,5)
         read(keyword(iline,8),*,iostat=ioerr) restpars(irest,6)
-      else if (keyword(iline,2).ne.'plane') then
-        ioerr = 1
       else
-        ityperest(irest) = 10
+        ioerr = 1
       end if
     end if
 
@@ -632,15 +632,15 @@ subroutine getinp()
       read(keyword(iline,4),*,iostat=ioerr) restpars(irest,2)
       read(keyword(iline,5),*,iostat=ioerr) restpars(irest,3)
       read(keyword(iline,6),*,iostat=ioerr) restpars(irest,4)
-      ! Check if the surface is a 2D Gaussian, else plane
-      if(keyword(iline,2).eq.'xygauss') then
+      ! Check if the surface is a plane or 2D Gaussian
+      if (keyword(iline,2).eq.'plane') then
+        ityperest(irest) = 11
+      else if(keyword(iline,2).eq.'xygauss') then
         ityperest(irest) = 15
         read(keyword(iline,7),*,iostat=ioerr) restpars(irest,5)
         read(keyword(iline,8),*,iostat=ioerr) restpars(irest,6)
-      else if (keyword(iline,2).ne.'plane') then
-        ioerr = 1
       else 
-        ityperest(irest) = 11
+        ioerr = 1
       end if
     end if
 
