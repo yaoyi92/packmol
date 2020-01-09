@@ -51,6 +51,7 @@ subroutine getinp()
   avoidoverlap = .true.
   packall = .false.
   use_short_tol = .false.
+  crd = .false.
 
   inside_structure = .false.
 
@@ -130,6 +131,10 @@ subroutine getinp()
     else if(keyword(i,1).eq.'use_short_tol') then
       use_short_tol = .true.
       write(*,*) ' Will use a short distance penalty for all atoms. '
+    else if(keyword(i,1).eq.'writecrd') then
+      crd = .true.
+      write(*,*) ' Will write output also in CRD format '
+      read(keyword(i,2),*,iostat=ioerr) crdfile
     else if(keyword(i,1).eq.'add_box_sides') then
       add_box_sides = .true.
       write(*,*) ' Will print BOX SIDE informations. '
@@ -187,6 +192,7 @@ subroutine getinp()
              keyword(i,1) /= 'check' .and. &
              keyword(i,1) /= 'iprint1' .and. &
              keyword(i,1) /= 'iprint2' .and. &
+             keyword(i,1) /= 'writecrd' .and. &
              keyword(i,1) /= 'chkgrad' ) then
       write(*,*) ' ERROR: Keyword not recognized: ', trim(keyword(i,1))
       stop

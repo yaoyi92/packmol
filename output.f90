@@ -33,7 +33,7 @@ subroutine output(n,x)
   character :: write_chain, even_chain, odd_chain
   character(len=64) :: title
   character(len=80) :: pdb_atom_line, pdb_hetatm_line, tinker_atom_line, format_line,&
-                       pdb_atom_line_hex, pdb_hetatm_line_hex
+                       pdb_atom_line_hex, pdb_hetatm_line_hex, crd_format
   character(len=200) :: record
 
   ! Job title
@@ -357,8 +357,13 @@ subroutine output(n,x)
     pdb_hetatm_line_hex = "( t1,a6,t7,z5,t12,a10,t22,a1,&
                             &t23,i4,t27,a1,t31,f8.3,t39,&
                             &f8.3,t47,f8.3,t55,a26 )"
+    crd_format='(2I10,2X,A8,2X,A8,3F20.10,2X,A8,2X,A8,F20.10)'
 
     open(30,file=xyzout,status='unknown') 
+    if ( crd ) then
+      open(40,file=crdfile,status='unknown')
+      write(40,'(i10,2x,a)') ntotat,'EXT'
+    end if
  
     write(30,"( & 
             &'HEADER ',/&
@@ -510,6 +515,14 @@ subroutine output(n,x)
                                     (xcart(icart,k), k = 1, 3),&
                                     record(55:80)
             end if
+
+            if ( crd ) then
+              write(40,crd_format) i_ref_atom, iires, record(18:20), &
+                                   record(13:16),&
+                                   (xcart(icart,k), k = 1, 3), "X",&
+                                   record(13:16), 0.
+            end if
+
           end do
           irescount = irescount + nres
           ilugan = ilugan + 3 
@@ -602,6 +615,13 @@ subroutine output(n,x)
                                       record(55:80)
           end if
 
+          if ( crd ) then
+            write(40,crd_format) i_ref_atom, iires, record(18:20), &
+                                 record(13:16),&
+                                 (coor(idatom,k), k = 1, 3), "X",&
+                                 record(13:16), 0.
+          end if
+
         end do
         irescount = irescount + nres
         close(15)
@@ -610,6 +630,7 @@ subroutine output(n,x)
     end do             
     write(30,"('END')")
     close(30) 
+    if ( crd ) close(40)
   end if 
  
   ! Write the output (tinker xyz file)

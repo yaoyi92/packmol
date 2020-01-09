@@ -62,6 +62,7 @@ subroutine checkpoint(n,x)
 
   write(*,*) ' The solution with the best function value was '
   write(*,*) ' written to the output file: ', xyzout(1:strlength(xyzout))
+  if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
   write(*,dash1_line)
   write(*,*) ' Forcing the solution to fit the constraints...'
 
@@ -84,6 +85,7 @@ subroutine checkpoint(n,x)
 
   write(*,*) ' The forced point was writen to the '
   write(*,*) ' output file: ', xyzout(1:strlength(xyzout)+7)
+  if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
   write(*,*)
   write(*,*) ' If you want that the packing procedure continues'
   write(*,*) ' for a longer time, add the following keyword '
@@ -99,6 +101,7 @@ subroutine checkpoint(n,x)
   write(*,*) ' The output file:'
   write(*,*)
   write(*,*) '   ',xyzout(1:strlength(xyzout)-7) 
+  if ( crd ) write(*,*) ' (... and to CRD file: ', trim(adjustl(crdfile)), ')'
   write(*,*)
   write(*,*) ' contains the best solution found. '
   write(*,*)
