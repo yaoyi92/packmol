@@ -25,7 +25,7 @@ subroutine setsizes()
 
   write(*,*) ' Packmol must be run with: packmol < inputfile.inp '
   write(*,*)
-  write(*,*) ' Userguide at: www.ime.unicamp.br/~martinez/packmol '
+  write(*,*) ' Userguide at: http://m3g.iqm.unicamp.br/packmol '
   write(*,*)
       
   ! Getting input lines from the input file

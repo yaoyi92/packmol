@@ -5,7 +5,7 @@
 !  
 !-----------------------------------------------------------------------------
 !
-! http://www.ime.unicamp.br/~martinez/packmol
+! http://m3g.iqm.unicamp.br/packmol
 !
 ! Usage (see the page above for further information):
 !

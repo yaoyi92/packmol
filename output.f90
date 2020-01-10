@@ -366,7 +366,7 @@ subroutine output(n,x)
       write(40,'("* TITLE ", a64,/&
                 &"* Packmol generated CHARMM CRD File",/&
                 &"* Home-Page:",/&
-                &"* http://www.ime.unicamp.br/~martinez/packmol",/&
+                &"* http://m3g.iqm.unicamp.br/packmol",/&
                 &"* ")') title
       write(40,'(i10,2x,a)') ntotat,'EXT'
     end if
@@ -376,7 +376,7 @@ subroutine output(n,x)
             &'TITLE    ', a64,/&
             &'REMARK   Packmol generated pdb file ',/&
             &'REMARK   Home-Page: ',&
-            &'http://www.ime.unicamp.br/~martinez/packmol',/,&
+            &'http://m3g.iqm.unicamp.br/packmol',/,&
             &'REMARK' )" ) title
 
     if(add_box_sides) then
