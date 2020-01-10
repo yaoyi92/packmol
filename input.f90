@@ -67,6 +67,7 @@ module input
 
   character(len=1), allocatable :: chain(:) ! (ntype)
   character(len=3), allocatable :: ele(:) ! (ntotat)
+  character(len=8), allocatable :: segid(:) ! (segment identifier)
   character(len=80), allocatable :: pdbfile(:) ! (ntype)
   character(len=200), allocatable :: name(:) ! (ntype)
   character(len=200), allocatable :: keyword(:,:) ! (nlines,maxkeywords)
