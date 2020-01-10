@@ -640,7 +640,7 @@ subroutine output(n,x)
               crdires = adjustl(crdires)
               crdresn = trim(adjustl(record(18:21)))
               crdsegi = crdresn
-              if (len(trim(adjustl(segid(i_not_fixed))))/=0) crdsegi = trim(adjustl(segid(i_not_fixed)))
+              if (len(trim(adjustl(segid(i_fixed))))/=0) crdsegi = trim(adjustl(segid(i_fixed)))
               atmname = adjustl(record(13:16))
               write(40,crd_format) i_ref_atom, iires,crdresn, atmname, &
                                    (xcart(icart,k), k = 1, 3), crdsegi,&
