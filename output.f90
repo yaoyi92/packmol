@@ -15,7 +15,7 @@ subroutine output(n,x)
   implicit none
   integer :: n, k, i, ilugan, ilubar, itype, imol, idatom,&
              irest, iimol, ichain, iatom, irec, ilres, ifres,&
-             iires, strlength, irescount,&
+             iires, ciires, strlength, irescount,&
              icart, i_ref_atom, ioerr
   integer :: nr, nres, imark  
   integer :: i_fixed, i_not_fixed
@@ -33,7 +33,8 @@ subroutine output(n,x)
   character :: write_chain, even_chain, odd_chain
   character(len=64) :: title
   character(len=80) :: pdb_atom_line, pdb_hetatm_line, tinker_atom_line, format_line,&
-                       pdb_atom_line_hex, pdb_hetatm_line_hex
+                       pdb_atom_line_hex, pdb_hetatm_line_hex, crd_format
+  character(len=8) :: crdires,crdresn,crdsegi,atmname
   character(len=200) :: record
 
   ! Job title
@@ -357,15 +358,25 @@ subroutine output(n,x)
     pdb_hetatm_line_hex = "( t1,a6,t7,z5,t12,a10,t22,a1,&
                             &t23,i4,t27,a1,t31,f8.3,t39,&
                             &f8.3,t47,f8.3,t55,a26 )"
+    crd_format='(2I10,2X,A8,2X,A8,3F20.10,2X,A8,2X,A8,F20.10)'
 
     open(30,file=xyzout,status='unknown') 
+    if ( crd ) then
+      open(40,file=crdfile,status='unknown')
+      write(40,'("* TITLE ", a64,/&
+                &"* Packmol generated CHARMM CRD File",/&
+                &"* Home-Page:",/&
+                &"* http://m3g.iqm.unicamp.br/packmol",/&
+                &"* ")') title
+      write(40,'(i10,2x,a)') ntotat,'EXT'
+    end if
  
     write(30,"( & 
             &'HEADER ',/&
             &'TITLE    ', a64,/&
             &'REMARK   Packmol generated pdb file ',/&
             &'REMARK   Home-Page: ',&
-            &'http://www.ime.unicamp.br/~martinez/packmol',/,&
+            &'http://m3g.iqm.unicamp.br/packmol',/,&
             &'REMARK' )" ) title
 
     if(add_box_sides) then
@@ -480,14 +491,19 @@ subroutine output(n,x)
             if ( ioerr /= 0 ) imark = 1
             if(resnumbers(i_not_fixed).eq.0) then
               iires = mod(imol,9999)
+              ciires = mod(imol,99999999)
             else if(resnumbers(i_not_fixed).eq.1) then
               iires = imark
+              ciires = imark
             else if(resnumbers(i_not_fixed).eq.2) then
               iires = mod(imark-ifres+irescount,9999)
+              ciires = mod(imark-ifres+irescount,99999999)
             else if(resnumbers(i_not_fixed).eq.3) then
               iires = mod(iimol,9999)
+              ciires = mod(iimol,99999999)
             end if
             if(iires.eq.0) iires = 9999
+            if(ciires.eq.0) ciires = 99999999
 
             ! Writing output line
 
@@ -510,6 +526,19 @@ subroutine output(n,x)
                                     (xcart(icart,k), k = 1, 3),&
                                     record(55:80)
             end if
+
+            if ( crd ) then
+              write(crdires,'(I8)') ciires 
+              crdires = adjustl(crdires)
+              crdresn = trim(adjustl(record(18:21)))
+              crdsegi = crdresn
+              if (len(trim(adjustl(segid(i_not_fixed))))/=0) crdsegi = trim(adjustl(segid(i_not_fixed)))
+              atmname = adjustl(record(13:16))
+              write(40,crd_format) i_ref_atom, ciires,crdresn, atmname, &
+                                   (xcart(icart,k), k = 1, 3), crdsegi,&
+                                   crdires, 0.
+            end if
+
           end do
           irescount = irescount + nres
           ilugan = ilugan + 3 
@@ -572,12 +601,16 @@ subroutine output(n,x)
           read(record(23:26),*) imark
           if(resnumbers(i_fixed).eq.0) then
             iires = 1
+            ciires = 1
           else if(resnumbers(i_fixed).eq.1) then
             iires = imark
+            ciires = imark
           else if(resnumbers(i_fixed).eq.2) then
             iires = mod(imark-ifres+irescount,9999) 
+            ciires = mod(imark-ifres+irescount,99999999) 
           else if(resnumbers(i_fixed).eq.3) then
             iires = mod(iimol,9999)
+            ciires = mod(iimol,99999999)
           end if
 
           if ( chain(i_fixed) == "#" ) then
@@ -602,6 +635,18 @@ subroutine output(n,x)
                                       record(55:80)
           end if
 
+          if ( crd ) then
+              write(crdires,'(I8)') ciires 
+              crdires = adjustl(crdires)
+              crdresn = trim(adjustl(record(18:21)))
+              crdsegi = crdresn
+              if (len(trim(adjustl(segid(i_fixed))))/=0) crdsegi = trim(adjustl(segid(i_fixed)))
+              atmname = adjustl(record(13:16))
+              write(40,crd_format) i_ref_atom, iires,crdresn, atmname, &
+                                   (xcart(icart,k), k = 1, 3), crdsegi,&
+                                   crdires, 0.
+          end if
+
         end do
         irescount = irescount + nres
         close(15)
@@ -610,6 +655,7 @@ subroutine output(n,x)
     end do             
     write(30,"('END')")
     close(30) 
+    if ( crd ) close(40)
   end if 
  
   ! Write the output (tinker xyz file)

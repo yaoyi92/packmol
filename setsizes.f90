@@ -25,7 +25,7 @@ subroutine setsizes()
 
   write(*,*) ' Packmol must be run with: packmol < inputfile.inp '
   write(*,*)
-  write(*,*) ' Userguide at: www.ime.unicamp.br/~martinez/packmol '
+  write(*,*) ' Userguide at: http://m3g.iqm.unicamp.br/packmol '
   write(*,*)
       
   ! Getting input lines from the input file
@@ -341,7 +341,8 @@ subroutine setsizes()
 
   allocate(irestline(maxrest),linestrut(ntype,2),resnumbers(ntype),&
            input_itype(ntype),changechains(ntype),chain(ntype),&
-           fixedoninput(ntype),pdbfile(ntype),name(ntype))
+           fixedoninput(ntype),pdbfile(ntype),name(ntype),&
+           segid(ntype))
 
   ! Allocate vectors for flashsort
 

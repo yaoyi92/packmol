@@ -45,6 +45,7 @@ module input
   logical :: writebad
   logical :: tinker
   logical :: pdb
+  logical :: crd
   logical :: xyz
   logical :: moldy
   logical :: check
@@ -62,9 +63,11 @@ module input
   logical, allocatable :: fixedoninput(:) ! (ntype)
   
   character(len=200) :: xyzout
+  character(len=200) :: crdfile
 
   character(len=1), allocatable :: chain(:) ! (ntype)
   character(len=3), allocatable :: ele(:) ! (ntotat)
+  character(len=8), allocatable :: segid(:) ! (segment identifier)
   character(len=80), allocatable :: pdbfile(:) ! (ntype)
   character(len=200), allocatable :: name(:) ! (ntype)
   character(len=200), allocatable :: keyword(:,:) ! (nlines,maxkeywords)

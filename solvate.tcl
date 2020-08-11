@@ -7589,18 +7589,23 @@ puts "  Wrote packmol input. "
 #
 
 set water_file [ open ./WATER.pdb w ]
-puts $water_file "HETATM    1  H1  TIP3    1       9.626   6.787  12.673"
-puts $water_file "HETATM    2  H2  TIP3    1       9.626   8.420  12.673"
-puts $water_file "HETATM    3  OH2 TIP3    1      10.203   7.604  12.673"
+puts $water_file \
+"HETATM    1  H1  TIP3    1       9.626   6.787  12.673                       H"
+puts $water_file \
+"HETATM    2  H2  TIP3    1       9.626   8.420  12.673                       H"
+puts $water_file \
+"HETATM    3  OH2 TIP3    1      10.203   7.604  12.673                       O"
 close $water_file
 
 
 set sod_file [ open ./SODIUM.pdb w ]
-puts $sod_file  "HETATM    1 SOD  SOD    2        0.000   0.000   0.000"
+puts $sod_file  \
+"HETATM    1 SOD  SOD    2        0.000   0.000   0.000                      Na"
 close $sod_file
 
 set cl_file [ open ./CHLORIDE.pdb w ]
-puts $cl_file  "HETATM    1 CLA  CLA    2        0.000   0.000   0.000"
+puts $cl_file  \
+"HETATM    1 CLA  CLA    2        0.000   0.000   0.000                      Cl"
 close $cl_file
 
 # Run packmol 

@@ -3,7 +3,11 @@ Packmol
 
 Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
-This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page, for which the link is provided here.
+This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page:
+
+http://m3g.iqm.unicamp.br/packmol
+
+Detailed installation and usage instructions are available at this home-page.
 
 What is Packmol
 ---------------

@@ -92,9 +92,11 @@ subroutine eulerfixed(beta,gama,teta,v1,v2,v3)
   v1(1) = c2*c3
   v1(2) = c1*s3 + c3*s1*s2
   v1(3) = s1*s3 - c1*c3*s2
+
   v2(1) = -c2*s3
   v2(2) = c1*c3 - s1*s2*s3
   v2(3) = c1*s2*s3 + c3*s1
+
   v3(1) = s2
   v3(2) = -c2*s1
   v3(3) = c1*c2         

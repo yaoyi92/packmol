@@ -5,7 +5,7 @@
 !  
 !-----------------------------------------------------------------------------
 !
-! http://www.ime.unicamp.br/~martinez/packmol
+! http://m3g.iqm.unicamp.br/packmol
 !
 ! Usage (see the page above for further information):
 !
@@ -663,6 +663,7 @@ program packmol
     write(*,*) ' The output file contains the fixed molecules in the desired positions. '
     write(*,dash1_line)
     write(*,*) ' Wrote output file: ', trim(adjustl(xyzout))
+    if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     write(*,dash1_line)
     stop
   end if
@@ -688,6 +689,7 @@ program packmol
   if(check) then
     call output(n,x)
     write(*,*) ' Wrote initial point to output file: ', xyzout(1:strlength(xyzout)) 
+    if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     stop
   end if
 
@@ -740,8 +742,10 @@ program packmol
       call output(n,x)
       if( itype == ntype + 1 ) then
         write(*,*) ' Solution written to file: ', trim(adjustl(xyzout))
+        if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
       else
         write(*,*) ' Current point written to file: ', trim(adjustl(xyzout))
+        if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
       end if
       call writesuccess(itype,fdist,frest,fx)
 
@@ -836,6 +840,7 @@ program packmol
             call swaptype(n,x,itype,3) ! Restore all molecule vectors
             call output(n,x)
             write(*,*) ' Current structure written to file: ', trim(adjustl(xyzout))
+            if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
             call writesuccess(itype,fdist,frest,fx)
             exit gencanloop
           end if
@@ -856,6 +861,7 @@ program packmol
             call output(n,x)
             call writesuccess(itype,fdist,frest,fx)
             write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
+            if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
             write(*,dash3_line)
             exit main
           end if
@@ -867,6 +873,7 @@ program packmol
         if( mod(loop+1,writeout) == 0 .and. all_type_fx < fprint ) then
           call output(n,x)
           write(*,*) ' Current solution written to file: ', trim(adjustl(xyzout))
+          if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
           fprint = all_type_fx
           do i = 1, n
             xprint(i) = x(i)
@@ -876,6 +883,7 @@ program packmol
         else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
           call output(n,x)
           write(*,*) ' Writing current (perhaps bad) structure to file: ', trim(adjustl(xyzout))
+          if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
         end if
 
         ! Restore vector for packing this type of molecule, if the case

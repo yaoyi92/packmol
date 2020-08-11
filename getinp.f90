@@ -51,6 +51,7 @@ subroutine getinp()
   avoidoverlap = .true.
   packall = .false.
   use_short_tol = .false.
+  crd = .false.
 
   inside_structure = .false.
 
@@ -130,6 +131,10 @@ subroutine getinp()
     else if(keyword(i,1).eq.'use_short_tol') then
       use_short_tol = .true.
       write(*,*) ' Will use a short distance penalty for all atoms. '
+    else if(keyword(i,1).eq.'writecrd') then
+      crd = .true.
+      write(*,*) ' Will write output also in CRD format '
+      read(keyword(i,2),*,iostat=ioerr) crdfile
     else if(keyword(i,1).eq.'add_box_sides') then
       add_box_sides = .true.
       write(*,*) ' Will print BOX SIDE informations. '
@@ -187,6 +192,8 @@ subroutine getinp()
              keyword(i,1) /= 'check' .and. &
              keyword(i,1) /= 'iprint1' .and. &
              keyword(i,1) /= 'iprint2' .and. &
+             keyword(i,1) /= 'writecrd' .and. &
+             keyword(i,1) /= 'segid' .and. &
              keyword(i,1) /= 'chkgrad' ) then
       write(*,*) ' ERROR: Keyword not recognized: ', trim(keyword(i,1))
       stop
@@ -744,6 +751,7 @@ subroutine getinp()
       resnumbers(itype) = -1
       changechains(itype) = .false.
       chain(itype) = "#"
+      segid(itype) = ""
       do iline = 1, nlines
         if(iline.gt.linestrut(itype,1).and.&
              iline.lt.linestrut(itype,2)) then
@@ -756,8 +764,19 @@ subroutine getinp()
           if(keyword(iline,1).eq.'chain') then
             read(keyword(iline,2),*) chain(itype)
           end if
+          if(keyword(iline,1).eq.'segid') then
+            read(keyword(iline,2),*) segid(itype)
+          end if
         end if
       end do
+      if (crd) then
+         if (itype.gt.1 .and. segid(itype)=="") then
+            if (segid(itype-1) /= "")  then
+               write(*,*) ' Warning: Type of segid not defined for ', itype,'. Keeping it same as previous'
+            endif
+            segid(itype) = segid(itype-1)
+         endif
+      endif
       if ( resnumbers(itype) == -1 ) then
         write(*,*) ' Warning: Type of residue numbering not',&
                    ' set for structure ',itype
@@ -786,11 +805,16 @@ subroutine getinp()
     write(*,*) ' Number of molecules of type ', itype, ': ', nmols(itype)
     if(pdb.and.nmols(itype).gt.9999) then
       write(*,*) ' Warning: There will be more than 9999 molecules of type ',itype
-      write(*,*) '          Residue numbering is reset after 9999. '
+      if (.not. crd)  write(*,*) '          Residue numbering is reset after 9999. '
+      if (crd)  write(*,*) '          Residue numbering is reset after 9999 in pdb but not in crd. '
       if ( chain(itype) == "#" ) then
         write(*,*) ' Each set be will be assigned a different chain in the PDB output file. '
       end if
     end if
+    if(crd.and.nmols(itype).gt.99999999) then
+      write(*,*) ' Warning: There will be more than 99999999 molecules of type ',itype
+      write(*,*) '          Residue numbering is reset after 99999999 in crd. '
+    endif
   end do
 
   ! Checking if restart files will be used for each structure or for the whole system
