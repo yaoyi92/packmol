@@ -5669,7 +5669,8 @@ C     ******************************************************************
    85 HITEST = CUTHI/DFLOAT(N)
       DO 95 J = I,NN,INCX
         IF (DABS(DX(J)).GE.HITEST) GO TO 100
-   95 SUM = SUM + DX(J)**2
+        SUM = SUM + DX(J)**2
+   95 END DO
       HSLDNRM2 = DSQRT(SUM)
       GO TO 300
   200 CONTINUE

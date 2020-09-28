@@ -15,7 +15,7 @@ subroutine getinp()
 
   implicit none
   integer :: i, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
-             imark, strlength, ioerr, nloop0
+             imark, strlength, ioerr, nloop0, iread, idfirstatom
   double precision :: clen
   character(len=200) :: record, blank
   logical :: inside_structure
@@ -238,11 +238,13 @@ subroutine getinp()
         record = keyword(iline,2)
         pdbfile(itype) = record(1:80)
         idfirst(itype) = 1
+        idfirstatom = 0
         do ii = itype - 1, 1, -1
           idfirst(itype) = idfirst(itype) + natoms(ii)
         end do
         open(10,file=keyword(iline,2),status='old',iostat=ioerr)
         if ( ioerr /= 0 ) call failopen(keyword(iline,2))
+        ! Read coordinates
         record(1:6) = '######'
         do while(record(1:4).ne.'ATOM'.and.record(1:6).ne.'HETATM')
           read(10,"( a200 )") record
@@ -252,6 +254,8 @@ subroutine getinp()
           if(record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM') then
             idatom = idatom + 1
             amass(idatom) = 1.d0
+            ! Read the index of the first atom, to adjust connectivities, if any
+            if(idfirstatom == 0) read(record(7:11),*,iostat=ioerr) idfirstatom
             read(record,"( t31,f8.3,t39,f8.3,t47,f8.3 )",iostat=ioerr) &
                  (coor(idatom,k),k=1,3)
             if( ioerr /= 0 ) then
@@ -265,10 +269,9 @@ subroutine getinp()
               write(*,*) ' www.rcsb.org/pdb '
               stop
             end if
-
+           
             ! This only tests if residue numbers can be read, they are used 
             ! only for  output
-
             read(record(23:26),*,iostat=ioerr) itest
             if( ioerr /= 0 ) then
               record = pdbfile(itype)
@@ -285,7 +288,43 @@ subroutine getinp()
             end if   
           end if
           read(10,"( a200 )",iostat=ioerr) record
+        end do
+        !
+        ! Read connectivity, if there is any specified
+        !
+        do while(.true.)
           if ( ioerr /= 0 ) exit
+          if(record(1:6).eq.'CONECT') then
+            iread = 7
+            read(record(iread:iread+4),*,iostat=ioerr) iatom
+            iatom = iatom - idfirstatom + 1
+            idatom = idfirst(itype) - 1 + iatom
+            if(ioerr /= 0) then
+              write(*,*) " ERROR: Could not read atom index from CONECT line: "
+              write(*,*) record(1:strlength(record))
+              stop
+            end if
+            iread = iread + 5
+            read(record(iread:iread+4),*,iostat=ioerr) nconnect(idatom,1)
+            if(ioerr /= 0) then
+              write(*,*) " ERROR: Could not read any connection index from CONECT line: "
+              write(*,*) record(1:strlength(record))
+              stop
+            end if
+            nconnect(idatom,1) = nconnect(idatom,1) - idfirstatom + 1
+            maxcon(idatom) = 1
+            do while(.true.)
+              iread = iread + 5
+              read(record(iread:iread+4),*,iostat=ioerr) nconnect(idatom,maxcon(idatom)+1)
+              if(ioerr == 0) then
+                maxcon(idatom) = maxcon(idatom) + 1
+                nconnect(idatom,maxcon(idatom)) = nconnect(idatom,maxcon(idatom)) - idfirstatom + 1
+              else
+                exit
+              end if
+            end do
+          end if
+          read(10,"( a200 )",iostat=ioerr) record
         end do
         close(10)
       end if

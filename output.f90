@@ -16,7 +16,7 @@ subroutine output(n,x)
   integer :: n, k, i, ilugan, ilubar, itype, imol, idatom,&
              irest, iimol, ichain, iatom, irec, ilres, ifres,&
              iires, ciires, strlength, irescount,&
-             icart, i_ref_atom, ioerr
+             icart, i_ref_atom, ioerr, ifirst_mol
   integer :: nr, nres, imark  
   integer :: i_fixed, i_not_fixed
   
@@ -32,10 +32,10 @@ subroutine output(n,x)
 
   character :: write_chain, even_chain, odd_chain
   character(len=64) :: title
-  character(len=80) :: pdb_atom_line, pdb_hetatm_line, tinker_atom_line, format_line,&
-                       pdb_atom_line_hex, pdb_hetatm_line_hex, crd_format
+  character(len=80) :: pdb_atom_line, tinker_atom_line, crd_format
   character(len=8) :: crdires,crdresn,crdsegi,atmname
   character(len=200) :: record
+  character(len=5) :: i5hex
 
   ! Job title
 
@@ -345,19 +345,9 @@ subroutine output(n,x)
   ! write the output as pdb file
 
   if(pdb) then
-
-    pdb_atom_line = "( t1,a5,t7,i5,t12,a10,t22,a1,t23,&
+    pdb_atom_line = "( t1,a6,t7,a5,t12,a10,t22,a1,t23,&
                       &i4,t27,a1,t31,f8.3,t39,f8.3,t47,&
                       &f8.3,t55,a26 )"
-    pdb_atom_line_hex = "( t1,a5,t7,z5,t12,a10,t22,a1,t23,&
-                          &i4,t27,a1,t31,f8.3,t39,f8.3,t47,&
-                          &f8.3,t55,a26 )"
-    pdb_hetatm_line = "( t1,a6,t7,i5,t12,a10,t22,a1,&
-                        &t23,i4,t27,a1,t31,f8.3,t39,&
-                        &f8.3,t47,f8.3,t55,a26 )"
-    pdb_hetatm_line_hex = "( t1,a6,t7,z5,t12,a10,t22,a1,&
-                            &t23,i4,t27,a1,t31,f8.3,t39,&
-                            &f8.3,t47,f8.3,t55,a26 )"
     crd_format='(2I10,2X,A8,2X,A8,3F20.10,2X,A8,2X,A8,F20.10)'
 
     open(30,file=xyzout,status='unknown') 
@@ -479,7 +469,6 @@ subroutine output(n,x)
             icart = icart + 1
             idatom = idatom + 1
             i_ref_atom = i_ref_atom + 1
-
             call compcart(icart,xbar,ybar,zbar,&
                           coor(idatom,1),coor(idatom,2),&
                           coor(idatom,3),v1,v2,v3)
@@ -508,23 +497,18 @@ subroutine output(n,x)
             ! Writing output line
 
             if(record(1:4).eq.'ATOM') then
-              format_line = pdb_atom_line
-              if ( i_ref_atom > 99999 ) format_line = pdb_atom_line_hex
-              write(30,format_line) record(1:5), i_ref_atom,&
-                                    record(12:21), write_chain, iires,&
-                                    record(27:27),&
-                                    (xcart(icart,k), k = 1, 3),&
-                                    record(55:80)
+              write(30,pdb_atom_line) "ATOM  ",i5hex(i_ref_atom),&
+                                      record(12:21), write_chain, iires,&
+                                      record(27:27),&
+                                      (xcart(icart,k), k = 1, 3),&
+                                      record(55:80)
             end if
-
             if(record(1:6).eq.'HETATM') then
-              format_line = pdb_hetatm_line
-              if ( i_ref_atom > 99999 ) format_line = pdb_hetatm_line_hex
-              write(30,format_line) record(1:6), i_ref_atom,&
-                                    record(12:21), write_chain, iires,&
-                                    record(27:27),&
-                                    (xcart(icart,k), k = 1, 3),&
-                                    record(55:80)
+              write(30,pdb_atom_line) "HETATM", i5hex(i_ref_atom),&
+                                       record(12:21), write_chain, iires,&
+                                       record(27:27),&
+                                       (xcart(icart,k), k = 1, 3),&
+                                       record(55:80)
             end if
 
             if ( crd ) then
@@ -620,19 +604,18 @@ subroutine output(n,x)
           end if
 
           if(record(1:4).eq.'ATOM') then
-            write(30,pdb_atom_line) record(1:5), i_ref_atom,&
+            write(30,pdb_atom_line) "ATOM  ", i5hex(i_ref_atom),&
                                     record(12:21), write_chain, iires,&
                                     record(27:27),&
                                     (coor(idatom,k), k = 1, 3),&
                                     record(55:80)
           end if
-
           if(record(1:6).eq.'HETATM') then
-            write(30,pdb_hetatm_line) record(1:6), i_ref_atom,&
-                                      record(12:21), write_chain, iires,&
-                                      record(27:27),&
-                                      (coor(idatom,k), k = 1, 3),&
-                                      record(55:80)
+            write(30,pdb_atom_line) "HETATM", i5hex(i_ref_atom),&
+                                    record(12:21), write_chain, iires,&
+                                    record(27:27),&
+                                    (coor(idatom,k), k = 1, 3),&
+                                    record(55:80)
           end if
 
           if ( crd ) then
@@ -651,6 +634,40 @@ subroutine output(n,x)
         irescount = irescount + nres
         close(15)
         if(add_amber_ter) write(30,"('TER')") 
+      end if
+    end do
+    ! 
+    ! Write connectivity if available
+    !
+    i_ref_atom = 0
+    i_not_fixed = 0
+    i_fixed = ntype
+    do itype = 1, ntfix 
+      if ( .not. fixedoninput(itype) ) then
+        i_not_fixed = i_not_fixed + 1
+        idatom = idfirst(i_not_fixed) - 1     
+        do imol = 1, nmols(i_not_fixed) 
+          iatom = 0
+          ifirst_mol = i_ref_atom + 1
+          do while(iatom.lt.natoms(i_not_fixed))
+            iatom = iatom + 1 
+            i_ref_atom = i_ref_atom + 1
+            call write_connect(30,idatom,iatom,ifirst_mol)
+          end do
+        end do
+        close(15)
+      ! If fixed molecule on input:
+      else
+        i_fixed = i_fixed + 1
+        idatom = idfirst(i_fixed) - 1
+        iatom = 0
+        ifirst_mol = i_ref_atom + 1
+        idatom = idfirst(i_fixed) - 1
+        do while(iatom.lt.natoms(i_fixed))
+          iatom = iatom + 1
+          i_ref_atom = i_ref_atom + 1
+          call write_connect(30,idatom,iatom,ifirst_mol)
+        end do
       end if
     end do             
     write(30,"('END')")
@@ -739,4 +756,37 @@ subroutine output(n,x)
 
   return
 end subroutine output
+
+function i5hex(i)
+  implicit none
+  integer :: i
+  character(len=5) i5hex
+  if(i <= 99999) then
+    write(i5hex,"(i5)") i
+  else
+    write(i5hex,"(z5)") i
+  end if
+end
+
+subroutine write_connect(iostream,idatom,iatom,ifirst)
+  use input
+  implicit none
+  integer :: i, j, iostream, iatom, idatom, ifirst, strlength
+  character(len=5) :: i5hex
+  character(len=200) :: str
+  if(maxcon(iatom+idatom) == 0) return
+  str = "CONECT"
+  j=7
+  write(str(j:j+4),"(a5)") i5hex(iatom+ifirst-1)
+  do i = 1, maxcon(iatom+idatom)
+    j = j + 5
+    write(str(j:j+4),"(a5)") i5hex(nconnect(iatom+idatom,i)+ifirst-1)
+  end do
+  write(iostream,"(a)") str(1:strlength(str))
+end subroutine write_connect
+
+
+
+
+
 
