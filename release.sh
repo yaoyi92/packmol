@@ -5,6 +5,9 @@
 
 package=packmol
 
+# Release version, read from command line:
+version="$1"
+
 # HTML file containing download list:
 
 downloads=/home/leandro/public_html/packmol/versionhistory/index.html
@@ -23,19 +26,13 @@ versionfile=./title.f90
 
 year=`date +%y`
 day=`date +%j`
-version="${year:0:1}${year:1:1}.$day"
+#version="${year:0:1}${year:1:1}.$day"
+if [[ $version < " " ]]; then
+  echo "ERROR: Please provide version number."
+  exit
+fi
 
 file="$package-$version.tar.gz" 
-version_file=$version
-
-i=2
-while grep -q $file $downloads ; do
-  file=$package-$version.$i.tar.gz
-  version_file=$version.$i
-  i=`expr $i + 1`
-done
-version=$version_file
-file=$package-$version.tar.gz
 echo "Will create file: $file"
 
 cat $versionfile | sed -e "s/Version.*/Version\ $version \')\")/" > version_title_temp.f90
