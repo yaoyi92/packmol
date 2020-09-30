@@ -40,7 +40,7 @@ cat $versionfile | sed -e "s/Version.*/Version\ $version \')\")/" > version_titl
 
 git add -A .
 git commit -m "Changed version file to $version"
-git tag -a $version -m "Release $version"
+git tag -a "v$version" -m "Release $version"
 git push origin master tag $version
 
 today=`date +"%b %d, %Y"`
