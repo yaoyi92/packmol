@@ -60,7 +60,7 @@ tar -cf packmol.tar ./packmol
 gzip packmol.tar
 #scp packmol.tar.gz martinez@ssh.ime.unicamp.br:./public_html/packmol/
 \cp -f packmol.tar.gz ~/public_html/m3g/packmol/packmol.tar.gz
-~/public_html/m3g/update.sh
+m3g.sh
 cd ..
 \rm -rf ./TEMP
 
