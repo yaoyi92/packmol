@@ -312,6 +312,7 @@ program packmol
                 if(keyword(iline,1).eq.'inside'.or.&
                    keyword(iline,1).eq.'outside'.or.&
                    keyword(iline,1).eq.'over'.or.&
+                   keyword(iline,1).eq.'above'.or.&
                    keyword(iline,1).eq.'below') then
                   nratom(icart) = nratom(icart) + 1
                   iratcount = iratcount + 1
@@ -326,6 +327,7 @@ program packmol
           else if(keyword(iline,1).eq.'inside'.or.&
                   keyword(iline,1).eq.'outside'.or.&
                   keyword(iline,1).eq.'over'.or.&
+                  keyword(iline,1).eq.'above'.or.&
                   keyword(iline,1).eq.'below') then
             nratom(icart) = nratom(icart) + 1    
             iratcount = iratcount + 1

@@ -167,6 +167,7 @@ subroutine getinp()
              keyword(i,1) /= 'center' .and. &
              keyword(i,1) /= 'centerofmass' .and. &
              keyword(i,1) /= 'over' .and. &
+             keyword(i,1) /= 'above' .and. &
              keyword(i,1) /= 'below' .and. &
              keyword(i,1) /= 'constrain_rotation' .and. &
              keyword(i,1) /= 'radius' .and. &
@@ -652,7 +653,7 @@ subroutine getinp()
       end if
     end if
 
-    if(keyword(iline,1).eq.'over') then
+    if(keyword(iline,1).eq.'over' .or. keyword(iline,1).eq.'above') then
       irest = irest + 1
       irestline(irest) = iline
       ityperest(irest) = 10

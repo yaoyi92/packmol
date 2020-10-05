@@ -312,6 +312,7 @@ subroutine setsizes()
          keyword(iline,1) == 'inside' .or. &
          keyword(iline,1) == 'outside' .or. &
          keyword(iline,1) == 'over' .or. &
+         keyword(iline,1) == 'above' .or. &
          keyword(iline,1) == 'below' .or. &
          keyword(iline,1) == 'constrain_rotation' ) then
       i = i + 1 
