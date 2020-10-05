@@ -28,7 +28,7 @@ year=`date +%y`
 day=`date +%j`
 #version="${year:0:1}${year:1:1}.$day"
 if [[ $version < " " ]]; then
-  echo "ERROR: Please provide version number."
+  echo "ERROR: Please provide version number, with: ./release.sh 20.1.1"
   exit
 fi
 
@@ -41,11 +41,11 @@ cat $versionfile | sed -e "s/Version.*/Version\ $version \')\")/" > version_titl
 git add -A .
 git commit -m "Changed version file to $version"
 git tag -a "v$version" -m "Release $version"
-git push origin master tag $version
+git push origin master tag "v$version"
 
 today=`date +"%b %d, %Y"`
-changelog="https://github.com/m3g/$package/releases/tag/$version"
-newline="<tr><td width=190px valign=top><a href=$giturl/archive/$version.tar.gz> $file </a></td><td> Released on $today - <a target=newpage href=$changelog> [change log at github] </a></td></tr>"
+changelog="https://github.com/m3g/$package/releases/tag/v$version"
+newline="<tr><td width=190px valign=top><a href=$giturl/archive/v$version.tar.gz> $file </a></td><td> Released on $today - <a target=newpage href=$changelog> [change log at github] </a></td></tr>"
 htmlfile=$downloads
 
 echo "------------------------------"
@@ -53,9 +53,9 @@ echo "CREATING RELEASE IN HOME-PAGE:"
 echo "------------------------------"
 mkdir TEMP
 cd TEMP
-wget https://github.com/m3g/packmol/archive/$version.tar.gz 
-tar -xf $version.tar.gz
-mv packmol-$version packmol
+wget https://github.com/m3g/packmol/archive/v$version.tar.gz 
+tar -xf v$version.tar.gz
+mv packmol-v$version packmol
 tar -cf packmol.tar ./packmol
 gzip packmol.tar
 #scp packmol.tar.gz martinez@ssh.ime.unicamp.br:./public_html/packmol/
