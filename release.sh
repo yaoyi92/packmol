@@ -55,7 +55,7 @@ mkdir TEMP
 cd TEMP
 wget https://github.com/m3g/packmol/archive/v$version.tar.gz 
 tar -xf v$version.tar.gz
-mv packmol-v$version packmol
+mv packmol-$version packmol
 tar -cf packmol.tar ./packmol
 gzip packmol.tar
 #scp packmol.tar.gz martinez@ssh.ime.unicamp.br:./public_html/packmol/
