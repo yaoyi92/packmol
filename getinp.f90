@@ -180,6 +180,7 @@ subroutine getinp()
              keyword(i,1) /= 'discale' .and. &
              keyword(i,1) /= 'maxit' .and. &
              keyword(i,1) /= 'movebadrandom' .and. &
+             keyword(i,1) /= 'maxmove' .and. &
              keyword(i,1) /= 'add_amber_ter' .and. &
              keyword(i,1) /= 'sidemax' .and. &
              keyword(i,1) /= 'seed' .and. &
@@ -776,11 +777,15 @@ subroutine getinp()
       changechains(itype) = .false.
       chain(itype) = "#"
       segid(itype) = ""
+      maxmove(itype) = nmols(itype)
       do iline = 1, nlines
         if(iline.gt.linestrut(itype,1).and.&
              iline.lt.linestrut(itype,2)) then
           if(keyword(iline,1).eq.'changechains') then
             changechains(itype) = .true.
+          end if
+          if(keyword(iline,1).eq.'maxmove') then
+            read(keyword(iline,2),*) maxmove(itype)
           end if
           if(keyword(iline,1).eq.'resnumbers') then
             read(keyword(iline,2),*) resnumbers(itype)

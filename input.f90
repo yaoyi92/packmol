@@ -27,6 +27,7 @@ module input
   integer, allocatable :: input_itype(:) ! (ntype)
   integer, allocatable :: nloop_type(:) ! (ntype)
   integer, allocatable :: nloop0_type(:) ! (ntype)
+  integer, allocatable :: maxmove(:) ! (ntype)
 
   double precision :: dism
   double precision :: precison

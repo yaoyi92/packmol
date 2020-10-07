@@ -50,6 +50,7 @@ program packmol
   integer :: loop
   integer :: resntemp, nloop_tmp
   integer :: strlength, ioerr
+  integer :: maxmove_tmp
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
@@ -196,6 +197,7 @@ program packmol
         linesttmp1 = linestrut(itype,1)
         linesttmp2 = linestrut(itype,2)
         changechains_tmp = changechains(itype)
+        maxmove_tmp = maxmove(itype)
         chain_tmp = chain(itype)
         nloop_tmp = nloop_type(itype)
         jtype = itype + 1
@@ -220,6 +222,8 @@ program packmol
           resnumbers(jtype) = resntemp
           changechains(itype) = changechains(jtype)
           changechains(jtype) = changechains_tmp
+          maxmove(itype) = maxmove(jtype)
+          maxmove(jtype) = maxmove_tmp
           chain(itype) = chain(jtype)
           chain(jtype) = chain_tmp
           nloop_type(itype) = nloop_type(jtype)
