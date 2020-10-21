@@ -175,6 +175,7 @@ subroutine getinp()
              keyword(i,1) /= 'short_radius' .and. &
              keyword(i,1) /= 'short_radius_scale' .and. &
              keyword(i,1) /= 'resnumbers' .and. &
+             keyword(i,1) /= 'connect' .and. &
              keyword(i,1) /= 'changechains' .and. &
              keyword(i,1) /= 'chain' .and. &
              keyword(i,1) /= 'discale' .and. &
@@ -774,6 +775,7 @@ subroutine getinp()
 
   if(pdb) then             
     do itype = 1, ntype
+      connect(itype) = .true.
       resnumbers(itype) = -1
       changechains(itype) = .false.
       chain(itype) = "#"
@@ -790,6 +792,11 @@ subroutine getinp()
           end if
           if(keyword(iline,1).eq.'resnumbers') then
             read(keyword(iline,2),*) resnumbers(itype)
+          end if
+          if(keyword(iline,1).eq.'connect') then
+            if(keyword(iline,2) == "no") then
+              connect(itype) = .false.
+            end if
           end if
           if(keyword(iline,1).eq.'chain') then
             read(keyword(iline,2),*) chain(itype)

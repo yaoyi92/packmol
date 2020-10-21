@@ -62,6 +62,7 @@ module input
 
   logical, allocatable :: changechains(:) ! (ntype)
   logical, allocatable :: fixedoninput(:) ! (ntype)
+  logical, allocatable :: connect(:) ! (ntype)
   
   character(len=200) :: xyzout
   character(len=200) :: crdfile

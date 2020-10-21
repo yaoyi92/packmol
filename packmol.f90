@@ -70,7 +70,7 @@ program packmol
   logical :: fixtmp
   logical :: rests
   logical :: movebadprint
-  logical :: changechains_tmp
+  logical :: changechains_tmp, connecttmp
 
   logical, allocatable :: fixed(:) ! ntype
 
@@ -193,6 +193,7 @@ program packmol
         nmtemp = nmols(itype)
         natemp = natoms(itype)
         resntemp = resnumbers(itype)
+        connecttmp = connect(itype)
         if(pdb) xyzfile = pdbfile(itype)
         linesttmp1 = linestrut(itype,1)
         linesttmp2 = linestrut(itype,2)
@@ -220,6 +221,8 @@ program packmol
           natoms(jtype) = natemp
           resnumbers(itype) = resnumbers(jtype)
           resnumbers(jtype) = resntemp
+          connect(itype) = connect(jtype)
+          connect(jtype) = connecttmp
           changechains(itype) = changechains(jtype)
           changechains(jtype) = changechains_tmp
           maxmove(itype) = maxmove(jtype)
