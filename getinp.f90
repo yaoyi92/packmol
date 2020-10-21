@@ -256,6 +256,7 @@ subroutine getinp()
           if(record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM') then
             idatom = idatom + 1
             amass(idatom) = 1.d0
+            maxcon(idatom) = 0
             ! Read the index of the first atom, to adjust connectivities, if any
             if(idfirstatom == 0) read(record(7:11),*,iostat=ioerr) idfirstatom
             read(record,"( t31,f8.3,t39,f8.3,t47,f8.3 )",iostat=ioerr) &
