@@ -1,9 +1,10 @@
 
 type input_file
 
+  use sizes
   logical :: tinker, pdb, xyz, moldy
   integer :: nlines
-  character(len=200), allocatable :: line(:)
-  character(len=200), allocatable :: keyword(:,:)
+  character(len=strl), allocatable :: line(:)
+  character(len=strl), allocatable :: keyword(:,:)
 
 end type input_file

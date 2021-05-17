@@ -8,12 +8,13 @@
 !
 function strlength(string)
 
+  use sizes
   implicit none
   integer :: strlength
-  character(len=200) :: string
+  character(len=strl) :: string
   logical empty_char
   
-  strlength = 200
+  strlength = strl
   do while(empty_char(string(strlength:strlength)))
     strlength = strlength - 1
     if ( strlength == 0 ) exit
@@ -43,12 +44,13 @@ end function empty_char
  
 function alltospace(record)
 
+  use sizes
   implicit none
   integer :: i
   logical :: empty_char
-  character(len=200) :: alltospace, record
+  character(len=strl) :: alltospace, record
 
-  do i = 1, 200
+  do i = 1, strl
     if ( empty_char(record(i:i)) ) then
       alltospace(i:i) = " "
     else

@@ -49,7 +49,7 @@ program packmol
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
   integer :: loop
   integer :: resntemp, nloop_tmp
-  integer :: strlength, ioerr
+  integer :: ioerr
   integer :: maxmove_tmp
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
@@ -63,8 +63,8 @@ program packmol
 
   real :: etime, tarray(2), time0
   
-  character(len=200) :: record, restart_from_temp, restart_to_temp
-  character(len=80) :: xyzfile
+  character(len=strl) :: record, restart_from_temp, restart_to_temp
+  character(len=strl) :: xyzfile
   character(len=1) :: chain_tmp
 
   logical :: fixtmp
@@ -141,7 +141,7 @@ program packmol
             coor(idatom, 3) = ztemp + cmz 
           end do
           record = name(itype)
-          write(*,*) ' Molecule ',record(1:strlength(record)),'(',itype,') will be fixed.' 
+          write(*,*) ' Molecule ',trim(adjustl(record)),'(',itype,') will be fixed.' 
           fixed(itype) = .true.
           if(nmols(itype).gt.1) then
             write(*,*)' ERROR: Cannot set number > 1',' for fixed molecules. '
@@ -697,7 +697,7 @@ program packmol
 
   if(check) then
     call output(n,x)
-    write(*,*) ' Wrote initial point to output file: ', xyzout(1:strlength(xyzout)) 
+    write(*,*) ' Wrote initial point to output file: ', trim(adjustl(xyzout)) 
     if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     stop
   end if
@@ -869,7 +869,7 @@ program packmol
           if ( fdist < precision .and. frest < precision ) then
             call output(n,x)
             call writesuccess(itype,fdist,frest,fx)
-            write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
+            write(*,*) ' Solution written to file: ', trim(adjustl(xyzout))
             if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
             write(*,dash3_line)
             exit main

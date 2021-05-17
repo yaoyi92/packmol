@@ -15,14 +15,14 @@ subroutine getinp()
 
   implicit none
   integer :: i, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
-             imark, strlength, ioerr, nloop0, iread, idfirstatom
+             imark, ioerr, nloop0, iread, idfirstatom
   double precision :: clen
-  character(len=200) :: record, blank
+  character(len=strl) :: record, blank
   logical :: inside_structure
 
   ! Clearing the blank character arrays
 
-  do i = 1, 200
+  do i = 1, strl
     blank(i:i) = ' '
   end do
 
@@ -215,14 +215,14 @@ subroutine getinp()
   do iline = 1, nlines
     if(keyword(iline,1).eq.'output') then
       xyzout = keyword(iline,2)
-      xyzout = xyzout(1:strlength(xyzout))
+      xyzout = trim(adjustl(xyzout))
     end if
   end do
   if(xyzout(1:4) == '####') then
     write(*,*)' ERROR: Output file not (correctly?) specified. '
     stop
   end if
-  write(*,*)' Output file: ', xyzout(1:strlength(xyzout))
+  write(*,*)' Output file: ', trim(adjustl(xyzout))
 
   ! Reading structure files
 
@@ -232,14 +232,14 @@ subroutine getinp()
       itype = itype + 1
      
       record = keyword(iline,2)
-      write(*,*) ' Reading coordinate file: ', record(1:strlength(record))
+      write(*,*) ' Reading coordinate file: ', trim(adjustl(record))
 
       ! Reading pdb input files
 
       if(pdb) then
-        name(itype) = record(1:strlength(record))
+        name(itype) = trim(adjustl(record))
         record = keyword(iline,2)
-        pdbfile(itype) = record(1:80)
+        pdbfile(itype) = trim(record)
         idfirst(itype) = 1
         idfirstatom = 0
         do ii = itype - 1, 1, -1
@@ -250,7 +250,7 @@ subroutine getinp()
         ! Read coordinates
         record(1:6) = '######'
         do while(record(1:4).ne.'ATOM'.and.record(1:6).ne.'HETATM')
-          read(10,"( a200 )") record
+          read(10,str_format) record
         end do
         idatom = idfirst(itype) - 1
         do while(idatom.lt.natoms(itype)+idfirst(itype)-1)
@@ -265,7 +265,7 @@ subroutine getinp()
             if( ioerr /= 0 ) then
               record = keyword(iline,2) 
               write(*,*) ' ERROR: Failed to read coordinates from', &
-                         ' file: ', record(1:strlength(record))
+                         ' file: ', trim(adjustl(record))
               write(*,*) ' Probably the coordinates are not in', &
                          ' standard PDB file format. '
               write(*,*) ' Standard PDB format specifications', &
@@ -280,7 +280,7 @@ subroutine getinp()
             if( ioerr /= 0 ) then
               record = pdbfile(itype)
               write(*,*) ' ERROR: Failed reading residue number',&
-                         ' from PDB file: ',record(1:strlength(record))
+                         ' from PDB file: ', trim(adjustl(record))
               write(*,*) ' Residue numbers are integers that',&
                          ' must be within columns 23 and 26. '
               write(*,*) ' Other characters within these columns',&
@@ -291,7 +291,7 @@ subroutine getinp()
               stop
             end if   
           end if
-          read(10,"( a200 )",iostat=ioerr) record
+          read(10,str_format,iostat=ioerr) record
         end do
         !
         ! Read connectivity, if there is any specified
@@ -305,14 +305,14 @@ subroutine getinp()
             idatom = idfirst(itype) - 1 + iatom
             if(ioerr /= 0) then
               write(*,*) " ERROR: Could not read atom index from CONECT line: "
-              write(*,*) record(1:strlength(record))
+              write(*,*) trim(adjustl(record))
               stop
             end if
             iread = iread + 5
             read(record(iread:iread+4),*,iostat=ioerr) nconnect(idatom,1)
             if(ioerr /= 0) then
               write(*,*) " ERROR: Could not read any connection index from CONECT line: "
-              write(*,*) record(1:strlength(record))
+              write(*,*) trim(adjustl(record))
               stop
             end if
             nconnect(idatom,1) = nconnect(idatom,1) - idfirstatom + 1
@@ -328,7 +328,7 @@ subroutine getinp()
               end if
             end do
           end if
-          read(10,"( a200 )",iostat=ioerr) record
+          read(10,str_format,iostat=ioerr) record
         end do
         close(10)
       end if
@@ -347,73 +347,73 @@ subroutine getinp()
         open(10,file = keyword(iline,2), status = 'old')
         record = blank
         do while(record.le.blank)
-          read(10,"( a200 )") record
+          read(10,str_format) record
         end do
         i = 1
         do while(record(i:i).le.' ')
           i = i + 1
-          if ( i > 200 ) exit
+          if ( i > strl ) exit
         end do
         iarg = i
-        if ( i < 200 ) then
+        if ( i < strl ) then
           do while(record(i:i).gt.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
         end if
         read(record(iarg:i-1),*) natoms(itype)
-        if ( i < 200 ) then
+        if ( i < strl ) then
           do while(record(i:i).le.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
         end if
         iarg = i
-        if ( i < 200 ) then
+        if ( i < strl ) then
           do while(record(i:i).gt.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
         end if
-        read(record(iarg:i-1),"( a200 )") name(itype)
+        read(record(iarg:i-1),str_format) name(itype)
         record = name(itype)
-        name(itype) = record(1:strlength(record))
+        name(itype) = trim(adjustl(record))
         if(name(itype).lt.' ') name(itype) = 'Without_title'
         idatom = idfirst(itype) - 1
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
           record = blank
           do while(record.le.blank)
-            read(10,"( a200 )") record
+            read(10,str_format) record
           end do
           i = 1
           do while(record(i:i).le.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
           iarg = i
-          if ( i < 200 ) then
+          if ( i < strl ) then
             do while(record(i:i).gt.' ')
               i = i + 1
-              if ( i > 200 ) exit
+              if ( i > strl ) exit
             end do
           end if
           read(record(iarg:i-1),*) in
-          if ( i < 200 ) then
+          if ( i < strl ) then
             do while(record(i:i).le.' ')
               i = i + 1
-              if ( i > 200 ) exit
+              if ( i > strl ) exit
             end do
           end if
           iarg = i
-          if ( i < 200 ) then
+          if ( i < strl ) then
             do while(record(i:i).gt.' ')
               i = i + 1
-              if ( i > 200 ) exit
+              if ( i > strl ) exit
             end do
           end if
           read(record(iarg:i-1),*) ele(idatom)    
-          read(record(i:200),*) (coor(idatom,k), k = 1, 3),&
+          read(record(i:strl),*) (coor(idatom,k), k = 1, 3),&
                (nconnect(idatom, k), k = 1, maxcon(idatom))
           amass(idatom) = 1.d0
         end do
@@ -426,7 +426,7 @@ subroutine getinp()
         open(10,file=keyword(iline,2),status='old',iostat=ioerr)
         if ( ioerr /= 0 ) call failopen(keyword(iline,2))
         read(10,*) natoms(itype)
-        read(10,"( a200 )") name(itype)
+        read(10,str_format) name(itype)
         if(name(itype).lt.' ') name(itype) = 'Without_title'
         idfirst(itype) = 1
         do ii = itype - 1, 1, -1
@@ -436,7 +436,7 @@ subroutine getinp()
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
           record = blank
-          read(10,"( a200 )") record
+          read(10,str_format) record
           read(record,*) ele(idatom), (coor(idatom,k),k=1,3)
           amass(idatom) = 1.d0
         end do
@@ -451,7 +451,7 @@ subroutine getinp()
         read(10,*) name(itype), nmols(itype)
         natoms(itype) = 0
         do while(.true.)
-          read(10,"( a200 )",iostat=ioerr) record
+          read(10,str_format,iostat=ioerr) record
           if ( ioerr /= 0 ) exit
           if(record.gt.' '.and.record(1:3).ne.'end') & 
             natoms(itype) = natoms(itype) + 1
@@ -462,11 +462,11 @@ subroutine getinp()
           idfirst(itype) = idfirst(itype) + natoms(ii)
         end do
         open(10,file=keyword(iline,2),status='old')
-        read(10,"( a200 )") record
+        read(10,str_format) record
         idatom = idfirst(itype) - 1
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
-          read(10,"( a200 )") record
+          read(10,str_format) record
           read(record,*) lixo, (coor(idatom,k), k = 1, 3),&
                        amass(idatom), charge(idatom), ele(idatom)
         end do
@@ -482,7 +482,7 @@ subroutine getinp()
 
   do itype = 1, ntype
     record = name(itype)
-    write(*,*) ' Structure ', itype, ':',record(1:strlength(record)),&
+    write(*,*) ' Structure ', itype, ':', trim(adjustl(record)),&
                '(',natoms(itype),' atoms)'
   end do
 
@@ -903,7 +903,8 @@ end subroutine getinp
 !
 
 subroutine failopen(record)
-  character(len=200) :: record
+  use sizes
+  character(len=strl) :: record
   write(*,*) 
   write(*,*) ' ERROR: Could not open file. '
   write(*,*) '        Could not find file: ',trim(record)
@@ -921,16 +922,17 @@ end subroutine failopen
 
 subroutine setrnum(file,nres)
 
+  use sizes
   implicit none
   integer :: iread, ires, ireslast, nres, ioerr
-  character(len=80) :: file
-  character(len=200) :: record
+  character(len=strl) :: file
+  character(len=strl) :: record
 
   open(10,file=file,status='old')
   iread = 0
   nres = 1
   do while(nres.eq.1)
-    read(10,"( a200 )",iostat=ioerr) record
+    read(10,str_format,iostat=ioerr) record
     if ( ioerr /= 0 ) exit
     if(record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM') then
       read(record(23:26),*,iostat=ioerr) ires
@@ -994,7 +996,7 @@ subroutine getkeywords()
   use sizes
   use input, only : keyword, nlines, inputfile
   implicit none
-  character(len=200) :: record
+  character(len=strl) :: record
   integer :: iline, i, j, ilast, ival, ioerr
 
   ! Clearing keyword array
@@ -1008,14 +1010,14 @@ subroutine getkeywords()
   ! Filling keyword array
 
   do iline = 1, nlines
-    read(inputfile(iline),"( a200 )",iostat=ioerr) record
+    read(inputfile(iline),str_format,iostat=ioerr) record
     if ( ioerr /= 0 ) exit
     i = 0
     ival = 0
-    do while(i < 200)
+    do while(i < strl)
       i = i + 1
       ilast = i
-      do while(record(i:i) > ' '.and. i < 200)
+      do while(record(i:i) > ' '.and. i < strl)
         i = i + 1
       end do
       if(i.gt.ilast) then
@@ -1082,10 +1084,11 @@ end subroutine chainc
 
 subroutine clear(record)
       
+  use sizes
   integer :: i
-  character(len=80) :: record
+  character(len=strl) :: record
 
-  do i = 1, 80
+  do i = 1, strl
     record(i:i) = ' '
   end do
       

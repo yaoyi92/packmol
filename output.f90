@@ -15,7 +15,7 @@ subroutine output(n,x)
   implicit none
   integer :: n, k, i, ilugan, ilubar, itype, imol, idatom,&
              irest, iimol, ichain, iatom, irec, ilres, ifres,&
-             iires, ciires, strlength, irescount,&
+             iires, ciires, irescount,&
              icart, i_ref_atom, ioerr, ifirst_mol
   integer :: nr, nres, imark  
   integer :: i_fixed, i_not_fixed
@@ -32,9 +32,9 @@ subroutine output(n,x)
 
   character :: write_chain, even_chain, odd_chain
   character(len=64) :: title
-  character(len=80) :: pdb_atom_line, tinker_atom_line, crd_format
+  character(len=strl) :: pdb_atom_line, tinker_atom_line, crd_format
   character(len=8) :: crdires,crdresn,crdsegi,atmname
-  character(len=200) :: record
+  character(len=strl) :: record
   character(len=5) :: i5hex
 
   ! Job title
@@ -258,7 +258,7 @@ subroutine output(n,x)
           xbar = dmin1(0.999999d0,xbar)     
           ybar = dmin1(0.999999d0,ybar)     
           zbar = dmin1(0.999999d0,zbar)     
-          write(30,"( a10,tr1,7(f12.6) )") record(1:strlength(record)), xbar, ybar, zbar, &
+          write(30,"( a10,tr1,7(f12.6) )") trim(adjustl(record)), xbar, ybar, zbar, &
                          q0, q1, q2, q3
           ilugan = ilugan + 3 
           ilubar = ilubar + 3 
@@ -335,7 +335,7 @@ subroutine output(n,x)
         xcm = dmin1(0.999999d0,xcm)     
         ycm = dmin1(0.999999d0,ycm)     
         zcm = dmin1(0.999999d0,zcm)     
-        write(30,"( a10,tr1,7(f12.6) )") record(1:strlength(record)),&
+        write(30,"( a10,tr1,7(f12.6) )") trim(adjustl(record)),&
                        xcm, ycm, zcm, q0, q1, q2, q3
       end if
     end do
@@ -397,14 +397,14 @@ subroutine output(n,x)
         open(15,file=pdbfile(i_not_fixed),status='old')
         ifres = 0
         do
-          read(15,"( a80 )",iostat=ioerr) record
+          read(15,str_format,iostat=ioerr) record
           if ( ioerr /= 0 ) exit
           if ( record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM' ) then
             read(record(23:26),*,iostat=ioerr) imark
             if ( ioerr /= 0 ) then
               record = pdbfile(i_not_fixed)
               write(*,*) ' ERROR: Failed reading residue number ',&
-                         ' from PDB file: ', record(1:strlength(record))
+                         ' from PDB file: ', trim(adjustl(record))
               write(*,*) ' Residue numbers are integers that must',&
                          ' be between columns 23 and 26. '
               write(*,*) ' Other characters within these columns',&
@@ -420,7 +420,7 @@ subroutine output(n,x)
         end do
         nres = ilres - ifres + 1
 
-        do irec = 1, 80
+        do irec = 1, strl
           record(irec:irec) = ' '
         end do
 
@@ -459,7 +459,7 @@ subroutine output(n,x)
           iatom = 0
           do while(iatom.lt.natoms(i_not_fixed))
 
-            read(15,"( a80 )",iostat=ioerr) record
+            read(15,str_format,iostat=ioerr) record
             if ( ioerr /= 0 ) exit mol
             if(record(1:4).ne.'ATOM'.and.record(1:6).ne.'HETATM') then
               cycle
@@ -541,14 +541,14 @@ subroutine output(n,x)
         open(15,file=pdbfile(i_fixed),status='old')
         ifres = 0
         do
-          read(15,"( a80 )",iostat=ioerr) record
+          read(15,str_format,iostat=ioerr) record
           if ( ioerr /= 0 ) exit
           if ( record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM' ) then
             read(record(23:26),*,iostat=ioerr) imark
             if ( ioerr /= 0 ) then
               record = pdbfile(i_not_fixed)
               write(*,*) ' ERROR: Failed reading residue number ',&
-                         ' from PDB file: ', record(1:strlength(record))
+                         ' from PDB file: ', trim(adjustl(record))
               write(*,*) ' Residue numbers are integers that must',&
                          ' be between columns 23 and 26. ' 
               write(*,*) ' Other characters within these columns',&
@@ -571,7 +571,7 @@ subroutine output(n,x)
         iatom = 0
         do while(iatom.lt.natoms(i_fixed))
 
-          read(15,"( a80 )",iostat=ioerr) record
+          read(15,str_format,iostat=ioerr) record
           if ( ioerr /= 0 ) exit
           if(record(1:4).ne.'ATOM'.and.record(1:6).ne.'HETATM') then
             !write(30,"( a80 )") record(1:80)
@@ -773,11 +773,12 @@ function i5hex(i)
 end
 
 subroutine write_connect(iostream,idatom,iatom,ifirst)
+  use sizes
   use input
   implicit none
-  integer :: i, j, iostream, iatom, idatom, ifirst, strlength
+  integer :: i, j, iostream, iatom, idatom, ifirst
   character(len=5) :: i5hex
-  character(len=200) :: str
+  character(len=strl) :: str
   if(maxcon(iatom+idatom) == 0) return
   str = "CONECT"
   j=7
@@ -786,7 +787,7 @@ subroutine write_connect(iostream,idatom,iatom,ifirst)
     j = j + 5
     write(str(j:j+4),"(a5)") i5hex(nconnect(iatom+idatom,i)+ifirst-1)
   end do
-  write(iostream,"(a)") str(1:strlength(str))
+  write(iostream,"(a)") trim(adjustl(str))
 end subroutine write_connect
 
 
