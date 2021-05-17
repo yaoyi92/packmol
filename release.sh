@@ -8,10 +8,6 @@ package=packmol
 # Release version, read from command line:
 version="$1"
 
-# HTML file containing download list:
-
-downloads=/home/leandro/public_html/packmol/versionhistory/index.html
-
 # GIT URL:
 
 giturl=https://github.com/m3g/packmol
@@ -46,7 +42,6 @@ git push origin master tag "v$version"
 today=`date +"%b %d, %Y"`
 changelog="https://github.com/m3g/$package/releases/tag/v$version"
 newline="<tr><td width=190px valign=top><a href=$giturl/archive/v$version.tar.gz> $file </a></td><td> Released on $today - <a target=newpage href=$changelog> [change log at github] </a></td></tr>"
-htmlfile=$downloads
 
 echo "------------------------------"
 echo "CREATING RELEASE IN HOME-PAGE:"
@@ -60,27 +55,8 @@ tar -cf packmol.tar ./packmol
 gzip packmol.tar
 #scp packmol.tar.gz martinez@ssh.ime.unicamp.br:./public_html/packmol/
 \cp -f packmol.tar.gz ~/public_html/m3g/packmol/packmol.tar.gz
-m3g.sh
 cd ..
 \rm -rf ./TEMP
-
-writeline=yes
-while IFS= read -r line ; do
- 
-  if [ "$writeline" = "yes" ] ; then
-    echo $line >> ./htmlfile_new_temp
-  fi
-  if [ $writeline = "no" ] ; then
-    writeline="yes"
-  fi
-
-  if [[ $line == *NEW_VERSION_HERE* ]] ; then
-    echo $newline >> ./htmlfile_new_temp
-  fi
-
-done < "$htmlfile"
-rm $htmlfile
-mv htmlfile_new_temp $htmlfile   
 
 echo "----------------------"
 echo "CHANGE LOG:"
