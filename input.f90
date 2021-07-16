@@ -64,8 +64,9 @@ module input
   logical, allocatable :: fixedoninput(:) ! (ntype)
   logical, allocatable :: connect(:) ! (ntype)
   
-  character(len=200) :: xyzout
-  character(len=200) :: crdfile
+  character(len=1), parameter :: forbiden_char = '~'
+  character(len=strl) :: xyzout
+  character(len=strl) :: crdfile
 
   character(len=1), allocatable :: chain(:) ! (ntype)
   character(len=3), allocatable :: ele(:) ! (ntotat)

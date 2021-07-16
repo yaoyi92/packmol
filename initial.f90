@@ -29,7 +29,7 @@ subroutine initial(n,x)
   logical :: overlap, movebadprint, hasbad 
   logical, allocatable :: hasfixed(:,:,:)
 
-  character(len=200) :: record
+  character(len=strl) :: record
 
   ! Allocate hasfixed array
 

@@ -42,13 +42,11 @@ subroutine setsizes()
     read(5,str_format,iostat=ioerr) record
 
     ! Replace any strange blank character by spaces
-
     record = alltospace(record)
 
     if ( ioerr /= 0 ) exit
 
     ! Remove comments
-
     i = 0
     do while( i < strl ) 
       i = i + 1
@@ -61,6 +59,13 @@ subroutine setsizes()
       cycle
     end if
     if ( strlength(record) < 1 ) cycle
+    record = trim(record)
+
+    !
+    ! Convert file name paths with spaces to single strings
+    !
+    ! check for quotes and replace spaces by @
+    call parse_spaces(record)
       
     ! Number of lines of the input file
 
@@ -96,6 +101,7 @@ subroutine setsizes()
     ! Convert all strange blank characters to spaces
 
     record = alltospace(record)
+    call parse_spaces(record)
 
     ! Remove comments
 

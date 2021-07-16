@@ -994,10 +994,10 @@ end subroutine setcon
 subroutine getkeywords()
 
   use sizes
-  use input, only : keyword, nlines, inputfile
+  use input, only : keyword, nlines, inputfile, forbiden_char
   implicit none
   character(len=strl) :: record
-  integer :: iline, i, j, ilast, ival, ioerr
+  integer :: iline, i, j, k, ilast, ival, ioerr
 
   ! Clearing keyword array
 
@@ -1008,7 +1008,6 @@ subroutine getkeywords()
   end do
 
   ! Filling keyword array
-
   do iline = 1, nlines
     read(inputfile(iline),str_format,iostat=ioerr) record
     if ( ioerr /= 0 ) exit
@@ -1025,6 +1024,19 @@ subroutine getkeywords()
         keyword(iline,ival) = record(ilast:i)
       end if
     end do
+  end do
+
+  ! Remove quotes and the forbiden_char from keywords
+  do i = 1, nlines
+    do j = 1, maxkeywords
+      record = keyword(i,j)
+      do k = 1,strl
+        if (record(k:k) == forbiden_char .or. record(k:k) == '"') then
+          record(k:k) = " "
+        end if
+      end do
+      keyword(i,j) = trim(adjustl(record))
+    end do            
   end do
 
   return
