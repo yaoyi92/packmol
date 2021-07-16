@@ -61,7 +61,7 @@ function alltospace(record)
 end function alltospace
 
 subroutine parse_spaces(record)
-  use input, only : forbiden_char
+  use input, only : forbidden_char
   use sizes
   implicit none
   integer :: i, strlength
@@ -79,17 +79,17 @@ subroutine parse_spaces(record)
           stop
         end if
         if(record(i:i) == " ") then
-          record(i:i) = forbiden_char 
+          record(i:i) = forbidden_char 
         end if 
       end do
     end if
   end do
-  ! Replace spaces after \ by the forbiden_char and remove the \
+  ! Replace spaces after \ by the forbidden_char and remove the \
   i = 0
   do while(i < strlength(record)-1)
     i = i + 1
     if (record(i:i) == "\" .and. record(i+1:i+1) == " ") then
-      record(i:i) = forbiden_char 
+      record(i:i) = forbidden_char 
       record = record(1:i)//record(i+2:strlength(record))
     end if
   end do
