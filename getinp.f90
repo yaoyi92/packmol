@@ -760,8 +760,7 @@ subroutine getinp()
                keyword(iline,2).ne.'structure')
         if(keyword(iline,1) == 'structure'.or.&
            iline == nlines) then
-          write(*,*) ' Input file ERROR: structure specification',&
-                     ' not ending with "end structure"'
+          write(*,*) ' ERROR: Structure specification not ending with "end structure"'
           stop
         end if
         iline = iline + 1
