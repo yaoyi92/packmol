@@ -42,6 +42,7 @@ subroutine initial(n,x)
   ! Default status of the function evaluation
 
   init1 = .false.
+  lboxfirst = 0
 
   ! Initialize the comptype logical array
 
@@ -55,7 +56,7 @@ subroutine initial(n,x)
   scale = 1.d0
   scale2 = 1.d-2
 
-  ! Move molecules to their center of mass (not for moldy)                                                                                   
+  ! Move molecules to their center of mass (not for moldy)
   if(.not.moldy) call tobar()
 
   ! Compute maximum internal distance within each type of molecule
