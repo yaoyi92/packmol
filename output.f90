@@ -35,7 +35,7 @@ subroutine output(n,x)
   character(len=strl) :: pdb_atom_line, tinker_atom_line, crd_format
   character(len=8) :: crdires,crdresn,crdsegi,atmname
   character(len=strl) :: record
-  character(len=5) :: i5hex
+  character(len=5) :: i5hex, tmp_i5hex
 
   ! Job title
 
@@ -497,14 +497,16 @@ subroutine output(n,x)
             ! Writing output line
 
             if(record(1:4).eq.'ATOM') then
-              write(30,pdb_atom_line) "ATOM  ",i5hex(i_ref_atom),&
+              tmp_i5hex = i5hex(i_ref_atom)
+              write(30,pdb_atom_line) "ATOM  ", tmp_i5hex,&
                                       record(12:21), write_chain, iires,&
                                       record(27:27),&
                                       (xcart(icart,k), k = 1, 3),&
                                       record(55:80)
             end if
             if(record(1:6).eq.'HETATM') then
-              write(30,pdb_atom_line) "HETATM", i5hex(i_ref_atom),&
+              tmp_i5hex = i5hex(i_ref_atom)
+              write(30,pdb_atom_line) "HETATM", tmp_i5hex,&
                                        record(12:21), write_chain, iires,&
                                        record(27:27),&
                                        (xcart(icart,k), k = 1, 3),&
@@ -604,14 +606,16 @@ subroutine output(n,x)
           end if
 
           if(record(1:4).eq.'ATOM') then
-            write(30,pdb_atom_line) "ATOM  ", i5hex(i_ref_atom),&
+            tmp_i5hex = i5hex(i_ref_atom)
+            write(30,pdb_atom_line) "ATOM  ", tmp_i5hex,&
                                     record(12:21), write_chain, iires,&
                                     record(27:27),&
                                     (coor(idatom,k), k = 1, 3),&
                                     record(55:80)
           end if
           if(record(1:6).eq.'HETATM') then
-            write(30,pdb_atom_line) "HETATM", i5hex(i_ref_atom),&
+            tmp_i5hex = i5hex(i_ref_atom)
+            write(30,pdb_atom_line) "HETATM", tmp_i5hex,&
                                     record(12:21), write_chain, iires,&
                                     record(27:27),&
                                     (coor(idatom,k), k = 1, 3),&
@@ -777,15 +781,17 @@ subroutine write_connect(iostream,idatom,iatom,ifirst)
   use input
   implicit none
   integer :: i, j, iostream, iatom, idatom, ifirst
-  character(len=5) :: i5hex
+  character(len=5) :: i5hex, tmp_i5hex
   character(len=strl) :: str
   if(maxcon(iatom+idatom) == 0) return
   str = "CONECT"
   j=7
-  write(str(j:j+4),"(a5)") i5hex(iatom+ifirst-1)
+  tmp_i5hex = i5hex(iatom+ifirst-1)
+  write(str(j:j+4),"(a5)") tmp_i5hex
   do i = 1, maxcon(iatom+idatom)
     j = j + 5
-    write(str(j:j+4),"(a5)") i5hex(nconnect(iatom+idatom,i)+ifirst-1)
+    tmp_i5hex = i5hex(nconnect(iatom+idatom,i)+ifirst-1)
+    write(str(j:j+4),"(a5)") tmp_i5hex
   end do
   write(iostream,"(a)") trim(adjustl(str))
 end subroutine write_connect
