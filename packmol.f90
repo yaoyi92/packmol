@@ -692,6 +692,9 @@ program packmol
   call computef(n,x,all_type_fx)
   write(*,*) ' Objective function at initial point: ', all_type_fx
   fprint = all_type_fx
+  do i = 1, n 
+    xprint(i) = x(i)
+  end do
 
   ! Stop if only checking the initial approximation
 
