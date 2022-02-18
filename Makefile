@@ -18,7 +18,7 @@ FORTRAN=/usr/bin/gfortran
 #
 # Change the flags of the compilation if you want:
 #
-FLAGS= -O3 --fast-math
+FLAGS= -O3 --fast-math -march=native -funroll-loops
  
 ###################################################################
 #                                                                 #
@@ -36,6 +36,10 @@ endif
 ifeq ($(MAKECMDGOALS),perf)
 FLAGS = -g -pg
 GENCANFLAGS = -g -pg
+endif
+ifeq ($(MAKECMDGOALS),static)
+FLAGS = -O3 --fast-math -static
+GENCANFLAGS = -O3 --fast-math -static
 endif
 #
 # Files required
@@ -93,6 +97,7 @@ all : $(oall)
 #
 # Compiling with flags for development
 #
+static : devel
 perf : devel
 devel : $(oall)
 	@echo " ------------------------------------------------------ " 
