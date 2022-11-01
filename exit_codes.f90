@@ -8,6 +8,7 @@ module exit_codes
 
   IMPLICIT NONE
 
+  ! Codes 1, 2, 126 – 165 and 255 have special meaning
   integer, parameter :: exit_code_success = 0
   integer, parameter :: exit_code_general_error = 170
   integer, parameter :: exit_code_input_error = 171
