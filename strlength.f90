@@ -61,6 +61,7 @@ function alltospace(record)
 end function alltospace
 
 subroutine parse_spaces(record)
+  use exit_codes
   use input, only : forbidden_char
   use sizes
   implicit none
@@ -76,7 +77,7 @@ subroutine parse_spaces(record)
         i = i + 1
         if( i > strlength(record) ) then
           write(*,*) ' ERROR: Could not find ending quotes in line: ', trim(record)
-          stop
+          stop exit_code_input_error
         end if
         if(record(i:i) == " ") then
           record(i:i) = forbidden_char 

@@ -50,6 +50,7 @@ oall = cenmass.o \
        initial.o \
        title.o \
        setsizes.o \
+       exit_codes.o \
        getinp.o \
        strlength.o \
        output.o \
@@ -111,7 +112,10 @@ devel : $(oall)
 #
 # Modules
 #
-modules = sizes.o compute_data.o usegencan.o input.o flashmod.o swaptypemod.o ahestetic.o
+modules = exit_codes.o sizes.o compute_data.o usegencan.o input.o flashmod.o \
+          swaptypemod.o ahestetic.o
+exit_codes.o : exit_codes.f90
+	@$(FORTRAN) $(FLAGS) -c exit_codes.f90
 sizes.o : sizes.f90 
 	@$(FORTRAN) $(FLAGS) -c sizes.f90
 compute_data.o : compute_data.f90 sizes.o

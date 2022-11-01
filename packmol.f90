@@ -33,6 +33,7 @@
 
 program packmol
 
+  use exit_codes
   use sizes
   use compute_data
   use input
@@ -51,6 +52,7 @@ program packmol
   integer :: resntemp, nloop_tmp
   integer :: ioerr
   integer :: maxmove_tmp
+  integer :: exit_code = 0
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
@@ -146,13 +148,13 @@ program packmol
           if(nmols(itype).gt.1) then
             write(*,*)' ERROR: Cannot set number > 1',' for fixed molecules. '
             write(*,*) '       Structure: ', itype,': ', trim(adjustl(record))
-            stop
+            stop exit_code_input_error
           end if
           if ( restart_from(itype) /= 'none' .or. &
                restart_to(itype) /= 'none' ) then
             write(*,*) ' ERROR: Restart files cannot be used for fixed molecules. '
             write(*,*) '        Structure: ', itype,': ', trim(adjustl(record))
-            stop
+            stop exit_code_input_error
           end if
         end if
       end do
@@ -300,7 +302,7 @@ program packmol
               if ( ioerr /= 0 ) then
                 if ( iiatom == -1 ) then 
                   write(*,*) ' ERROR: Could not read atom selection for type: ', itype
-                  stop
+                  stop exit_code_input_error
                 else
                   exit
                 end if
@@ -308,7 +310,7 @@ program packmol
               if ( iiatom > natoms(itype) ) then
                 write(*,*) ' ERROR: atom selection with index greater than number of '
                 write(*,*) '        atoms in structure ', itype
-                stop
+                stop exit_code_input_error
               end if
               if(iatom.eq.iiatom) exit
             end do
@@ -349,7 +351,7 @@ program packmol
       if(.not.rests) then
         write(*,*) ' ERROR: Some molecule has no geometrical',&
                    ' restriction defined: nothing to do.'
-        stop
+        stop exit_code_input_error
       end if
     end do
   end do
@@ -406,7 +408,7 @@ program packmol
                keyword(iline,2) /= 'y' .and. &
                keyword(iline,2) /= 'z' ) then
             write(*,*) ' ERROR: constrain_rotation option not properly defined (not x, y, or z) '
-            stop
+            stop exit_code_input_error
           end if
         end if
       end if
@@ -454,7 +456,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read radius from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -471,7 +473,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read fscale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -488,7 +490,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -506,7 +508,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius_scale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -550,7 +552,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read radius from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -559,7 +561,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             radius(icart+iat) = value
             ival = ival + 1
@@ -572,7 +574,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read fscale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -581,7 +583,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             fscale(icart+iat) = value
             ival = ival + 1
@@ -594,7 +596,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -603,7 +605,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             short_radius(icart+iat) = value
             use_short_radius(icart+iat) = .true.
@@ -617,7 +619,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius_scale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -626,7 +628,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             short_radius_scale(icart+iat) = value
             use_short_radius(icart+iat) = .true.
@@ -658,7 +660,7 @@ program packmol
      if ( short_radius(i) >= radius(i) ) then 
        write(*,*) ' ERROR: The short radius must be smaller than the default radius. '
        write(*,*) '        (the default radius is one half of the default tolerance).'
-       stop
+       stop exit_code_input_error
      end if
    end if
   end do
@@ -674,7 +676,7 @@ program packmol
     write(*,*) ' Wrote output file: ', trim(adjustl(xyzout))
     if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     write(*,dash1_line)
-    stop
+    stop exit_code_input_error
   end if
   
   !
@@ -925,6 +927,7 @@ program packmol
           if ( itype .eq. ntype+1 ) then
             write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
             call checkpoint(n,xprint)
+            exit_code = exit_code_failed_to_converge
             exit main
           else
             write(*,*)' Maximum number of GENCAN loops achieved.'
@@ -940,6 +943,15 @@ program packmol
   write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
   write(*,dash3_line)
   write(*,*) 
+
+  ! Fortran < 2008 doesn't support non-constant exit codes
+  if (exit_code == 0) then
+    stop
+  elseif (exit_code == exit_code_failed_to_converge) then
+    stop exit_code_failed_to_converge
+  else
+    stop exit_code_general_error
+  end if
 
 end program packmol
 

@@ -8,6 +8,7 @@
 
 subroutine getinp()
 
+  use exit_codes
   use sizes
   use compute_data, only : ntype, natoms, idfirst, nmols, ityperest, coor, restpars
   use input
@@ -199,12 +200,12 @@ subroutine getinp()
              keyword(i,1) /= 'segid' .and. &
              keyword(i,1) /= 'chkgrad' ) then
       write(*,*) ' ERROR: Keyword not recognized: ', trim(keyword(i,1))
-      stop
+      stop exit_code_input_error
     end if
   end do
   if ( ioerr /= 0 ) then
     write(*,*) ' ERROR: Some optional keyword was not used correctly: ', trim(keyword(i,1))
-    stop
+    stop exit_code_input_error
   end if
   write(*,*) ' Seed for random number generator: ', seed
   call init_random_number(seed)
@@ -220,7 +221,7 @@ subroutine getinp()
   end do
   if(xyzout(1:4) == '####') then
     write(*,*)' ERROR: Output file not (correctly?) specified. '
-    stop
+    stop exit_code_input_error
   end if
   write(*,*)' Output file: ', trim(adjustl(xyzout))
 
@@ -271,7 +272,7 @@ subroutine getinp()
               write(*,*) ' Standard PDB format specifications', &
                          ' can be found at: '
               write(*,*) ' www.rcsb.org/pdb '
-              stop
+              stop exit_code_input_error
             end if
            
             ! This only tests if residue numbers can be read, they are used 
@@ -288,7 +289,7 @@ subroutine getinp()
               write(*,*) ' Standard PDB format specifications',&
                          ' can be found at: '
               write(*,*) ' www.rcsb.org/pdb '
-              stop
+              stop exit_code_input_error
             end if   
           end if
           read(10,str_format,iostat=ioerr) record
@@ -306,14 +307,14 @@ subroutine getinp()
             if(ioerr /= 0) then
               write(*,*) " ERROR: Could not read atom index from CONECT line: "
               write(*,*) trim(adjustl(record))
-              stop
+              stop exit_code_input_error
             end if
             iread = iread + 5
             read(record(iread:iread+4),*,iostat=ioerr) nconnect(idatom,1)
             if(ioerr /= 0) then
               write(*,*) " ERROR: Could not read any connection index from CONECT line: "
               write(*,*) trim(adjustl(record))
-              stop
+              stop exit_code_input_error
             end if
             nconnect(idatom,1) = nconnect(idatom,1) - idfirstatom + 1
             maxcon(idatom) = 1
@@ -680,7 +681,7 @@ subroutine getinp()
 
     if ( ioerr /= 0 ) then
       write(*,*) ' ERROR: Some restriction is not set correctly. '
-      stop
+      stop exit_code_input_error
     end if
 
   end do
@@ -696,14 +697,14 @@ subroutine getinp()
       read(keyword(iline,2),*,iostat=ioerr) dism
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Failed reading tolerance. '
-        stop
+        stop exit_code_input_error
       end if
       exit
     end if
   end do
   if ( ioerr /= 0 ) then
     write(*,*) ' ERROR: Overall tolerance not set. Use, for example: tolerance 2.0 '
-    stop
+    stop exit_code_input_error
   end if
   write(*,*) ' Distance tolerance: ', dism
 
@@ -717,11 +718,11 @@ subroutine getinp()
       read(keyword(iline,2),*,iostat=ioerr) short_tol_dist
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Failed reading short_tol_dist. '
-        stop
+        stop exit_code_input_error
       end if
       if ( short_tol_dist > dism ) then 
         write(*,*) ' ERROR: The short_tol_dist parameter must be smaller than the tolerance. '
-        stop
+        stop exit_code_input_error
       end if
       write(*,*) ' User defined short tolerance distance: ', short_tol_dist
       short_tol_dist = short_tol_dist**2
@@ -735,11 +736,11 @@ subroutine getinp()
       read(keyword(iline,2),*,iostat=ioerr) short_tol_scale
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Failed reading short_tol_scale. '
-        stop
+        stop exit_code_input_error
       end if
       if ( short_tol_dist <= 0.d0 ) then 
         write(*,*) ' ERROR: The short_tol_scale parameter must be positive. '
-        stop
+        stop exit_code_input_error
       end if
       write(*,*) ' User defined short tolerance scale: ', short_tol_scale
       exit
@@ -761,7 +762,7 @@ subroutine getinp()
         if(keyword(iline,1) == 'structure'.or.&
            iline == nlines) then
           write(*,*) ' ERROR: Structure specification not ending with "end structure"'
-          stop
+          stop exit_code_input_error
         end if
         iline = iline + 1
       end do
@@ -830,7 +831,7 @@ subroutine getinp()
       if ( chain(itype) /= "#" .and. changechains(itype) ) then
         write(*,*) " ERROR: 'changechains' and 'chain' input parameters are not compatible "
         write(*,*) "        for a single structure. "
-        stop
+        stop exit_code_input_error
       end if
     end do
   end if
@@ -874,7 +875,7 @@ subroutine getinp()
         restart_from(0) = keyword(iline,2)
       else
         write(*,*) ' ERROR: More than one definition of restart_from file for all system. '
-        stop
+        stop exit_code_input_error
       end if
     end if
     if ( keyword(iline,1) == 'restart_to' ) then
@@ -889,7 +890,7 @@ subroutine getinp()
         restart_to(0) = keyword(iline,2)
       else
         write(*,*) ' ERROR: More than one definition of restart_to file for all system. '
-        stop
+        stop exit_code_input_error
       end if
     end if
   end do lines
@@ -902,6 +903,7 @@ end subroutine getinp
 !
 
 subroutine failopen(record)
+  use exit_codes
   use sizes
   character(len=strl) :: record
   write(*,*) 
@@ -911,7 +913,7 @@ subroutine failopen(record)
   write(*,*) '        files are in the current directory or if the' 
   write(*,*) '        correct paths are provided.'
   write(*,*) 
-  stop 
+  stop exit_code_open_file
 end subroutine failopen
 
 !
