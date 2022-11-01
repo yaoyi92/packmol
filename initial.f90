@@ -9,6 +9,7 @@
 
 subroutine initial(n,x)
 
+  use exit_codes
   use sizes
   use compute_data
   use input, only : randini, ntfix, fix, moldy, chkgrad, avoidoverlap,&
@@ -238,7 +239,7 @@ subroutine initial(n,x)
       end if
         write(*,*) ' >The maximum number of cycles (',nloop0_type(itype),') was achieved.' 
         write(*,*) '  You may try increasing it with the',' nloop0 keyword, as in: nloop0 1000 '
-      stop
+      stop exit_code_failed_to_converge
     end if
   end do
   init1 = .false.
@@ -364,7 +365,7 @@ subroutine initial(n,x)
                               x(ilugan+1), x(ilugan+2), x(ilugan+3)
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
-        stop
+        stop exit_code_open_file
       end if
       ilubar = ilubar + 3
       ilugan = ilugan + 3
@@ -516,14 +517,14 @@ subroutine initial(n,x)
       open(10,file=record,status='old',action='read',iostat=ioerr)
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Could not open restart file: ', trim(adjustl(record))
-        stop
+        stop exit_code_open_file
       end if
       do i = 1, nmols(itype)
         read(10,*,iostat=ioerr) x(ilubar+1), x(ilubar+2), x(ilubar+3), &
                                 x(ilugan+1), x(ilugan+2), x(ilugan+3)
         if ( ioerr /= 0 ) then
           write(*,*) ' ERROR: Could not read restart file: ', trim(adjustl(record))
-          stop
+          stop exit_code_open_file
         end if
         ilubar = ilubar + 3
         ilugan = ilugan + 3

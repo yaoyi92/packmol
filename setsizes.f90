@@ -8,6 +8,7 @@
 
 subroutine setsizes()
 
+  use exit_codes
   use sizes
   use compute_data
   use input
@@ -145,7 +146,7 @@ subroutine setsizes()
       read(record,*,iostat=ioerr) fbins
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Invalid value for fbins. '
-        stop
+        stop exit_code_input_error
       end if
     end if
   end do
@@ -164,7 +165,7 @@ subroutine setsizes()
       if ( keyword(iline,2) == "none" ) then
         write(*,*) ' ERROR: structure without filename. '
         write(*,*) ' The syntax must be, for example: structure water.pdb '
-        stop 
+        stop exit_code_input_error 
       end if
     end if
   end do
@@ -237,11 +238,11 @@ subroutine setsizes()
       read(keyword(iline,2),*,iostat=ioerr) nmols(itype)
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Error reading number of molecules of type ', itype
-        stop  
+        stop exit_code_input_error  
       end if
       if ( nmols(itype) < 1 ) then
         write(*,*) ' ERROR: Number of molecules of type ', itype, ' set to less than 1 '
-        stop
+        stop exit_code_input_error
       end if
     end if
 
@@ -252,11 +253,11 @@ subroutine setsizes()
         read(keyword(iline,2),*,iostat=ioerr) nloop_type(itype)
         if ( ioerr /= 0 ) then
           write(*,*) ' ERROR: Error reading number of loops of type ', itype
-          stop  
+          stop exit_code_input_error
         end if
         if ( nloop_type(itype) < 1 ) then
           write(*,*) ' ERROR: Number of loops of type ', itype, ' set to less than 1 '
-          stop
+          stop exit_code_input_error
         end if
       end if
     end if 
@@ -268,11 +269,11 @@ subroutine setsizes()
         read(keyword(iline,2),*,iostat=ioerr) nloop0_type(itype)
         if ( ioerr /= 0 ) then
           write(*,*) ' ERROR: Error reading number of loops-0 of type ', itype
-          stop  
+          stop exit_code_input_error
         end if
         if ( nloop0_type(itype) < 1 ) then
           write(*,*) ' ERROR: Number of loops-0 of type ', itype, ' set to less than 1 '
-          stop
+          stop exit_code_input_error
         end if
       end if
     end if 

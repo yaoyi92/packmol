@@ -8,6 +8,7 @@
 
 subroutine output(n,x)
 
+  use exit_codes
   use sizes
   use compute_data
   use input
@@ -52,7 +53,7 @@ subroutine output(n,x)
     open(10,file=restart_to(0),iostat=ioerr)
     if ( ioerr /= 0 ) then
       write(*,*) ' ERROR: Could not open restart_to file: ', trim(adjustl(record))
-      stop
+      stop exit_code_open_file
     end if
     ilubar = 0
     ilugan = ntotmol*3
@@ -76,7 +77,7 @@ subroutine output(n,x)
       open(10,file=record,iostat=ioerr)
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Could not open restart_to file: ', trim(adjustl(record))
-        stop
+        stop exit_code_open_file
       end if
       do i = 1, nmols(itype)
         write(10,"(6(tr1,es23.16))") x(ilubar+1), x(ilubar+2), x(ilubar+3), &
@@ -412,7 +413,7 @@ subroutine output(n,x)
               write(*,*) ' Standard PDB format specifications can',&
                          ' be found at: '
               write(*,*) ' www.rcsb.org/pdb '
-              stop
+              stop exit_code_input_error
             end if
             if ( ifres .eq. 0 ) ifres = imark
             ilres = imark
@@ -558,7 +559,7 @@ subroutine output(n,x)
               write(*,*) ' Standard PDB format specifications can',&
                          ' be found at: '
               write(*,*) ' www.rcsb.org/pdb '
-              stop
+              stop exit_code_input_error
             end if
             if ( ifres .eq. 0 ) ifres = imark
             ilres = imark
