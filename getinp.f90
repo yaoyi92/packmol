@@ -45,6 +45,7 @@ subroutine getinp()
   precision = 1.d-2
   writebad = .false.
   add_amber_ter = .false.
+  amber_ter_preserve = .false.
   add_box_sides = .false.
   add_sides_fix = 0.d0
   sidemax = 1000.d0
@@ -118,6 +119,9 @@ subroutine getinp()
     else if(keyword(i,1).eq.'add_amber_ter') then
       add_amber_ter = .true.
       write(*,*) ' Will add the TER flag between molecules. '
+    else if(keyword(i,1).eq.'amber_ter_preserve') then
+      amber_ter_preserve = .true.
+      write(*,*) ' TER flags for fixed molecules will be kept if found. '
     else if(keyword(i,1).eq.'avoid_overlap') then
       if ( keyword(i,2).eq.'yes') then
         avoidoverlap = .true.
@@ -184,6 +188,7 @@ subroutine getinp()
              keyword(i,1) /= 'movebadrandom' .and. &
              keyword(i,1) /= 'maxmove' .and. &
              keyword(i,1) /= 'add_amber_ter' .and. &
+             keyword(i,1) /= 'amber_ter_preserve' .and. &
              keyword(i,1) /= 'sidemax' .and. &
              keyword(i,1) /= 'seed' .and. &
              keyword(i,1) /= 'randominitialpoint' .and. &

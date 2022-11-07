@@ -53,7 +53,7 @@ module input
   logical :: chkgrad
   logical :: randini
   logical :: movebadrandom
-  logical :: add_amber_ter
+  logical :: add_amber_ter, amber_ter_preserve
   logical :: add_box_sides
   logical :: fix
   logical :: avoidoverlap
