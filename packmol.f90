@@ -768,28 +768,25 @@ program packmol
     else 
 
       loop = -1
+
+      ! Initializing parameters relative to the improvement of the function
+      fimp = 1.d99
+      fimprov = fimp
+      do i = 1, ntotat
+        radiuswork(i) = radius(i) 
+        radius(i) = radius_ini(i)
+      end do
+      call computef(n,x,fx)
+      do i = 1, ntotat
+        radius(i) = radiuswork(i)
+      end do
+      bestf = fx
+      flast = fx
+
       gencanloop : do while(loop.lt.nloop)
         loop = loop + 1
 
-        ! Reseting the parameters relative to the improvement of the function
-           
-        if(loop.eq.0) then
-          fimp = 1.d99
-          fimprov = fimp
-          do i = 1, ntotat
-            radiuswork(i) = radius(i) 
-            radius(i) = radius_ini(i)
-          end do
-          call computef(n,x,fx)
-          do i = 1, ntotat
-            radius(i) = radiuswork(i)
-          end do
-          bestf = fx
-          flast = fx
-        end if
-
         ! Moving bad molecules
-
         if(radscale == 1.d0 .and. fimp.le.10.d0) then
           movebadprint = .true.
           call movebad(n,x,fx,movebadprint)
