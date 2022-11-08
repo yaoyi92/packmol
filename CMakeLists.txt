@@ -14,6 +14,7 @@ endif()
 
 # Build the executable
 add_executable(packmol
+       exit_codes.f90
        cenmass.f90
        gencan.f
        pgencan.f90
