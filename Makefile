@@ -143,7 +143,7 @@ setsizes.o : setsizes.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c setsizes.f90
 getinp.o : getinp.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c getinp.f90
-strlength.o : strlength.f90  
+strlength.o : strlength.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c strlength.f90
 output.o : output.f90  $(modules)
 	@$(FORTRAN) $(FLAGS) -c output.f90
