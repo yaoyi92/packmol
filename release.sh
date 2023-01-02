@@ -25,7 +25,9 @@ year=`date +%y`
 day=`date +%j`
 #version="${year:0:1}${year:1:1}.$day"
 if [[ $version < " " ]]; then
+  version=`grep version fpm.toml`
   echo "ERROR: Please provide version number, with: ./release.sh 20.1.1"
+  echo "       current $version"
   exit
 fi
 
