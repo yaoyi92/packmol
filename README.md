@@ -1,5 +1,4 @@
-Packmol
-=======
+# Packmol
 
 Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
@@ -9,8 +8,7 @@ http://m3g.iqm.unicamp.br/packmol
 
 Detailed installation and usage instructions are available at this home-page.
 
-What is Packmol
----------------
+## What is Packmol
 
 Packmol creates an initial point for molecular dynamics simulations by packing molecules in defined regions of space. The packing guarantees that short range repulsive interactions do not disrupt the simulations.
 
@@ -22,8 +20,40 @@ The package is compatible with input files of PDB, TINKER, XYZ and MOLDY formats
 
 See http://m3g.iqm.unicamp.br/packmol for more information.
 
-References
-----------
+## Installation instructions
+
+### From source:
+
+1. Download the `.tar.gz` or `.zip` files of the latest version from: https://github.com/m3g/packmol/releases
+
+2. Unpack the files, for example with: 
+   ```
+   tar -xzvf packmol-20.12.0.tar.gz
+   ```
+   or
+   ```
+   unzip -xzvf packmol-20.12.0.zip
+   ```
+   substituting the `20.12.0` with the correct version number.
+
+3. Go into the directory, and compile the package (we assume `gfortran`) is installed in your system:
+    ```
+    cd packmol
+    make
+    ```
+
+4. An executable called `packmol` will be created in the main directory. Add that directory to your path.
+
+### Using the Fortran Package Manager
+
+
+
+
+## Usage
+
+An user guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br/packmol
+
+## References
 
 Please always cite one of the following references in publications for which Packmol was useful:
 

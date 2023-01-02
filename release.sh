@@ -12,9 +12,10 @@ version="$1"
 
 giturl=https://github.com/m3g/packmol
 
-# Name of file containing version number
+# Name of files containing version number
 
-versionfile=./title.f90
+versionfile=./src/title.f90
+fpmfile=./fpm.toml
 
 ####################################################################################################
 
@@ -31,8 +32,11 @@ fi
 file="$package-$version.tar.gz" 
 echo "Will create file: $file"
 
-cat $versionfile | sed -e "s/Version.*/Version\ $version \')\")/" > version_title_temp.f90
-\mv -f version_title_temp.f90 $versionfile
+cat $versionfile | sed -e "s/Version.*/Version\ $version \')\")/" > tmpfile.txt
+\mv -f tmpfile.txt $versionfile
+
+cat $fpmfile | sed -e "s/version.*/version = \"$version\"/" > tmpfile.txt
+\mv -f tmpfile.txt $fpmfile
 
 git add -A .
 git commit -m "Changed version file to $version"
