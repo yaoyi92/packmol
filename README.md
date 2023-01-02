@@ -2,11 +2,10 @@
 
 Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
-This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page:
+This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page: 
 
 http://m3g.iqm.unicamp.br/packmol
-
-Detailed installation and usage instructions are available at this home-page.
+---------------------------------
 
 ## What is Packmol
 
@@ -18,11 +17,13 @@ The user must provide only the coordinates of one molecule of each type, the num
 
 The package is compatible with input files of PDB, TINKER, XYZ and MOLDY formats.
 
-See http://m3g.iqm.unicamp.br/packmol for more information.
+## Usage
+
+User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br/packmol
 
 ## Installation instructions
 
-### From source:
+### Downloading
 
 1. Download the `.tar.gz` or `.zip` files of the latest version from: https://github.com/m3g/packmol/releases
 
@@ -36,33 +37,22 @@ See http://m3g.iqm.unicamp.br/packmol for more information.
    ```
    substituting the `20.12.0` with the correct version number.
 
-3. Go into the directory, and compile the package (we assume `gfortran`) is installed in your system:
+### Using `make`
+
+3. Go into the `packmol` directory, and compile the package (we assume `gfortran` or other compiler is available):
     ```
     cd packmol
+    ./configure [optional: path to fortran compiler]
     make
     ```
 
 4. An executable called `packmol` will be created in the main directory. Add that directory to your path.
 
-### Using the Fortran Package Manager
+### Using the Fortran Package Manager (`fpm`)
 
-packmol now is compatible with the Fortran Package Manager `fpm`, instructions
-of installing `fpm` can be found in:
-https://fpm.fortran-lang.org/en/install/index.html#install
+3. Install the Fortran Package Manager from: https://fpm.fortran-lang.org/en/install/index.html#install
 
-1. Download the `.tar.gz` or `.zip` files of the latest version from: https://github.com/m3g/packmol/releases
-
-2. Unpack the files, for example with: 
-   ```
-   tar -xzvf packmol-20.12.0.tar.gz
-   ```
-   or
-   ```
-   unzip -xzvf packmol-20.12.0.zip
-   ```
-   substituting the `20.12.0` with the correct version number.
-
-3. Go into the directory, to install the package with `fpm` just run:
+4. Go into the `packmol` directory, and run:
    ```
    fpm install --profile release
    ```
@@ -72,11 +62,7 @@ https://fpm.fortran-lang.org/en/install/index.html#install
 
    `fpm` will look for Fortran compilers automatically and will use `gfortran`
    as default. To use another compiler modify the environment variable
-   `FPM_FC=compiler`, for example for `ifort` `FPM_FC=ifort`.
-
-## Usage
-
-An user guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br/packmol
+   `FPM_FC=compiler`, for example for `ifort`, use in bash, `export FPM_FC=ifort`.
 
 ## References
 
