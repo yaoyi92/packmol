@@ -33,6 +33,7 @@ jobs:
     - name: Compile using make
       if: matrix.compiler == 'make'
       run: |
+        ./configure
         make
       shell: bash
 
