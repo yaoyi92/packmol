@@ -4,8 +4,7 @@ Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
 This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page: 
 
-http://m3g.iqm.unicamp.br/packmol
----------------------------------
+**http://m3g.iqm.unicamp.br/packmol**
 
 ## What is Packmol
 
@@ -28,11 +27,11 @@ User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br
 1. Download the `.tar.gz` or `.zip` files of the latest version from: https://github.com/m3g/packmol/releases
 
 2. Unpack the files, for example with: 
-   ```
+   ```bash
    tar -xzvf packmol-20.12.0.tar.gz
    ```
    or
-   ```
+   ```bash
    unzip -xzvf packmol-20.12.0.zip
    ```
    substituting the `20.12.0` with the correct version number.
@@ -40,7 +39,7 @@ User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br
 ### Using `make`
 
 3. Go into the `packmol` directory, and compile the package (we assume `gfortran` or other compiler is available):
-    ```
+    ```bash
     cd packmol
     ./configure [optional: path to fortran compiler]
     make
@@ -53,7 +52,7 @@ User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br
 3. Install the Fortran Package Manager from: https://fpm.fortran-lang.org/en/install/index.html#install
 
 4. Go into the `packmol` directory, and run:
-   ```
+   ```bash
    fpm install --profile release
    ```
    this will compile and send the executable somewhere in your `PATH`.
