@@ -14,12 +14,13 @@
 # If you want to compile with some specific fortran compiler, you must 
 # change the line below to the path of your fortran compiler. 
 #
-FORTRAN=$(FC)
+FORTRAN=/usr/bin/gfortran
 #
 # Change the flags of the compilation if you want:
 #
 FLAGS= -O3 --fast-math -march=native -funroll-loops
- 
+SRCDIR= src
+MAINDIR= app 
 ###################################################################
 #                                                                 #
 # Generally no modifications are required after this.             #
@@ -114,85 +115,85 @@ devel : $(oall)
 #
 modules = exit_codes.o sizes.o compute_data.o usegencan.o input.o flashmod.o \
           swaptypemod.o ahestetic.o
-exit_codes.o : exit_codes.f90
-	@$(FORTRAN) $(FLAGS) -c exit_codes.f90
-sizes.o : sizes.f90 
-	@$(FORTRAN) $(FLAGS) -c sizes.f90
-compute_data.o : compute_data.f90 sizes.o
-	@$(FORTRAN) $(FLAGS) -c compute_data.f90
-input.o : input.f90 sizes.o 
-	@$(FORTRAN) $(FLAGS) -c input.f90
-flashmod.o : flashmod.f90 sizes.o 
-	@$(FORTRAN) $(FLAGS) -c flashmod.f90
-usegencan.o : usegencan.f90 sizes.o
-	@$(FORTRAN) $(FLAGS) -c usegencan.f90
-swaptypemod.o : swaptypemod.f90 
-	@$(FORTRAN) $(FLAGS) -c swaptypemod.f90
-ahestetic.o : ahestetic.f90 
-	@$(FORTRAN) $(FLAGS) -c ahestetic.f90
+exit_codes.o : $(SRCDIR)/exit_codes.f90
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/exit_codes.f90
+sizes.o : $(SRCDIR)/sizes.f90 
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/sizes.f90
+compute_data.o : $(SRCDIR)/compute_data.f90 sizes.o
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/compute_data.f90
+input.o : $(SRCDIR)/input.f90 sizes.o 
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/input.f90
+flashmod.o : $(SRCDIR)/flashmod.f90 sizes.o 
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/flashmod.f90
+usegencan.o : $(SRCDIR)/usegencan.f90 sizes.o
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/usegencan.f90
+swaptypemod.o : $(SRCDIR)/swaptypemod.f90 
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/swaptypemod.f90
+ahestetic.o : $(SRCDIR)/ahestetic.f90 
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/ahestetic.f90
 #
 # Code compiled only for all versions
 #
-cenmass.o : cenmass.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c cenmass.f90
-initial.o : initial.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c initial.f90
-title.o : title.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c title.f90
-setsizes.o : setsizes.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c setsizes.f90
-getinp.o : getinp.f90  $(modules)
-	@$(FORTRAN) $(FLAGS) -c getinp.f90
-strlength.o : strlength.f90  $(modules)
-	@$(FORTRAN) $(FLAGS) -c strlength.f90
-output.o : output.f90  $(modules)
-	@$(FORTRAN) $(FLAGS) -c output.f90
-checkpoint.o : checkpoint.f90  $(modules)
-	@$(FORTRAN) $(FLAGS) -c checkpoint.f90
-writesuccess.o : writesuccess.f90  $(modules)
-	@$(FORTRAN) $(FLAGS) -c writesuccess.f90
-fparc.o : fparc.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c fparc.f90
-gparc.o : gparc.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c gparc.f90
-gwalls.o : gwalls.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c gwalls.f90
-comprest.o : comprest.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c comprest.f90
-comparegrad.o : comparegrad.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c comparegrad.f90
-packmol.o : packmol.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c packmol.f90
-polartocart.o : polartocart.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c polartocart.f90
-resetboxes.o : resetboxes.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c resetboxes.f90
-tobar.o : tobar.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c tobar.f90
-setijk.o : setijk.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c setijk.f90
-setibox.o : setibox.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c setibox.f90
-restmol.o : restmol.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c restmol.f90
-swaptype.o : swaptype.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c swaptype.f90
-heuristics.o : heuristics.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c heuristics.f90
-flashsort.o : flashsort.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c flashsort.f90
-jacobi.o : jacobi.f90
-	@$(FORTRAN) $(FLAGS) -c jacobi.f90
-pgencan.o : pgencan.f90 $(modules)
-	@$(FORTRAN) $(FLAGS) -c pgencan.f90
-gencan.o : gencan.f
-	@$(FORTRAN) $(GENCANFLAGS) -c gencan.f 
-random.o : random.f90 
-	@$(FORTRAN) $(FLAGS) -c random.f90
-computef.o : computef.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c computef.f90
-computeg.o : computeg.f90 $(modules)   
-	@$(FORTRAN) $(FLAGS) -c computeg.f90
+cenmass.o : $(SRCDIR)/cenmass.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/cenmass.f90
+initial.o : $(SRCDIR)/initial.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/initial.f90
+title.o : $(SRCDIR)/title.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/title.f90
+setsizes.o : $(SRCDIR)/setsizes.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/setsizes.f90
+getinp.o : $(SRCDIR)/getinp.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/getinp.f90
+strlength.o : $(SRCDIR)/strlength.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/strlength.f90
+output.o : $(SRCDIR)/output.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/output.f90
+checkpoint.o : $(SRCDIR)/checkpoint.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/checkpoint.f90
+writesuccess.o : $(SRCDIR)/writesuccess.f90  $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/writesuccess.f90
+fparc.o : $(SRCDIR)/fparc.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/fparc.f90
+gparc.o : $(SRCDIR)/gparc.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/gparc.f90
+gwalls.o : $(SRCDIR)/gwalls.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/gwalls.f90
+comprest.o : $(SRCDIR)/comprest.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/comprest.f90
+comparegrad.o : $(SRCDIR)/comparegrad.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/comparegrad.f90
+packmol.o : app/packmol.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c app/packmol.f90
+polartocart.o : $(SRCDIR)/polartocart.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/polartocart.f90
+resetboxes.o : $(SRCDIR)/resetboxes.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/resetboxes.f90
+tobar.o : $(SRCDIR)/tobar.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/tobar.f90
+setijk.o : $(SRCDIR)/setijk.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/setijk.f90
+setibox.o : $(SRCDIR)/setibox.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/setibox.f90
+restmol.o : $(SRCDIR)/restmol.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/restmol.f90
+swaptype.o : $(SRCDIR)/swaptype.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/swaptype.f90
+heuristics.o : $(SRCDIR)/heuristics.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/heuristics.f90
+flashsort.o : $(SRCDIR)/flashsort.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/flashsort.f90
+jacobi.o : $(SRCDIR)/jacobi.f90
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/jacobi.f90
+pgencan.o : $(SRCDIR)/pgencan.f90 $(modules)
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/pgencan.f90
+gencan.o : $(SRCDIR)/gencan.f
+	@$(FORTRAN) $(GENCANFLAGS) -c $(SRCDIR)/gencan.f 
+random.o : $(SRCDIR)/random.f90 
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/random.f90
+computef.o : $(SRCDIR)/computef.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/computef.f90
+computeg.o : $(SRCDIR)/computeg.f90 $(modules)   
+	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/computeg.f90
 #
 # Clean build files
 #

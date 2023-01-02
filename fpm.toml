@@ -1,0 +1,19 @@
+name = "packmol"
+version = "0.1.0"
+license = "license"
+author = ""
+maintainer = ""
+copyright = ""
+
+[build]
+auto-executables = true
+auto-tests = true
+auto-examples = true
+
+[[executable]]
+name = "packmol"
+source-dir = "app"
+main = "packmol.f90"
+
+[install]
+library = false
