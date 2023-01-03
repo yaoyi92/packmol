@@ -1,8 +1,8 @@
-!  
+!
 !  Written by Leandro Martínez, 2009-2011.
 !  Copyright (c) 2009-2018, Leandro Martínez, Jose Mario Martinez,
 !  Ernesto G. Birgin.
-!  
+!
 !
 ! Subroutine comprest: Compute the function value relative to
 !                      to the restrictions for one atom
@@ -14,7 +14,7 @@ subroutine comprest(icart,f)
   use compute_data, only : xcart, restpars, scale, scale2, nratom, ityperest, iratom
 
   implicit none
-  integer :: iratcount, irest, icart 
+  integer :: iratcount, irest, icart
   double precision :: xmin, ymin, zmin, clength, a1, a2, a3, a4, w, b1, b2, b3, d, a5, a6
   double precision :: f
   double precision :: xmax, ymax, zmax
@@ -35,11 +35,11 @@ subroutine comprest(icart,f)
       a1 = dmin1(xcart(icart,1) - xmin, 0.d0)
       a2 = dmin1(xcart(icart,2) - ymin, 0.d0)
       a3 = dmin1(xcart(icart,3) - zmin, 0.d0)
-      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3) 
+      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3)
       a1 = dmax1(xcart(icart,1) - xmax, 0.d0)
       a2 = dmax1(xcart(icart,2) - ymax, 0.d0)
       a3 = dmax1(xcart(icart,3) - zmax, 0.d0)
-      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3)   
+      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3)
     else if(ityperest(irest).eq.3) then
       xmin = restpars(irest,1)
       ymin = restpars(irest,2)
@@ -50,12 +50,12 @@ subroutine comprest(icart,f)
       a1 = dmin1(xcart(icart,1) - xmin, 0.d0)
       a2 = dmin1(xcart(icart,2) - ymin, 0.d0)
       a3 = dmin1(xcart(icart,3) - zmin, 0.d0)
-      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3) 
+      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3)
       a1 = dmax1(xcart(icart,1) - xmax, 0.d0)
       a2 = dmax1(xcart(icart,2) - ymax, 0.d0)
       a3 = dmax1(xcart(icart,3) - zmax, 0.d0)
-      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3)   
-    else if(ityperest(irest).eq.4) then     
+      f = f + scale*(a1 * a1 + a2 * a2 + a3 * a3)
+    else if(ityperest(irest).eq.4) then
       w = (xcart(icart,1)-restpars(irest,1))**2 + &
           (xcart(icart,2)-restpars(irest,2))**2 + &
           (xcart(icart,3)-restpars(irest,3))**2 - &
@@ -162,25 +162,26 @@ subroutine comprest(icart,f)
            dmin1(w - restpars(irest,9), 0.d0)**2 * &
            dmin1(d - restpars(irest,7)**2 , 0.d0 )**2 )
     else if(ityperest(irest).eq.14) then
-      w = restpars(irest,6)*exp( &
-          -(xcart(icart,1) - restpars(irest,1))**2 &
-          /(2*restpars(irest,3)**2) &
-          -(xcart(icart,2) - restpars(irest,2))**2 &
-          /(2*restpars(irest,4)**2)) &
-          -(xcart(icart,3)-restpars(irest,5))
+      a1 = -(xcart(icart,1) - restpars(irest,1))**2/(2*restpars(irest,3)**2)
+      a2 = -(xcart(icart,2) - restpars(irest,2))**2/(2*restpars(irest,4)**2)
+      if(a1+a2<=-50) then
+        w = -(xcart(icart,3)-restpars(irest,5))
+      else
+        w = restpars(irest,6)*exp(a1+a2)-(xcart(icart,3)-restpars(irest,5))
+      end if
       a1 = dmax1(w,0.d0)
       f = f + scale * a1*a1
     else if(ityperest(irest).eq.15) then
-      w = restpars(irest,6)*exp( &
-          -(xcart(icart,1) - restpars(irest,1))**2 &
-          /(2*restpars(irest,3)**2) &
-          -(xcart(icart,2) - restpars(irest,2))**2 &
-          /(2*restpars(irest,4)**2)) &
-          -(xcart(icart,3)-restpars(irest,5))
+      a1 = -(xcart(icart,1) - restpars(irest,1))**2/(2*restpars(irest,3)**2)
+      a2 = -(xcart(icart,2) - restpars(irest,2))**2/(2*restpars(irest,4)**2)
+      if(a1+a2<=-50) then
+        w = -(xcart(icart,3)-restpars(irest,5))
+      else
+        w = restpars(irest,6)*exp(a1+a2)-(xcart(icart,3)-restpars(irest,5))
+      end if
       a1 = dmin1(w,0.d0)
       f = f + scale * a1*a1
     end if 
   end do 
   return
 end subroutine comprest
-

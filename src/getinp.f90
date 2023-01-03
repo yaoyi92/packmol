@@ -675,7 +675,7 @@ subroutine getinp()
         ityperest(irest) = 14
         read(keyword(iline,7),*,iostat=ioerr) restpars(irest,5)
         read(keyword(iline,8),*,iostat=ioerr) restpars(irest,6)
-      else 
+      else
         ioerr = 1
       end if
     end if
