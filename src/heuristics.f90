@@ -10,7 +10,7 @@ subroutine movebad(n,x,fx,movebadprint)
 
   use sizes
   use compute_data
-  use input, only : movefrac, movebadrandom, precision
+  use input, only : movefrac, movebadrandom, precision, maxmove
   use usegencan
   use flashsort
   use ahestetic
@@ -94,7 +94,7 @@ subroutine movebad(n,x,fx,movebadprint)
 
         ! Moving molecules
 
-        nmove = max0(int(nmols(itype)*frac),1)
+        nmove = min0(maxmove(itype),max0(int(nmols(itype)*frac),1))
         if(movebadprint) then
           write(*,"( a,i9,a,i9 )") '  Moving ',nmove,' molecules of type ',itype
           if ( movebadrandom ) then

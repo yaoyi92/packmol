@@ -18,11 +18,12 @@ subroutine checkpoint(n,x)
   use ahestetic
 
   implicit none
-  integer :: i, strlength
+  integer :: i
   integer :: n
   double precision :: x(n)
   double precision :: fx
   logical :: movebadprint
+  character(len=strl) :: xyzout_forced
 
   ! All molecules are important
 
@@ -61,7 +62,7 @@ subroutine checkpoint(n,x)
   call output(n,x)
 
   write(*,*) ' The solution with the best function value was '
-  write(*,*) ' written to the output file: ', xyzout(1:strlength(xyzout))
+  write(*,*) ' written to the output file: ', trim(adjustl(xyzout))
   if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
   write(*,dash1_line)
   write(*,*) ' Forcing the solution to fit the constraints...'
@@ -80,11 +81,11 @@ subroutine checkpoint(n,x)
 
   write(*,*)
   write(*,dash1_line)
-  xyzout = xyzout(1:strlength(xyzout))//'_FORCED'
+  xyzout_forced = trim(adjustl(xyzout))//'_FORCED'
   call output(n,x)
 
   write(*,*) ' The forced point was writen to the '
-  write(*,*) ' output file: ', xyzout(1:strlength(xyzout)+7)
+  write(*,*) ' output file: ', trim(adjustl(xyzout_forced))
   if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
   write(*,*)
   write(*,*) ' If you want that the packing procedure continues'
@@ -100,7 +101,7 @@ subroutine checkpoint(n,x)
   write(*,*) ' ENDED WITHOUT PERFECT PACKING: '
   write(*,*) ' The output file:'
   write(*,*)
-  write(*,*) '   ',xyzout(1:strlength(xyzout)-7) 
+  write(*,*) '   ', trim(adjustl(xyzout)) 
   if ( crd ) write(*,*) ' (... and to CRD file: ', trim(adjustl(crdfile)), ')'
   write(*,*)
   write(*,*) ' contains the best solution found. '

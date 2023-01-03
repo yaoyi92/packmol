@@ -27,6 +27,7 @@ module input
   integer, allocatable :: input_itype(:) ! (ntype)
   integer, allocatable :: nloop_type(:) ! (ntype)
   integer, allocatable :: nloop0_type(:) ! (ntype)
+  integer, allocatable :: maxmove(:) ! (ntype)
 
   double precision :: dism
   double precision :: precison
@@ -52,7 +53,7 @@ module input
   logical :: chkgrad
   logical :: randini
   logical :: movebadrandom
-  logical :: add_amber_ter
+  logical :: add_amber_ter, amber_ter_preserve
   logical :: add_box_sides
   logical :: fix
   logical :: avoidoverlap
@@ -61,17 +62,19 @@ module input
 
   logical, allocatable :: changechains(:) ! (ntype)
   logical, allocatable :: fixedoninput(:) ! (ntype)
+  logical, allocatable :: connect(:) ! (ntype)
   
-  character(len=200) :: xyzout
-  character(len=200) :: crdfile
+  character(len=1), parameter :: forbidden_char = '~'
+  character(len=strl) :: xyzout
+  character(len=strl) :: crdfile
 
   character(len=1), allocatable :: chain(:) ! (ntype)
   character(len=3), allocatable :: ele(:) ! (ntotat)
   character(len=8), allocatable :: segid(:) ! (segment identifier)
-  character(len=80), allocatable :: pdbfile(:) ! (ntype)
-  character(len=200), allocatable :: name(:) ! (ntype)
-  character(len=200), allocatable :: keyword(:,:) ! (nlines,maxkeywords)
-  character(len=200), allocatable :: inputfile(:) ! (nlines)
-  character(len=200), allocatable :: restart_from(:), restart_to(:) ! (0:ntype)
+  character(len=strl), allocatable :: pdbfile(:) ! (ntype)
+  character(len=strl), allocatable :: name(:) ! (ntype)
+  character(len=strl), allocatable :: keyword(:,:) ! (nlines,maxkeywords)
+  character(len=strl), allocatable :: inputfile(:) ! (nlines)
+  character(len=strl), allocatable :: restart_from(:), restart_to(:) ! (0:ntype)
 
 end module input

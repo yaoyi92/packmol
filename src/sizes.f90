@@ -16,13 +16,16 @@
 !
 
 module sizes
-
+  
   integer :: maxrest  
   integer :: mrperatom
   integer :: maxtry   
   integer :: nbp      
   integer :: nn       
   integer :: maxkeywords
+
+  integer, parameter :: strl = 1000
+  character(len=*), parameter :: str_format = "( a1000 )"
 
 end module sizes
 

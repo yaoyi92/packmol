@@ -8,6 +8,7 @@
 
 subroutine setsizes()
 
+  use exit_codes
   use sizes
   use compute_data
   use input
@@ -18,7 +19,7 @@ subroutine setsizes()
   integer :: i, ival, ilast, iline, itype
   integer :: ioerr
   integer :: strlength
-  character(len=200) :: record, word, blank, alltospace
+  character(len=strl) :: record, word, blank, alltospace
   logical :: inside_structure
 
   ! Instructions on how to run packmol
@@ -32,35 +33,40 @@ subroutine setsizes()
 
   write(*,*) ' Reading input file... (Control-C aborts)'   
 
-  do i = 1, 200
+  do i = 1, strl
     blank(i:i) = ' '
   end do
   nlines = 0
   maxkeywords = 0
   ntype = 0
   do
-    read(5,"(a200)",iostat=ioerr) record
+    read(5,str_format,iostat=ioerr) record
 
     ! Replace any strange blank character by spaces
-
     record = alltospace(record)
 
     if ( ioerr /= 0 ) exit
 
     ! Remove comments
-
     i = 0
-    do while( i < 200 ) 
+    do while( i < strl ) 
       i = i + 1
       if ( record(i:i) == '#' ) exit
     end do
     i = i - 1
     if ( i > 0 ) then
-      record = record(1:i)//blank(i+1:200)
+      record = record(1:i)//blank(i+1:strl)
     else
       cycle
     end if
     if ( strlength(record) < 1 ) cycle
+    record = trim(record)
+
+    !
+    ! Convert file name paths with spaces to single strings
+    !
+    ! check for quotes and replace spaces by @
+    call parse_spaces(record)
       
     ! Number of lines of the input file
 
@@ -70,10 +76,10 @@ subroutine setsizes()
 
     i = 0
     ival = 0
-    do while(i < 200)
+    do while(i < strl)
       i = i + 1
       ilast = i
-      do while(record(i:i) > ' ' .and. i < 200)
+      do while(record(i:i) > ' ' .and. i < strl)
         i = i + 1
       end do
       if(i > ilast) then
@@ -90,23 +96,24 @@ subroutine setsizes()
 
   iline = 0
   do
-    read(5,"(a200)",iostat=ioerr) record
+    read(5,str_format,iostat=ioerr) record
     if ( ioerr /= 0 ) exit
 
     ! Convert all strange blank characters to spaces
 
     record = alltospace(record)
+    call parse_spaces(record)
 
     ! Remove comments
 
     i = 0
-    do while( i < 200 ) 
+    do while( i < strl ) 
       i = i + 1
       if ( record(i:i) == '#' ) exit
     end do
     i = i - 1
     if ( i > 0 ) then
-      record = record(1:i)//blank(i+1:200)
+      record = record(1:i)//blank(i+1:strl)
     else
       cycle
     end if
@@ -139,7 +146,7 @@ subroutine setsizes()
       read(record,*,iostat=ioerr) fbins
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Invalid value for fbins. '
-        stop
+        stop exit_code_input_error
       end if
     end if
   end do
@@ -158,7 +165,7 @@ subroutine setsizes()
       if ( keyword(iline,2) == "none" ) then
         write(*,*) ' ERROR: structure without filename. '
         write(*,*) ' The syntax must be, for example: structure water.pdb '
-        stop 
+        stop exit_code_input_error 
       end if
     end if
   end do
@@ -191,7 +198,7 @@ subroutine setsizes()
       if( ioerr /= 0 ) call failopen(keyword(iline,2))
       if ( pdb ) then
         do
-          read(10,"(a200)",iostat=ioerr) record
+          read(10,str_format,iostat=ioerr) record
           if ( ioerr /= 0 ) exit
           if ( record(1:4) == "ATOM" .or. record(1:6) == "HETATM" ) then
             natoms(itype) = natoms(itype) + 1
@@ -231,11 +238,11 @@ subroutine setsizes()
       read(keyword(iline,2),*,iostat=ioerr) nmols(itype)
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Error reading number of molecules of type ', itype
-        stop  
+        stop exit_code_input_error  
       end if
       if ( nmols(itype) < 1 ) then
         write(*,*) ' ERROR: Number of molecules of type ', itype, ' set to less than 1 '
-        stop
+        stop exit_code_input_error
       end if
     end if
 
@@ -246,11 +253,11 @@ subroutine setsizes()
         read(keyword(iline,2),*,iostat=ioerr) nloop_type(itype)
         if ( ioerr /= 0 ) then
           write(*,*) ' ERROR: Error reading number of loops of type ', itype
-          stop  
+          stop exit_code_input_error
         end if
         if ( nloop_type(itype) < 1 ) then
           write(*,*) ' ERROR: Number of loops of type ', itype, ' set to less than 1 '
-          stop
+          stop exit_code_input_error
         end if
       end if
     end if 
@@ -262,11 +269,11 @@ subroutine setsizes()
         read(keyword(iline,2),*,iostat=ioerr) nloop0_type(itype)
         if ( ioerr /= 0 ) then
           write(*,*) ' ERROR: Error reading number of loops-0 of type ', itype
-          stop  
+          stop exit_code_input_error
         end if
         if ( nloop0_type(itype) < 1 ) then
           write(*,*) ' ERROR: Number of loops-0 of type ', itype, ' set to less than 1 '
-          stop
+          stop exit_code_input_error
         end if
       end if
     end if 
@@ -312,6 +319,7 @@ subroutine setsizes()
          keyword(iline,1) == 'inside' .or. &
          keyword(iline,1) == 'outside' .or. &
          keyword(iline,1) == 'over' .or. &
+         keyword(iline,1) == 'above' .or. &
          keyword(iline,1) == 'below' .or. &
          keyword(iline,1) == 'constrain_rotation' ) then
       i = i + 1 
@@ -342,7 +350,7 @@ subroutine setsizes()
   allocate(irestline(maxrest),linestrut(ntype,2),resnumbers(ntype),&
            input_itype(ntype),changechains(ntype),chain(ntype),&
            fixedoninput(ntype),pdbfile(ntype),name(ntype),&
-           segid(ntype))
+           segid(ntype),maxmove(ntype),connect(ntype))
 
   ! Allocate vectors for flashsort
 

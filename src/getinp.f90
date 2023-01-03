@@ -8,6 +8,7 @@
 
 subroutine getinp()
 
+  use exit_codes
   use sizes
   use compute_data, only : ntype, natoms, idfirst, nmols, ityperest, coor, restpars
   use input
@@ -15,14 +16,14 @@ subroutine getinp()
 
   implicit none
   integer :: i, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
-             imark, strlength, ioerr, nloop0
+             imark, ioerr, nloop0, iread, idfirstatom
   double precision :: clen
-  character(len=200) :: record, blank
+  character(len=strl) :: record, blank
   logical :: inside_structure
 
   ! Clearing the blank character arrays
 
-  do i = 1, 200
+  do i = 1, strl
     blank(i:i) = ' '
   end do
 
@@ -44,6 +45,7 @@ subroutine getinp()
   precision = 1.d-2
   writebad = .false.
   add_amber_ter = .false.
+  amber_ter_preserve = .false.
   add_box_sides = .false.
   add_sides_fix = 0.d0
   sidemax = 1000.d0
@@ -117,6 +119,9 @@ subroutine getinp()
     else if(keyword(i,1).eq.'add_amber_ter') then
       add_amber_ter = .true.
       write(*,*) ' Will add the TER flag between molecules. '
+    else if(keyword(i,1).eq.'amber_ter_preserve') then
+      amber_ter_preserve = .true.
+      write(*,*) ' TER flags for fixed molecules will be kept if found. '
     else if(keyword(i,1).eq.'avoid_overlap') then
       if ( keyword(i,2).eq.'yes') then
         avoidoverlap = .true.
@@ -167,6 +172,7 @@ subroutine getinp()
              keyword(i,1) /= 'center' .and. &
              keyword(i,1) /= 'centerofmass' .and. &
              keyword(i,1) /= 'over' .and. &
+             keyword(i,1) /= 'above' .and. &
              keyword(i,1) /= 'below' .and. &
              keyword(i,1) /= 'constrain_rotation' .and. &
              keyword(i,1) /= 'radius' .and. &
@@ -174,12 +180,15 @@ subroutine getinp()
              keyword(i,1) /= 'short_radius' .and. &
              keyword(i,1) /= 'short_radius_scale' .and. &
              keyword(i,1) /= 'resnumbers' .and. &
+             keyword(i,1) /= 'connect' .and. &
              keyword(i,1) /= 'changechains' .and. &
              keyword(i,1) /= 'chain' .and. &
              keyword(i,1) /= 'discale' .and. &
              keyword(i,1) /= 'maxit' .and. &
              keyword(i,1) /= 'movebadrandom' .and. &
+             keyword(i,1) /= 'maxmove' .and. &
              keyword(i,1) /= 'add_amber_ter' .and. &
+             keyword(i,1) /= 'amber_ter_preserve' .and. &
              keyword(i,1) /= 'sidemax' .and. &
              keyword(i,1) /= 'seed' .and. &
              keyword(i,1) /= 'randominitialpoint' .and. &
@@ -196,12 +205,12 @@ subroutine getinp()
              keyword(i,1) /= 'segid' .and. &
              keyword(i,1) /= 'chkgrad' ) then
       write(*,*) ' ERROR: Keyword not recognized: ', trim(keyword(i,1))
-      stop
+      stop exit_code_input_error
     end if
   end do
   if ( ioerr /= 0 ) then
     write(*,*) ' ERROR: Some optional keyword was not used correctly: ', trim(keyword(i,1))
-    stop
+    stop exit_code_input_error
   end if
   write(*,*) ' Seed for random number generator: ', seed
   call init_random_number(seed)
@@ -212,14 +221,14 @@ subroutine getinp()
   do iline = 1, nlines
     if(keyword(iline,1).eq.'output') then
       xyzout = keyword(iline,2)
-      xyzout = xyzout(1:strlength(xyzout))
+      xyzout = trim(adjustl(xyzout))
     end if
   end do
   if(xyzout(1:4) == '####') then
     write(*,*)' ERROR: Output file not (correctly?) specified. '
-    stop
+    stop exit_code_input_error
   end if
-  write(*,*)' Output file: ', xyzout(1:strlength(xyzout))
+  write(*,*)' Output file: ', trim(adjustl(xyzout))
 
   ! Reading structure files
 
@@ -229,51 +238,55 @@ subroutine getinp()
       itype = itype + 1
      
       record = keyword(iline,2)
-      write(*,*) ' Reading coordinate file: ', record(1:strlength(record))
+      write(*,*) ' Reading coordinate file: ', trim(adjustl(record))
 
       ! Reading pdb input files
 
       if(pdb) then
-        name(itype) = record(1:strlength(record))
+        name(itype) = trim(adjustl(record))
         record = keyword(iline,2)
-        pdbfile(itype) = record(1:80)
+        pdbfile(itype) = trim(record)
         idfirst(itype) = 1
+        idfirstatom = 0
         do ii = itype - 1, 1, -1
           idfirst(itype) = idfirst(itype) + natoms(ii)
         end do
         open(10,file=keyword(iline,2),status='old',iostat=ioerr)
         if ( ioerr /= 0 ) call failopen(keyword(iline,2))
+        ! Read coordinates
         record(1:6) = '######'
         do while(record(1:4).ne.'ATOM'.and.record(1:6).ne.'HETATM')
-          read(10,"( a200 )") record
+          read(10,str_format) record
         end do
         idatom = idfirst(itype) - 1
         do while(idatom.lt.natoms(itype)+idfirst(itype)-1)
           if(record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM') then
             idatom = idatom + 1
             amass(idatom) = 1.d0
+            maxcon(idatom) = 0
+            ! Read the index of the first atom, to adjust connectivities, if any
+            if(idfirstatom == 0) read(record(7:11),*,iostat=ioerr) idfirstatom
             read(record,"( t31,f8.3,t39,f8.3,t47,f8.3 )",iostat=ioerr) &
                  (coor(idatom,k),k=1,3)
             if( ioerr /= 0 ) then
               record = keyword(iline,2) 
               write(*,*) ' ERROR: Failed to read coordinates from', &
-                         ' file: ', record(1:strlength(record))
+                         ' file: ', trim(adjustl(record))
               write(*,*) ' Probably the coordinates are not in', &
                          ' standard PDB file format. '
               write(*,*) ' Standard PDB format specifications', &
                          ' can be found at: '
               write(*,*) ' www.rcsb.org/pdb '
-              stop
+              stop exit_code_input_error
             end if
-
+           
             ! This only tests if residue numbers can be read, they are used 
             ! only for  output
-
             read(record(23:26),*,iostat=ioerr) itest
             if( ioerr /= 0 ) then
               record = pdbfile(itype)
               write(*,*) ' ERROR: Failed reading residue number',&
-                         ' from PDB file: ',record(1:strlength(record))
+                         ' from PDB file: ', trim(adjustl(record))
               write(*,*) ' Residue numbers are integers that',&
                          ' must be within columns 23 and 26. '
               write(*,*) ' Other characters within these columns',&
@@ -281,11 +294,47 @@ subroutine getinp()
               write(*,*) ' Standard PDB format specifications',&
                          ' can be found at: '
               write(*,*) ' www.rcsb.org/pdb '
-              stop
+              stop exit_code_input_error
             end if   
           end if
-          read(10,"( a200 )",iostat=ioerr) record
+          read(10,str_format,iostat=ioerr) record
+        end do
+        !
+        ! Read connectivity, if there is any specified
+        !
+        do while(.true.)
           if ( ioerr /= 0 ) exit
+          if(record(1:6).eq.'CONECT') then
+            iread = 7
+            read(record(iread:iread+4),*,iostat=ioerr) iatom
+            iatom = iatom - idfirstatom + 1
+            idatom = idfirst(itype) - 1 + iatom
+            if(ioerr /= 0) then
+              write(*,*) " ERROR: Could not read atom index from CONECT line: "
+              write(*,*) trim(adjustl(record))
+              stop exit_code_input_error
+            end if
+            iread = iread + 5
+            read(record(iread:iread+4),*,iostat=ioerr) nconnect(idatom,1)
+            if(ioerr /= 0) then
+              write(*,*) " ERROR: Could not read any connection index from CONECT line: "
+              write(*,*) trim(adjustl(record))
+              stop exit_code_input_error
+            end if
+            nconnect(idatom,1) = nconnect(idatom,1) - idfirstatom + 1
+            maxcon(idatom) = 1
+            do while(.true.)
+              iread = iread + 5
+              read(record(iread:iread+4),*,iostat=ioerr) nconnect(idatom,maxcon(idatom)+1)
+              if(ioerr == 0) then
+                maxcon(idatom) = maxcon(idatom) + 1
+                nconnect(idatom,maxcon(idatom)) = nconnect(idatom,maxcon(idatom)) - idfirstatom + 1
+              else
+                exit
+              end if
+            end do
+          end if
+          read(10,str_format,iostat=ioerr) record
         end do
         close(10)
       end if
@@ -304,73 +353,73 @@ subroutine getinp()
         open(10,file = keyword(iline,2), status = 'old')
         record = blank
         do while(record.le.blank)
-          read(10,"( a200 )") record
+          read(10,str_format) record
         end do
         i = 1
         do while(record(i:i).le.' ')
           i = i + 1
-          if ( i > 200 ) exit
+          if ( i > strl ) exit
         end do
         iarg = i
-        if ( i < 200 ) then
+        if ( i < strl ) then
           do while(record(i:i).gt.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
         end if
         read(record(iarg:i-1),*) natoms(itype)
-        if ( i < 200 ) then
+        if ( i < strl ) then
           do while(record(i:i).le.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
         end if
         iarg = i
-        if ( i < 200 ) then
+        if ( i < strl ) then
           do while(record(i:i).gt.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
         end if
-        read(record(iarg:i-1),"( a200 )") name(itype)
+        read(record(iarg:i-1),str_format) name(itype)
         record = name(itype)
-        name(itype) = record(1:strlength(record))
+        name(itype) = trim(adjustl(record))
         if(name(itype).lt.' ') name(itype) = 'Without_title'
         idatom = idfirst(itype) - 1
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
           record = blank
           do while(record.le.blank)
-            read(10,"( a200 )") record
+            read(10,str_format) record
           end do
           i = 1
           do while(record(i:i).le.' ')
             i = i + 1
-            if ( i > 200 ) exit
+            if ( i > strl ) exit
           end do
           iarg = i
-          if ( i < 200 ) then
+          if ( i < strl ) then
             do while(record(i:i).gt.' ')
               i = i + 1
-              if ( i > 200 ) exit
+              if ( i > strl ) exit
             end do
           end if
           read(record(iarg:i-1),*) in
-          if ( i < 200 ) then
+          if ( i < strl ) then
             do while(record(i:i).le.' ')
               i = i + 1
-              if ( i > 200 ) exit
+              if ( i > strl ) exit
             end do
           end if
           iarg = i
-          if ( i < 200 ) then
+          if ( i < strl ) then
             do while(record(i:i).gt.' ')
               i = i + 1
-              if ( i > 200 ) exit
+              if ( i > strl ) exit
             end do
           end if
           read(record(iarg:i-1),*) ele(idatom)    
-          read(record(i:200),*) (coor(idatom,k), k = 1, 3),&
+          read(record(i:strl),*) (coor(idatom,k), k = 1, 3),&
                (nconnect(idatom, k), k = 1, maxcon(idatom))
           amass(idatom) = 1.d0
         end do
@@ -383,7 +432,7 @@ subroutine getinp()
         open(10,file=keyword(iline,2),status='old',iostat=ioerr)
         if ( ioerr /= 0 ) call failopen(keyword(iline,2))
         read(10,*) natoms(itype)
-        read(10,"( a200 )") name(itype)
+        read(10,str_format) name(itype)
         if(name(itype).lt.' ') name(itype) = 'Without_title'
         idfirst(itype) = 1
         do ii = itype - 1, 1, -1
@@ -393,7 +442,7 @@ subroutine getinp()
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
           record = blank
-          read(10,"( a200 )") record
+          read(10,str_format) record
           read(record,*) ele(idatom), (coor(idatom,k),k=1,3)
           amass(idatom) = 1.d0
         end do
@@ -408,7 +457,7 @@ subroutine getinp()
         read(10,*) name(itype), nmols(itype)
         natoms(itype) = 0
         do while(.true.)
-          read(10,"( a200 )",iostat=ioerr) record
+          read(10,str_format,iostat=ioerr) record
           if ( ioerr /= 0 ) exit
           if(record.gt.' '.and.record(1:3).ne.'end') & 
             natoms(itype) = natoms(itype) + 1
@@ -419,11 +468,11 @@ subroutine getinp()
           idfirst(itype) = idfirst(itype) + natoms(ii)
         end do
         open(10,file=keyword(iline,2),status='old')
-        read(10,"( a200 )") record
+        read(10,str_format) record
         idatom = idfirst(itype) - 1
         do iatom = 1, natoms(itype)
           idatom = idatom + 1
-          read(10,"( a200 )") record
+          read(10,str_format) record
           read(record,*) lixo, (coor(idatom,k), k = 1, 3),&
                        amass(idatom), charge(idatom), ele(idatom)
         end do
@@ -439,7 +488,7 @@ subroutine getinp()
 
   do itype = 1, ntype
     record = name(itype)
-    write(*,*) ' Structure ', itype, ':',record(1:strlength(record)),&
+    write(*,*) ' Structure ', itype, ':', trim(adjustl(record)),&
                '(',natoms(itype),' atoms)'
   end do
 
@@ -613,7 +662,7 @@ subroutine getinp()
       end if
     end if
 
-    if(keyword(iline,1).eq.'over') then
+    if(keyword(iline,1).eq.'over' .or. keyword(iline,1).eq.'above') then
       irest = irest + 1
       irestline(irest) = iline
       read(keyword(iline,3),*,iostat=ioerr) restpars(irest,1)
@@ -653,7 +702,7 @@ subroutine getinp()
 
     if ( ioerr /= 0 ) then
       write(*,*) ' ERROR: Some restriction is not set correctly. '
-      stop
+      stop exit_code_input_error
     end if
 
   end do
@@ -669,14 +718,14 @@ subroutine getinp()
       read(keyword(iline,2),*,iostat=ioerr) dism
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Failed reading tolerance. '
-        stop
+        stop exit_code_input_error
       end if
       exit
     end if
   end do
   if ( ioerr /= 0 ) then
     write(*,*) ' ERROR: Overall tolerance not set. Use, for example: tolerance 2.0 '
-    stop
+    stop exit_code_input_error
   end if
   write(*,*) ' Distance tolerance: ', dism
 
@@ -690,11 +739,11 @@ subroutine getinp()
       read(keyword(iline,2),*,iostat=ioerr) short_tol_dist
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Failed reading short_tol_dist. '
-        stop
+        stop exit_code_input_error
       end if
       if ( short_tol_dist > dism ) then 
         write(*,*) ' ERROR: The short_tol_dist parameter must be smaller than the tolerance. '
-        stop
+        stop exit_code_input_error
       end if
       write(*,*) ' User defined short tolerance distance: ', short_tol_dist
       short_tol_dist = short_tol_dist**2
@@ -708,11 +757,11 @@ subroutine getinp()
       read(keyword(iline,2),*,iostat=ioerr) short_tol_scale
       if ( ioerr /= 0 ) then
         write(*,*) ' ERROR: Failed reading short_tol_scale. '
-        stop
+        stop exit_code_input_error
       end if
       if ( short_tol_dist <= 0.d0 ) then 
         write(*,*) ' ERROR: The short_tol_scale parameter must be positive. '
-        stop
+        stop exit_code_input_error
       end if
       write(*,*) ' User defined short tolerance scale: ', short_tol_scale
       exit
@@ -733,9 +782,8 @@ subroutine getinp()
                keyword(iline,2).ne.'structure')
         if(keyword(iline,1) == 'structure'.or.&
            iline == nlines) then
-          write(*,*) ' Input file ERROR: structure specification',&
-                     ' not ending with "end structure"'
-          stop
+          write(*,*) ' ERROR: Structure specification not ending with "end structure"'
+          stop exit_code_input_error
         end if
         iline = iline + 1
       end do
@@ -748,18 +796,28 @@ subroutine getinp()
 
   if(pdb) then             
     do itype = 1, ntype
+      connect(itype) = .true.
       resnumbers(itype) = -1
       changechains(itype) = .false.
       chain(itype) = "#"
       segid(itype) = ""
+      maxmove(itype) = nmols(itype)
       do iline = 1, nlines
         if(iline.gt.linestrut(itype,1).and.&
              iline.lt.linestrut(itype,2)) then
           if(keyword(iline,1).eq.'changechains') then
             changechains(itype) = .true.
           end if
+          if(keyword(iline,1).eq.'maxmove') then
+            read(keyword(iline,2),*) maxmove(itype)
+          end if
           if(keyword(iline,1).eq.'resnumbers') then
             read(keyword(iline,2),*) resnumbers(itype)
+          end if
+          if(keyword(iline,1).eq.'connect') then
+            if(keyword(iline,2) == "no") then
+              connect(itype) = .false.
+            end if
           end if
           if(keyword(iline,1).eq.'chain') then
             read(keyword(iline,2),*) chain(itype)
@@ -794,7 +852,7 @@ subroutine getinp()
       if ( chain(itype) /= "#" .and. changechains(itype) ) then
         write(*,*) " ERROR: 'changechains' and 'chain' input parameters are not compatible "
         write(*,*) "        for a single structure. "
-        stop
+        stop exit_code_input_error
       end if
     end do
   end if
@@ -838,7 +896,7 @@ subroutine getinp()
         restart_from(0) = keyword(iline,2)
       else
         write(*,*) ' ERROR: More than one definition of restart_from file for all system. '
-        stop
+        stop exit_code_input_error
       end if
     end if
     if ( keyword(iline,1) == 'restart_to' ) then
@@ -853,7 +911,7 @@ subroutine getinp()
         restart_to(0) = keyword(iline,2)
       else
         write(*,*) ' ERROR: More than one definition of restart_to file for all system. '
-        stop
+        stop exit_code_input_error
       end if
     end if
   end do lines
@@ -866,7 +924,9 @@ end subroutine getinp
 !
 
 subroutine failopen(record)
-  character(len=200) :: record
+  use exit_codes
+  use sizes
+  character(len=strl) :: record
   write(*,*) 
   write(*,*) ' ERROR: Could not open file. '
   write(*,*) '        Could not find file: ',trim(record)
@@ -874,7 +934,7 @@ subroutine failopen(record)
   write(*,*) '        files are in the current directory or if the' 
   write(*,*) '        correct paths are provided.'
   write(*,*) 
-  stop 
+  stop exit_code_open_file
 end subroutine failopen
 
 !
@@ -884,16 +944,17 @@ end subroutine failopen
 
 subroutine setrnum(file,nres)
 
+  use sizes
   implicit none
   integer :: iread, ires, ireslast, nres, ioerr
-  character(len=80) :: file
-  character(len=200) :: record
+  character(len=strl) :: file
+  character(len=strl) :: record
 
   open(10,file=file,status='old')
   iread = 0
   nres = 1
   do while(nres.eq.1)
-    read(10,"( a200 )",iostat=ioerr) record
+    read(10,str_format,iostat=ioerr) record
     if ( ioerr /= 0 ) exit
     if(record(1:4).eq.'ATOM'.or.record(1:6).eq.'HETATM') then
       read(record(23:26),*,iostat=ioerr) ires
@@ -955,10 +1016,10 @@ end subroutine setcon
 subroutine getkeywords()
 
   use sizes
-  use input, only : keyword, nlines, inputfile
+  use input, only : keyword, nlines, inputfile, forbidden_char
   implicit none
-  character(len=200) :: record
-  integer :: iline, i, j, ilast, ival, ioerr
+  character(len=strl) :: record
+  integer :: iline, i, j, k, ilast, ival, ioerr
 
   ! Clearing keyword array
 
@@ -969,16 +1030,15 @@ subroutine getkeywords()
   end do
 
   ! Filling keyword array
-
   do iline = 1, nlines
-    read(inputfile(iline),"( a200 )",iostat=ioerr) record
+    read(inputfile(iline),str_format,iostat=ioerr) record
     if ( ioerr /= 0 ) exit
     i = 0
     ival = 0
-    do while(i < 200)
+    do while(i < strl)
       i = i + 1
       ilast = i
-      do while(record(i:i) > ' '.and. i < 200)
+      do while(record(i:i) > ' '.and. i < strl)
         i = i + 1
       end do
       if(i.gt.ilast) then
@@ -986,6 +1046,19 @@ subroutine getkeywords()
         keyword(iline,ival) = record(ilast:i)
       end if
     end do
+  end do
+
+  ! Remove quotes and the forbidden_char from keywords
+  do i = 1, nlines
+    do j = 1, maxkeywords
+      record = keyword(i,j)
+      do k = 1,strl
+        if (record(k:k) == forbidden_char .or. record(k:k) == '"') then
+          record(k:k) = " "
+        end if
+      end do
+      keyword(i,j) = trim(adjustl(record))
+    end do            
   end do
 
   return
@@ -1045,10 +1118,11 @@ end subroutine chainc
 
 subroutine clear(record)
       
+  use sizes
   integer :: i
-  character(len=80) :: record
+  character(len=strl) :: record
 
-  do i = 1, 80
+  do i = 1, strl
     record(i:i) = ' '
   end do
       

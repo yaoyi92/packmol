@@ -33,6 +33,7 @@
 
 program packmol
 
+  use exit_codes
   use sizes
   use compute_data
   use input
@@ -49,7 +50,9 @@ program packmol
   integer :: i, iline, iiatom, iat, iirest, iratcount, ival
   integer :: loop
   integer :: resntemp, nloop_tmp
-  integer :: strlength, ioerr
+  integer :: ioerr
+  integer :: maxmove_tmp
+  integer :: exit_code = 0
       
   double precision, allocatable :: x(:), xprint(:) ! (nn)
   double precision :: v1(3),v2(3),v3(3)
@@ -62,14 +65,14 @@ program packmol
 
   real :: etime, tarray(2), time0
   
-  character(len=200) :: record, restart_from_temp, restart_to_temp
-  character(len=80) :: xyzfile
+  character(len=strl) :: record, restart_from_temp, restart_to_temp
+  character(len=strl) :: xyzfile
   character(len=1) :: chain_tmp
 
   logical :: fixtmp
   logical :: rests
   logical :: movebadprint
-  logical :: changechains_tmp
+  logical :: changechains_tmp, connecttmp
 
   logical, allocatable :: fixed(:) ! ntype
 
@@ -140,18 +143,18 @@ program packmol
             coor(idatom, 3) = ztemp + cmz 
           end do
           record = name(itype)
-          write(*,*) ' Molecule ',record(1:strlength(record)),'(',itype,') will be fixed.' 
+          write(*,*) ' Molecule ',trim(adjustl(record)),'(',itype,') will be fixed.' 
           fixed(itype) = .true.
           if(nmols(itype).gt.1) then
             write(*,*)' ERROR: Cannot set number > 1',' for fixed molecules. '
             write(*,*) '       Structure: ', itype,': ', trim(adjustl(record))
-            stop
+            stop exit_code_input_error
           end if
           if ( restart_from(itype) /= 'none' .or. &
                restart_to(itype) /= 'none' ) then
             write(*,*) ' ERROR: Restart files cannot be used for fixed molecules. '
             write(*,*) '        Structure: ', itype,': ', trim(adjustl(record))
-            stop
+            stop exit_code_input_error
           end if
         end if
       end do
@@ -192,10 +195,12 @@ program packmol
         nmtemp = nmols(itype)
         natemp = natoms(itype)
         resntemp = resnumbers(itype)
+        connecttmp = connect(itype)
         if(pdb) xyzfile = pdbfile(itype)
         linesttmp1 = linestrut(itype,1)
         linesttmp2 = linestrut(itype,2)
         changechains_tmp = changechains(itype)
+        maxmove_tmp = maxmove(itype)
         chain_tmp = chain(itype)
         nloop_tmp = nloop_type(itype)
         jtype = itype + 1
@@ -218,8 +223,12 @@ program packmol
           natoms(jtype) = natemp
           resnumbers(itype) = resnumbers(jtype)
           resnumbers(jtype) = resntemp
+          connect(itype) = connect(jtype)
+          connect(jtype) = connecttmp
           changechains(itype) = changechains(jtype)
           changechains(jtype) = changechains_tmp
+          maxmove(itype) = maxmove(jtype)
+          maxmove(jtype) = maxmove_tmp
           chain(itype) = chain(jtype)
           chain(jtype) = chain_tmp
           nloop_type(itype) = nloop_type(jtype)
@@ -293,7 +302,7 @@ program packmol
               if ( ioerr /= 0 ) then
                 if ( iiatom == -1 ) then 
                   write(*,*) ' ERROR: Could not read atom selection for type: ', itype
-                  stop
+                  stop exit_code_input_error
                 else
                   exit
                 end if
@@ -301,7 +310,7 @@ program packmol
               if ( iiatom > natoms(itype) ) then
                 write(*,*) ' ERROR: atom selection with index greater than number of '
                 write(*,*) '        atoms in structure ', itype
-                stop
+                stop exit_code_input_error
               end if
               if(iatom.eq.iiatom) exit
             end do
@@ -312,6 +321,7 @@ program packmol
                 if(keyword(iline,1).eq.'inside'.or.&
                    keyword(iline,1).eq.'outside'.or.&
                    keyword(iline,1).eq.'over'.or.&
+                   keyword(iline,1).eq.'above'.or.&
                    keyword(iline,1).eq.'below') then
                   nratom(icart) = nratom(icart) + 1
                   iratcount = iratcount + 1
@@ -326,6 +336,7 @@ program packmol
           else if(keyword(iline,1).eq.'inside'.or.&
                   keyword(iline,1).eq.'outside'.or.&
                   keyword(iline,1).eq.'over'.or.&
+                  keyword(iline,1).eq.'above'.or.&
                   keyword(iline,1).eq.'below') then
             nratom(icart) = nratom(icart) + 1    
             iratcount = iratcount + 1
@@ -340,7 +351,7 @@ program packmol
       if(.not.rests) then
         write(*,*) ' ERROR: Some molecule has no geometrical',&
                    ' restriction defined: nothing to do.'
-        stop
+        stop exit_code_input_error
       end if
     end do
   end do
@@ -397,7 +408,7 @@ program packmol
                keyword(iline,2) /= 'y' .and. &
                keyword(iline,2) /= 'z' ) then
             write(*,*) ' ERROR: constrain_rotation option not properly defined (not x, y, or z) '
-            stop
+            stop exit_code_input_error
           end if
         end if
       end if
@@ -445,7 +456,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read radius from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -462,7 +473,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read fscale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -479,7 +490,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -497,7 +508,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius_scale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           iicart = icart
           do imol = 1, nmols(itype)
@@ -541,7 +552,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read radius from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -550,7 +561,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             radius(icart+iat) = value
             ival = ival + 1
@@ -563,7 +574,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read fscale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -572,7 +583,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             fscale(icart+iat) = value
             ival = ival + 1
@@ -585,7 +596,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -594,7 +605,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             short_radius(icart+iat) = value
             use_short_radius(icart+iat) = .true.
@@ -608,7 +619,7 @@ program packmol
           read(keyword(iline,2),*,iostat=ioerr) value
           if ( ioerr /= 0 ) then
             write(*,*) ' ERROR: Could not read short_radius_scale value from keyword. '
-            stop
+            stop exit_code_input_error
           end if
           ival = 2
           do
@@ -617,7 +628,7 @@ program packmol
             if ( iat > natoms(itype) ) then
               write(*,*) ' ERROR: atom selection with index greater than number of '
               write(*,*) '        atoms in structure ', itype
-              stop
+              stop exit_code_input_error
             end if
             short_radius_scale(icart+iat) = value
             use_short_radius(icart+iat) = .true.
@@ -649,7 +660,7 @@ program packmol
      if ( short_radius(i) >= radius(i) ) then 
        write(*,*) ' ERROR: The short radius must be smaller than the default radius. '
        write(*,*) '        (the default radius is one half of the default tolerance).'
-       stop
+       stop exit_code_input_error
      end if
    end if
   end do
@@ -665,7 +676,7 @@ program packmol
     write(*,*) ' Wrote output file: ', trim(adjustl(xyzout))
     if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     write(*,dash1_line)
-    stop
+    stop exit_code_input_error
   end if
   
   !
@@ -683,12 +694,15 @@ program packmol
   call computef(n,x,all_type_fx)
   write(*,*) ' Objective function at initial point: ', all_type_fx
   fprint = all_type_fx
+  do i = 1, n 
+    xprint(i) = x(i)
+  end do
 
   ! Stop if only checking the initial approximation
 
   if(check) then
     call output(n,x)
-    write(*,*) ' Wrote initial point to output file: ', xyzout(1:strlength(xyzout)) 
+    write(*,*) ' Wrote initial point to output file: ', trim(adjustl(xyzout)) 
     if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     stop
   end if
@@ -754,28 +768,25 @@ program packmol
     else 
 
       loop = -1
+
+      ! Initializing parameters relative to the improvement of the function
+      fimp = 1.d99
+      fimprov = fimp
+      do i = 1, ntotat
+        radiuswork(i) = radius(i) 
+        radius(i) = radius_ini(i)
+      end do
+      call computef(n,x,fx)
+      do i = 1, ntotat
+        radius(i) = radiuswork(i)
+      end do
+      bestf = fx
+      flast = fx
+
       gencanloop : do while(loop.lt.nloop)
         loop = loop + 1
 
-        ! Reseting the parameters relative to the improvement of the function
-           
-        if(loop.eq.0) then
-          fimp = 1.d99
-          fimprov = fimp
-          do i = 1, ntotat
-            radiuswork(i) = radius(i) 
-            radius(i) = radius_ini(i)
-          end do
-          call computef(n,x,fx)
-          do i = 1, ntotat
-            radius(i) = radiuswork(i)
-          end do
-          bestf = fx
-          flast = fx
-        end if
-
         ! Moving bad molecules
-
         if(radscale == 1.d0 .and. fimp.le.10.d0) then
           movebadprint = .true.
           call movebad(n,x,fx,movebadprint)
@@ -860,7 +871,7 @@ program packmol
           if ( fdist < precision .and. frest < precision ) then
             call output(n,x)
             call writesuccess(itype,fdist,frest,fx)
-            write(*,*) ' Solution written to file: ', xyzout(1:strlength(xyzout))
+            write(*,*) ' Solution written to file: ', trim(adjustl(xyzout))
             if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
             write(*,dash3_line)
             exit main
@@ -913,6 +924,7 @@ program packmol
           if ( itype .eq. ntype+1 ) then
             write(*,*)' STOP: Maximum number of GENCAN loops achieved.'
             call checkpoint(n,xprint)
+            exit_code = exit_code_failed_to_converge
             exit main
           else
             write(*,*)' Maximum number of GENCAN loops achieved.'
@@ -928,6 +940,15 @@ program packmol
   write(*,*) '  Running time: ', etime(tarray) - time0,' seconds. ' 
   write(*,dash3_line)
   write(*,*) 
+
+  ! Fortran < 2008 doesn't support non-constant exit codes
+  if (exit_code == 0) then
+    stop
+  elseif (exit_code == exit_code_failed_to_converge) then
+    stop exit_code_failed_to_converge
+  else
+    stop exit_code_general_error
+  end if
 
 end program packmol
 
