@@ -178,6 +178,7 @@ subroutine comprest(icart,f)
           /(2*restpars(irest,4)**2)) &
           -(xcart(icart,3)-restpars(irest,5))
       a1 = dmin1(w,0.d0)
+      f = f + scale * a1*a1
     end if 
   end do 
   return
