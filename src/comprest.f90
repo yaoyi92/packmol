@@ -162,21 +162,23 @@ subroutine comprest(icart,f)
            dmin1(w - restpars(irest,9), 0.d0)**2 * &
            dmin1(d - restpars(irest,7)**2 , 0.d0 )**2 )
     else if(ityperest(irest).eq.14) then
-      w = restpars(irest,6)*exp( &
-          -(xcart(icart,1) - restpars(irest,1))**2 &
-          /(2*restpars(irest,3)**2) &
-          -(xcart(icart,2) - restpars(irest,2))**2 &
-          /(2*restpars(irest,4)**2)) &
-          -(xcart(icart,3)-restpars(irest,5))
+      a1 = -(xcart(icart,1) - restpars(irest,1))**2/(2*restpars(irest,3)**2)
+      a2 = -(xcart(icart,2) - restpars(irest,2))**2/(2*restpars(irest,4)**2)
+      if(a1+a2<=-50) then
+        w = -(xcart(icart,3)-restpars(irest,5))
+      else
+        w = restpars(irest,6)*exp(a1+a2)-(xcart(icart,3)-restpars(irest,5))
+      end if
       a1 = dmax1(w,0.d0)
       f = f + scale * a1*a1
     else if(ityperest(irest).eq.15) then
-      w = restpars(irest,6)*exp( &
-          -(xcart(icart,1) - restpars(irest,1))**2 &
-          /(2*restpars(irest,3)**2) &
-          -(xcart(icart,2) - restpars(irest,2))**2 &
-          /(2*restpars(irest,4)**2)) &
-          -(xcart(icart,3)-restpars(irest,5))
+      a1 = -(xcart(icart,1) - restpars(irest,1))**2/(2*restpars(irest,3)**2)
+      a2 = -(xcart(icart,2) - restpars(irest,2))**2/(2*restpars(irest,4)**2)
+      if(a1+a2<=-50) then
+        w = -(xcart(icart,3)-restpars(irest,5))
+      else
+        w = restpars(irest,6)*exp(a1+a2)-(xcart(icart,3)-restpars(irest,5))
+      end if
       a1 = dmin1(w,0.d0)
       f = f + scale * a1*a1
     end if 

@@ -261,12 +261,13 @@ subroutine gwalls(icart,irest)
   ! Addition of Gaussian surface on xy plane
   ! Based on eq. of type h*exp(-(x-a)**2/2c**2 -(y-b)**2/2d**2)-(z-g)  
   else if(ityperest(irest).eq.14) then
-    d = restpars(irest,6)*exp( & 
-        -(xcart(icart,1) - restpars(irest,1))**2 &
-        /(2*restpars(irest,3)**2) &
-        -(xcart(icart,2) - restpars(irest,2))**2 &
-        /(2*restpars(irest,4)**2)) &
-        -(xcart(icart,3)-restpars(irest,5))
+    a1 = -(xcart(icart,1) - restpars(irest,1))**2/(2*restpars(irest,3)**2)
+    a2 = -(xcart(icart,2) - restpars(irest,2))**2/(2*restpars(irest,4)**2)
+    if(a1+a2<=-50) then
+      d = -(xcart(icart,3)-restpars(irest,5))
+    else
+      d = restpars(irest,6)*exp(a1+a2)-(xcart(icart,3)-restpars(irest,5))
+    end if
     if(d.gt.0.d0) then
       d = scale * d
       gxcar(icart,1) = gxcar(icart,1) - 2.d0*d*(xcart(icart,1)-restpars(irest,1)) &
@@ -276,12 +277,13 @@ subroutine gwalls(icart,irest)
       gxcar(icart,3) = gxcar(icart,3) - 2.d0*d
     end if
   else if(ityperest(irest).eq.15) then
-    d = restpars(irest,6)*exp( &
-        -(xcart(icart,1) - restpars(irest,1))**2 &
-        /(2*restpars(irest,3)**2) &
-        -(xcart(icart,2) - restpars(irest,2))**2 &
-        /(2*restpars(irest,4)**2)) &
-        -(xcart(icart,3)-restpars(irest,5))
+    a1 = -(xcart(icart,1) - restpars(irest,1))**2/(2*restpars(irest,3)**2)
+    a2 = -(xcart(icart,2) - restpars(irest,2))**2/(2*restpars(irest,4)**2)
+    if(a1+a2<=-50) then
+      d = -(xcart(icart,3)-restpars(irest,5))
+    else
+      d = restpars(irest,6)*exp(a1+a2)-(xcart(icart,3)-restpars(irest,5))
+    end if
     if(d.lt.0.d0) then
       d = scale * d
       gxcar(icart,1) = gxcar(icart,1) - 2.d0*d*(xcart(icart,1)-restpars(irest,1)) &
