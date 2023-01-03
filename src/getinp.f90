@@ -665,7 +665,6 @@ subroutine getinp()
     if(keyword(iline,1).eq.'over' .or. keyword(iline,1).eq.'above') then
       irest = irest + 1
       irestline(irest) = iline
-      ityperest(irest) = 10
       read(keyword(iline,3),*,iostat=ioerr) restpars(irest,1)
       read(keyword(iline,4),*,iostat=ioerr) restpars(irest,2)
       read(keyword(iline,5),*,iostat=ioerr) restpars(irest,3)
@@ -684,7 +683,6 @@ subroutine getinp()
     if(keyword(iline,1).eq.'below') then
       irest = irest + 1
       irestline(irest) = iline
-      ityperest(irest) = 11
       read(keyword(iline,3),*,iostat=ioerr) restpars(irest,1)
       read(keyword(iline,4),*,iostat=ioerr) restpars(irest,2)
       read(keyword(iline,5),*,iostat=ioerr) restpars(irest,3)
