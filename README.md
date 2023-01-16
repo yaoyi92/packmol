@@ -2,8 +2,6 @@
 
 Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
-This page contains the version history of Packmol. You can download packmol from this page, but give preference to the official Packmol page: 
-
 **http://m3g.iqm.unicamp.br/packmol**
 
 ## What is Packmol
@@ -18,7 +16,7 @@ The package is compatible with input files of PDB, TINKER, XYZ and MOLDY formats
 
 ## Usage
 
-User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br/packmol
+User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br/packmol (or at https://m3g.github.io/packmol)
 
 ## Installation instructions
 
