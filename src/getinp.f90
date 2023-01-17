@@ -665,23 +665,37 @@ subroutine getinp()
     if(keyword(iline,1).eq.'over' .or. keyword(iline,1).eq.'above') then
       irest = irest + 1
       irestline(irest) = iline
-      ityperest(irest) = 10
       read(keyword(iline,3),*,iostat=ioerr) restpars(irest,1)
       read(keyword(iline,4),*,iostat=ioerr) restpars(irest,2)
       read(keyword(iline,5),*,iostat=ioerr) restpars(irest,3)
       read(keyword(iline,6),*,iostat=ioerr) restpars(irest,4)
-      if(keyword(iline,2).ne.'plane') ioerr = 1
+      if (keyword(iline,2).eq.'plane') then
+        ityperest(irest) = 10
+      else if(keyword(iline,2).eq.'xygauss') then
+        ityperest(irest) = 14
+        read(keyword(iline,7),*,iostat=ioerr) restpars(irest,5)
+        read(keyword(iline,8),*,iostat=ioerr) restpars(irest,6)
+      else
+        ioerr = 1
+      end if
     end if
 
     if(keyword(iline,1).eq.'below') then
       irest = irest + 1
       irestline(irest) = iline
-      ityperest(irest) = 11
       read(keyword(iline,3),*,iostat=ioerr) restpars(irest,1)
       read(keyword(iline,4),*,iostat=ioerr) restpars(irest,2)
       read(keyword(iline,5),*,iostat=ioerr) restpars(irest,3)
       read(keyword(iline,6),*,iostat=ioerr) restpars(irest,4)
-      if(keyword(iline,2).ne.'plane') ioerr = 1 
+      if (keyword(iline,2).eq.'plane') then
+        ityperest(irest) = 11
+      else if(keyword(iline,2).eq.'xygauss') then
+        ityperest(irest) = 15
+        read(keyword(iline,7),*,iostat=ioerr) restpars(irest,5)
+        read(keyword(iline,8),*,iostat=ioerr) restpars(irest,6)
+      else 
+        ioerr = 1
+      end if
     end if
 
     if ( ioerr /= 0 ) then
