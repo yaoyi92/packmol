@@ -2,7 +2,7 @@
 
 Packmol - Creates Initial Configurations for Molecular Dynamics Simulations
 
-**http://m3g.iqm.unicamp.br/packmol**
+**https://m3g.github.io/packmol**
 
 ## What is Packmol
 
@@ -16,7 +16,7 @@ The package is compatible with input files of PDB, TINKER, XYZ and MOLDY formats
 
 ## Usage
 
-User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br/packmol (or at https://m3g.github.io/packmol)
+User guide, examples, and tutorials, are available at: https://m3g.github.io/packmol
 
 ## Installation instructions
 
@@ -26,13 +26,13 @@ User guide, examples, and tutorials, are available at: http://m3g.iqm.unicamp.br
 
 2. Unpack the files, for example with: 
    ```bash
-   tar -xzvf packmol-20.12.0.tar.gz
+   tar -xzvf packmol-20.13.0.tar.gz
    ```
    or
    ```bash
-   unzip -xzvf packmol-20.12.0.zip
+   unzip -xzvf packmol-20.13.0.zip
    ```
-   substituting the `20.12.0` with the correct version number.
+   substituting the `20.13.0` with the correct version number.
 
 ### Using `make`
 
