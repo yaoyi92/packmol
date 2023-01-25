@@ -463,6 +463,9 @@ subroutine output(n,x)
             read(15,str_format,iostat=ioerr) record
             if ( ioerr /= 0 ) exit mol
             if(record(1:4).ne.'ATOM'.and.record(1:6).ne.'HETATM') then
+              if(amber_ter_preserve .and. record(1:3).eq.'TER') then
+                write(30,"('TER')") 
+              end if
               cycle
             end if
 
