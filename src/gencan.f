@@ -495,7 +495,7 @@ C     purpose, we declare a vector of tmax elements. So maxitngp must
 C     be less than or equal to tmax.
      
       integer tmax
-      parameter ( tmax = 10000 )
+      parameter ( tmax = 1000 )
 
 C     HERE STARTS THE DESCRIPTION OF THE OTHER ARGUMENTS OF GENCAN BEING 
 C     SETTED BY EASYGENCAN. THESE ARGUMENTS MAY BE MODIFIED BY A COMMON 
@@ -1829,7 +1829,7 @@ C     equal to cgeps_0 and cgeps_f.
 C     We introduce now a linear relation between gpsupn and cgeps also.
 
 c LM: changed to avoid error with gpsupn=0
-      if ( gpsupn .ne. 0.0d0 ) then
+      if ( gpsupn .ge. 0.d0 ) then
          acgeps = log10( cgepsf / cgepsi ) / log10( cggpnf / gpsupn )
          bcgeps = log10( cgepsi ) - acgeps * log10( gpsupn )
       else
@@ -2190,7 +2190,7 @@ C         Call conjugate gradients
      +    cgiter,rbdtype,rbdind,inform,w(1),w(n+1),w(2*n+1),w(3*n+1),
      +    w(4*n+1),theta,sterel,steabs,epsrel,epsabs,infrel,infabs)
 
-	  cgcnt = cgcnt + cgiter
+          cgcnt = cgcnt + cgiter
 
           if ( inform .lt. 0 ) then
 
@@ -2571,7 +2571,7 @@ C     Non-executable statements
      */,1X,'Functional evaluations: ',I7,
      */,1X,'Gradient evaluations: ',I7,
      */,1X,'Conjugate gradient iterations: ',I7)
- 1003 format(6X,I6,T22,D17.6,T43,D17.6)
+C1003 format(6X,I6,T22,D17.6,T43,D17.6)
 C1003 format(6X,'Iter = ',I6,' f = ',1PD11.4,' gpsupn = ',1PD11.4)
  1000 format(/1X,'Flag of GENCAN = ',I3,' Fatal Error')
 
@@ -5649,17 +5649,17 @@ C     ******************************************************************
       NN = N*INCX
       I = 1
    20 CONTINUE
-   30 IF (DABS(DX(I)).GT.CUTLO) GO TO 85
+      IF (DABS(DX(I)).GT.CUTLO) GO TO 85
       XMAX = ZERO
-   50 IF (DX(I).EQ.ZERO) GO TO 200
+      IF (DX(I).EQ.ZERO) GO TO 200
       IF (DABS(DX(I)).GT.CUTLO) GO TO 85
       GO TO 105
   100 I = J
       SUM = (SUM/DX(I))/DX(I)
   105 XMAX = DABS(DX(I))
       GO TO 115
-   70 IF (DABS(DX(I)).GT.CUTLO) GO TO 75
-  110 IF (DABS(DX(I)).LE.XMAX) GO TO 115
+      IF (DABS(DX(I)).GT.CUTLO) GO TO 75
+      IF (DABS(DX(I)).LE.XMAX) GO TO 115
       SUM = ONE + SUM* (XMAX/DX(I))**2
       XMAX = DABS(DX(I))
       GO TO 200
