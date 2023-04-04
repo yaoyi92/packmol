@@ -21,6 +21,8 @@ FORTRAN=/usr/bin/gfortran
 FLAGS= -O3 --fast-math -march=native -funroll-loops
 SRCDIR= src
 MAINDIR= app 
+# Do not use --fast-math in GENCAN to avoid IEEE signaling
+GENCANFLAGS = -O3 -march=native -funroll-loops
 ###################################################################
 #                                                                 #
 # Generally no modifications are required after this.             #
