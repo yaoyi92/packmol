@@ -45,7 +45,8 @@ jobs:
 
     - name: Run
       run: |
-          cd example
+          cd testing
           ../packmol < water_box.inp
+          ../packmol < ieee_signaling.inp
           cd ..
       shell: bash
