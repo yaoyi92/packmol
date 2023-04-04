@@ -1829,13 +1829,16 @@ C     equal to cgeps_0 and cgeps_f.
 C     We introduce now a linear relation between gpsupn and cgeps also.
 
 c LM: changed to avoid error with gpsupn=0
-      if ( gpsupn .gt. 0.d0 ) then
-         acgeps = log10( cgepsf / cgepsi ) / log10( cggpnf / gpsupn )
-         bcgeps = log10( cgepsi ) - acgeps * log10( gpsupn )
-      else
-         acgeps = 0.0d0
-         bcgeps = cgepsf
-      end if
+      call gp_ieee_signal1(gpsupn, acgeps, bcgeps, cgepsf,
+     +      cgepsi, cggpnf)
+c      if ( gpsupn .gt. 0.d0 ) then
+c         acgeps = log10( cgepsf / cgepsi ) / log10( cggpnf / gpsupn )
+c         bcgeps = log10( cgepsi ) - acgeps * log10( gpsupn )
+c      else
+c         acgeps = 0.0d0
+c         bcgeps = cgepsf
+c      end if
+
 c      if ( cgscre .eq. 1 ) then
 c          acgeps = 2.0d0 * log10( cgepsf / cgepsi ) / 
 c     +                     log10( cggpnf ** 2 / gpeucn2 )
@@ -2152,36 +2155,41 @@ C         taken if you set ucgeps < 0 and ucgmaxit < 0, respectively.
 C         Otherwise, the parameters cgeps and cgmaxit will be the ones 
 C         set by the user.
 
-          if( ucgmaxit .le. 0 ) then
-              if ( nearlyq ) then
-                  cgmaxit = nind
-              else
-                  if ( cgscre .eq. 1 ) then
-                      kappa = log10( gpeucn2 / gpeucn20 )/
-     +                        log10( epsgpen2 / gpeucn20 )
-                  else ! if ( cgscre .eq. 2 ) then
-                      kappa= log10( gpsupn / gpsupn0 ) / 
-     +                       log10( epsgpsn / gpsupn0 )
-                  end if
-                  kappa = max( 0.0d0, min( 1.0d0, kappa ) )
-                  cgmaxit = int(
-     +            ( 1.0d0 - kappa ) * max( 1.0d0, 10.0d0 * 
-     +            log10( dfloat( nind ) ) ) + kappa * dfloat( nind ) )
-c L. Martinez added to accelerate the iterations near the solution 
-                  cgmaxit = min(20,cgmaxit)
-              end if
-c              cgmaxit = 2 * nind
-          else
-              cgmaxit = ucgmaxit
-          end if
+        call gp_ieee_signal2(
+     +    cgmaxit, nind, nearlyq, ucgmaxit, cgscre,
+     +    kappa, gpeucn2, gpeucn20, epsgpen2, epsgpsn,
+     +    cgeps, acgeps, bcgeps, cgepsf, cgepsi, gpsupn, gpsupn0)
 
-          if ( cgscre .eq. 1 ) then
-              cgeps = sqrt( 10.0d0 ** ( acgeps * log10( gpeucn2 ) + 
-     +                bcgeps ) )
-          else ! if ( cgscre .eq. 2 ) then
-              cgeps = 10.0d0 ** ( acgeps * log10( gpsupn ) + bcgeps )
-          end if
-          cgeps = max( cgepsf, min( cgepsi, cgeps ) )
+c          if( ucgmaxit .le. 0 ) then
+c              if ( nearlyq ) then
+c                  cgmaxit = nind
+c              else
+c                  if ( cgscre .eq. 1 ) then
+c                      kappa = log10( gpeucn2 / gpeucn20 )/
+c     +                        log10( epsgpen2 / gpeucn20 )
+c                  else ! if ( cgscre .eq. 2 ) then
+c                      kappa= log10( gpsupn / gpsupn0 ) / 
+c     +                       log10( epsgpsn / gpsupn0 )
+c                  end if
+c                  kappa = max( 0.0d0, min( 1.0d0, kappa ) )
+c                  cgmaxit = int(
+c     +            ( 1.0d0 - kappa ) * max( 1.0d0, 10.0d0 * 
+c     +            log10( dfloat( nind ) ) ) + kappa * dfloat( nind ) )
+cc L. Martinez added to accelerate the iterations near the solution 
+c                  cgmaxit = min(20,cgmaxit)
+c              end if
+cc              cgmaxit = 2 * nind
+c          else
+c              cgmaxit = ucgmaxit
+c          end if
+c
+c          if ( cgscre .eq. 1 ) then
+c              cgeps = sqrt( 10.0d0 ** ( acgeps * log10( gpeucn2 ) + 
+c     +                bcgeps ) )
+c          else ! if ( cgscre .eq. 2 ) then
+c              cgeps = 10.0d0 ** ( acgeps * log10( gpsupn ) + bcgeps )
+c          end if
+c          cgeps = max( cgepsf, min( cgepsi, cgeps ) )
 
 C         Call conjugate gradients
 

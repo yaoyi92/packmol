@@ -21,8 +21,6 @@ FORTRAN=/usr/bin/gfortran
 FLAGS= -O3 --fast-math -march=native -funroll-loops
 SRCDIR= src
 MAINDIR= app 
-# Do not use --fast-math in GENCAN to avoid IEEE signaling
-GENCANFLAGS = -O3 -march=native -funroll-loops
 ###################################################################
 #                                                                 #
 # Generally no modifications are required after this.             #
@@ -32,6 +30,8 @@ GENCANFLAGS = -O3 -march=native -funroll-loops
 # Flags for compiling development version
 #
 GENCANFLAGS := $(FLAGS)
+# Flags for the routines that signal with --fast-math
+IEEE_SIGNAL_FLAGS := $(FLAGS)
 ifeq ($(MAKECMDGOALS),devel)
 FLAGS = -Wall -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow
 GENCANFLAGS = -fcheck=bounds -g -fbacktrace -ffpe-trap=zero,overflow,underflow 
@@ -84,7 +84,8 @@ oall = cenmass.o \
        flashmod.o \
        computef.o \
        computeg.o \
-       input.o
+       input.o \
+	   gencan_ieee_signal_routines.o
 #
 # Linking 
 #
@@ -116,7 +117,7 @@ devel : $(oall)
 # Modules
 #
 modules = exit_codes.o sizes.o compute_data.o usegencan.o input.o flashmod.o \
-          swaptypemod.o ahestetic.o
+          swaptypemod.o ahestetic.o 
 exit_codes.o : $(SRCDIR)/exit_codes.f90
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/exit_codes.f90
 sizes.o : $(SRCDIR)/sizes.f90 
@@ -133,6 +134,7 @@ swaptypemod.o : $(SRCDIR)/swaptypemod.f90
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/swaptypemod.f90
 ahestetic.o : $(SRCDIR)/ahestetic.f90 
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/ahestetic.f90
+
 #
 # Code compiled only for all versions
 #
@@ -188,21 +190,23 @@ jacobi.o : $(SRCDIR)/jacobi.f90
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/jacobi.f90
 pgencan.o : $(SRCDIR)/pgencan.f90 $(modules)
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/pgencan.f90
-gencan.o : $(SRCDIR)/gencan.f
-	@$(FORTRAN) $(GENCANFLAGS) -c $(SRCDIR)/gencan.f 
 random.o : $(SRCDIR)/random.f90 
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/random.f90
 computef.o : $(SRCDIR)/computef.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/computef.f90
 computeg.o : $(SRCDIR)/computeg.f90 $(modules)   
 	@$(FORTRAN) $(FLAGS) -c $(SRCDIR)/computeg.f90
+gencan_ieee_signal_routines.o : $(SRCDIR)/gencan_ieee_signal_routines.f90
+	@$(FORTRAN) $(IEEE_SIGNAL_FLAGS) -c $(SRCDIR)/gencan_ieee_signal_routines.f90
+gencan.o : $(SRCDIR)/gencan.f gencan_ieee_signal_routines.o
+	@$(FORTRAN) $(GENCANFLAGS) -c $(SRCDIR)/gencan.f 
 #
 # Clean build files
 #
 clean: 
-	@\rm -f ./*.o ./*.mod 
+	@\rm -f ./*.o ./*.mod ./src/*.mod ./src/*.o
 #
 # Remove all build and executable files to upload to git
 #
 cleanall:  
-	@\rm -f ./packmol ./*.o ./*.mod
+	@\rm -f ./packmol ./*.o ./*.mod ./src/*.mod ./src/*.o
