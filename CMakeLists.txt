@@ -17,6 +17,7 @@ add_executable(packmol
        src/exit_codes.f90
        src/cenmass.f90
        src/gencan.f
+       src/gencan_ieee_signal_routines.f90
        src/pgencan.f90
        src/initial.f90
        src/title.f90
