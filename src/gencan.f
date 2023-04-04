@@ -1829,7 +1829,7 @@ C     equal to cgeps_0 and cgeps_f.
 C     We introduce now a linear relation between gpsupn and cgeps also.
 
 c LM: changed to avoid error with gpsupn=0
-      if ( gpsupn .ge. 0.d0 ) then
+      if ( gpsupn .gt. 0.d0 ) then
          acgeps = log10( cgepsf / cgepsi ) / log10( cggpnf / gpsupn )
          bcgeps = log10( cgepsi ) - acgeps * log10( gpsupn )
       else
