@@ -1,5 +1,13 @@
 ####################################################################################################
 
+#
+# How to release the software:
+#
+# run ./release. 20.14.1 (for example)
+#
+# go to the github site and release the version corresponding to the new tag.
+#
+
 # Software name:
 
 package=packmol
@@ -29,9 +37,6 @@ if [[ $version < " " ]]; then
   echo "       current $version"
   exit
 fi
-
-file="$package-$version.tar.gz" 
-echo "Will create file: $file"
 
 cat $versionfile | sed -e "s/Version.*/Version\ $version \')\")/" > tmpfile.txt
 \mv -f tmpfile.txt $versionfile
