@@ -140,6 +140,7 @@ subroutine setsizes()
       if(keyword(i,2).eq.'pdb') pdb = .true.
       if(keyword(i,2).eq.'xyz') xyz = .true.
       if(keyword(i,2).eq.'moldy') moldy = .true.
+      write(*,*)' Types of coordinate files specified: ', trim(keyword(i,2))
     end if
     if(keyword(i,1).eq.'fbins') then
       record = keyword(i,2)
@@ -225,6 +226,7 @@ subroutine setsizes()
       if ( natoms(itype) == 0 ) then
         write(*,*) ' ERROR: Could not read any atom from file: ', &
                    trim(adjustl(keyword(iline,2)))
+        stop exit_code_input_error
       end if
 
     end if
