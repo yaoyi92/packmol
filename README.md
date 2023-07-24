@@ -20,6 +20,17 @@ User guide, examples, and tutorials, are available at: https://m3g.github.io/pac
 
 ## Installation instructions
 
+### Multi-platform package provider with Julia
+
+If you are not familiar with compiling packages, you may find it easier to get the Julia interface for
+`packmol`, which provides executables for all common platforms: https://github.com/m3g/Packmol.jl
+
+Installation of the Julia programming language and of the Julia `Packmol` package are necessary, but
+these follow simple instructions which are described in the link above.
+
+Compilation of the package, particularly on Linux platforms is, nevertheless, easy, following the instructions
+below.
+
 ### Downloading
 
 1. Download the `.tar.gz` or `.zip` files of the latest version from: https://github.com/m3g/packmol/releases
