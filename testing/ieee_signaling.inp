@@ -1,5 +1,5 @@
 tolerance 6.0
-output test.pdb
+output ieee_signaling_box.pdb
 filetype pdb
 structure ieee_signaling.pdb
    number 6916

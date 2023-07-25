@@ -7,5 +7,5 @@ packmol
 CMakeCache.txt
 cmake_install.cmake
 tmpfile.txt
-testing/test.pdb
+testing/ieee_signaling_box.pdb
 testing/water_box.pdb
