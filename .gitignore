@@ -9,3 +9,5 @@ cmake_install.cmake
 tmpfile.txt
 testing/ieee_signaling_box.pdb
 testing/water_box.pdb
+testing/water_box.pdb_FORCED
+testing/packmol.log

@@ -6,7 +6,7 @@
 ! Subroutine output: Subroutine that writes the output file
 !
 
-subroutine output(n,x)
+subroutine output(n, x, output_file_name)
 
   use exit_codes
   use sizes
@@ -36,6 +36,7 @@ subroutine output(n,x)
   character(len=strl) :: pdb_atom_line, tinker_atom_line, crd_format
   character(len=8) :: crdires,crdresn,crdsegi,atmname
   character(len=strl) :: record
+  character(len=strl) :: output_file_name
   character(len=5) :: i5hex, tmp_i5hex
 
   ! Job title
@@ -96,7 +97,7 @@ subroutine output(n,x)
   ! Write the output (xyz file)
 
   if(xyz) then
-    open(30,file=xyzout,status='unknown') 
+    open(30,file=output_file_name,status='unknown') 
     write(30,*) ntotat
     write(30,*) title 
     ilubar = 0 
@@ -143,7 +144,7 @@ subroutine output(n,x)
   ! write the output as a MOLDY file
 
   if(moldy) then
-    open(30,file=xyzout,status='unknown') 
+    open(30,file=output_file_name,status='unknown') 
     ! For square moldy boxes, this must be the side dimensions of the box 
     sxmin = 1.d30
     symin = 1.d30
@@ -351,7 +352,7 @@ subroutine output(n,x)
                       &f8.3,t55,a26 )"
     crd_format='(2I10,2X,A8,2X,A8,3F20.10,2X,A8,2X,A8,F20.10)'
 
-    open(30,file=xyzout,status='unknown') 
+    open(30,file=output_file_name,status='unknown') 
     if ( crd ) then
       open(40,file=crdfile,status='unknown')
       write(40,'("* TITLE ", a64,/&
@@ -696,7 +697,7 @@ subroutine output(n,x)
 
     tinker_atom_line = "( i7,tr2,a3,3(tr2,f10.6),9(tr2,i7) )"
 
-    open(30, file = xyzout,status='unknown') 
+    open(30, file = output_file_name,status='unknown') 
  
     write(30,"( i6,tr2,a64 )") ntotat, title 
 

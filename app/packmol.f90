@@ -668,7 +668,7 @@ program packmol
   ! If there are no variables (only fixed molecules, stop)
 
   if(n.eq.0) then
-    call output(n,x)
+    call output(n,x, xyzout)
     write(*,dash1_line)
     write(*,*) ' There are only fixed molecules, therefore there is nothing to do. '
     write(*,*) ' The output file contains the fixed molecules in the desired positions. '
@@ -701,7 +701,7 @@ program packmol
   ! Stop if only checking the initial approximation
 
   if(check) then
-    call output(n,x)
+    call output(n,x,xyzout)
     write(*,*) ' Wrote initial point to output file: ', trim(adjustl(xyzout)) 
     if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
     stop
@@ -753,7 +753,7 @@ program packmol
       write(*,*) ' Initial approximation is a solution. Nothing to do. '
       write(*,*)
       call swaptype(n,x,itype,3) ! Restore all-molecule vectors
-      call output(n,x)
+      call output(n,x,xyzout)
       if( itype == ntype + 1 ) then
         write(*,*) ' Solution written to file: ', trim(adjustl(xyzout))
         if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
@@ -849,7 +849,7 @@ program packmol
           ! If the solution was found for this type
           if( fdist < precision .and. frest < precision ) then
             call swaptype(n,x,itype,3) ! Restore all molecule vectors
-            call output(n,x)
+            call output(n,x,xyzout)
             write(*,*) ' Current structure written to file: ', trim(adjustl(xyzout))
             if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
             call writesuccess(itype,fdist,frest,fx)
@@ -869,7 +869,7 @@ program packmol
           if ( fx < bestf ) bestf = fx
           ! If solution was found for all system
           if ( fdist < precision .and. frest < precision ) then
-            call output(n,x)
+            call output(n,x,xyzout)
             call writesuccess(itype,fdist,frest,fx)
             write(*,*) ' Solution written to file: ', trim(adjustl(xyzout))
             if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
@@ -882,7 +882,7 @@ program packmol
 
         ! If this is the best structure so far
         if( mod(loop+1,writeout) == 0 .and. all_type_fx < fprint ) then
-          call output(n,x)
+          call output(n,x,xyzout)
           write(*,*) ' Current solution written to file: ', trim(adjustl(xyzout))
           if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
           fprint = all_type_fx
@@ -892,7 +892,7 @@ program packmol
 
         ! If the user required printing even bad structures
         else if ( mod(loop+1,writeout) == 0 .and. writebad ) then
-          call output(n,x)
+          call output(n,x,xyzout)
           write(*,*) ' Writing current (perhaps bad) structure to file: ', trim(adjustl(xyzout))
           if ( crd ) write(*,*) ' ... and to CRD file: ', trim(adjustl(crdfile))
         end if

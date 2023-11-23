@@ -59,7 +59,7 @@ subroutine checkpoint(n,x)
             &)") fx
   write(*,dash3_line)
 
-  call output(n,x)
+  call output(n,x,xyzout)
 
   write(*,*) ' The solution with the best function value was '
   write(*,*) ' written to the output file: ', trim(adjustl(xyzout))
@@ -82,7 +82,7 @@ subroutine checkpoint(n,x)
   write(*,*)
   write(*,dash1_line)
   xyzout_forced = trim(adjustl(xyzout))//'_FORCED'
-  call output(n,x)
+  call output(n,x,xyzout_forced)
 
   write(*,*) ' The forced point was writen to the '
   write(*,*) ' output file: ', trim(adjustl(xyzout_forced))

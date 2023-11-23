@@ -1,14 +1,8 @@
 name: actions
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  schedule:
-    - cron: '0 6 * * *'
+  - push
+  - pull_request
 
 jobs:
   test:
@@ -46,7 +40,8 @@ jobs:
     - name: Run
       run: |
           cd testing
-          ../packmol < water_box.inp
-          ../packmol < ieee_signaling.inp
+          ./test.sh "water_box.inp" "packmol.log" "Success!"
+          ./test.sh "ieee_signaling.inp" "packmol.log" "Success!"
+          ./test.sh "water_box_failed.inp" "packmol.log" "FORCED"
           cd ..
       shell: bash
