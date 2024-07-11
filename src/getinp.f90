@@ -13,6 +13,7 @@ subroutine getinp()
   use compute_data, only : ntype, natoms, idfirst, nmols, ityperest, coor, restpars
   use input
   use usegencan
+  use pbc
 
   implicit none
   integer :: i, k, ii, iarg, iline, idatom, iatom, in, lixo, irest, itype, itest,&
@@ -157,6 +158,13 @@ subroutine getinp()
       read(keyword(i,2),*,iostat=ioerr) iprint2
       if ( ioerr /= 0 ) exit
       write(*,*) ' Optional printvalue 2 set: ', iprint2
+    else if(keyword(i,1).eq.'pbc') then
+      read(keyword(i,2),*,iostat=ioerr) pbc_box(1)
+      read(keyword(i,3),*,iostat=ioerr) pbc_box(2)
+      read(keyword(i,4),*,iostat=ioerr) pbc_box(3)
+      if ( ioerr /= 0 ) exit
+      is_pbc = .true.
+      write(*,*) ' Periodic boundary condition activated box: ', pbc_box(1), pbc_box(2), pbc_box(3)
     else if( keyword(i,1) /= 'tolerance' .and. &
              keyword(i,1) /= 'short_tol_dist' .and. &
              keyword(i,1) /= 'short_tol_scale' .and. &
