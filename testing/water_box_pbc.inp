@@ -1,5 +1,5 @@
 #
-# A box with water
+# A box with water at ~1g/mL with periodic boundary condition (pbc)
 #
 
 tolerance 2.0
