@@ -41,6 +41,7 @@ program packmol
   use flashsort
   use swaptypemod
   use ahestetic
+  use pbc
   implicit none
 
   integer :: itype, irest, idatom, iatom
@@ -346,6 +347,14 @@ program packmol
             iratom(icart,iratcount) = iirest
           end if
         end do
+        if (is_pbc) then
+          nratom(icart) = nratom(icart) + 1
+          iratcount = iratcount + 1
+          do irest = 1, nrest
+            if (irestline(irest).eq.-1) iratom(icart,iratcount) = irest
+          end do
+          !write(*,*) "test here", irestline(1), nrest, icart, iratcount, iratom(icart, iratcount)
+        end if
         if(nratom(icart).gt.0) rests = .true.
       end do 
       if(.not.rests) then

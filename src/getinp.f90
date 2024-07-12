@@ -531,6 +531,26 @@ subroutine getinp()
       write(*,*) ' Maximum number of GENCAN loops-0 for type: ', itype, ': ', nloop0_type(itype)
     end if
   end do
+
+  ! Getting the tolerance
+
+  ioerr = 1
+  dism = -1.d0
+  do iline = 1, nlines
+    if(keyword(iline,1).eq.'tolerance') then
+      read(keyword(iline,2),*,iostat=ioerr) dism
+      if ( ioerr /= 0 ) then
+        write(*,*) ' ERROR: Failed reading tolerance. '
+        stop exit_code_input_error
+      end if
+      exit
+    end if
+  end do
+  if ( ioerr /= 0 ) then
+    write(*,*) ' ERROR: Overall tolerance not set. Use, for example: tolerance 2.0 '
+    stop exit_code_input_error
+  end if
+  write(*,*) ' Distance tolerance: ', dism
       
   ! Reading the restrictions that were set
 
@@ -712,28 +732,25 @@ subroutine getinp()
     end if
 
   end do
+
+  if (is_pbc) then
+    irest = irest + 1
+    irestline(irest) = -1
+    ityperest(irest) = 3
+    restpars(irest,1) = -dism/2
+    restpars(irest,2) = -dism/2
+    restpars(irest,3) = -dism/2
+    restpars(irest,4) = pbc_box(1) + dism/2
+    restpars(irest,5) = pbc_box(2) + dism/2
+    restpars(irest,6) = pbc_box(3) + dism/2
+    write(*,*) " For periodic boundary condition." 
+    write(*,*) " We automatically add a constraint for all atoms."
+    write(*,*) " inside box -tol -tol -tol box1+tol box2+tol box3+tol"
+  end if
+
   nrest = irest 
   write(*,*) ' Total number of restrictions: ', nrest
 
-  ! Getting the tolerance
-
-  ioerr = 1
-  dism = -1.d0
-  do iline = 1, nlines
-    if(keyword(iline,1).eq.'tolerance') then
-      read(keyword(iline,2),*,iostat=ioerr) dism
-      if ( ioerr /= 0 ) then
-        write(*,*) ' ERROR: Failed reading tolerance. '
-        stop exit_code_input_error
-      end if
-      exit
-    end if
-  end do
-  if ( ioerr /= 0 ) then
-    write(*,*) ' ERROR: Overall tolerance not set. Use, for example: tolerance 2.0 '
-    stop exit_code_input_error
-  end if
-  write(*,*) ' Distance tolerance: ', dism
 
   ! Reading, if defined, the short distance penalty parameters
 
