@@ -9,5 +9,4 @@ pbc 31. 31. 31.
 
 structure water.pdb
   number 1000
-  inside box 0. 0. 0. 31. 31. 31.
 end structure
