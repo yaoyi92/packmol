@@ -9,7 +9,7 @@ function update_mind(i, j, d2, pdb, md::MinimumDistance)
 end
 CellListMap.reducer(md1::MinimumDistance, md2::MinimumDistance) = MinimumDistance(min(md1.d,md2.d))
 CellListMap.copy_output(md::MinimumDistance) = md
-CellListMap.reset_output(md::MinimumDistance) = MinimumDistance(+Inf)
+CellListMap.reset_output(::MinimumDistance) = MinimumDistance(+Inf)
 
 function check_mind(input_file::String)
     tolerance = nothing
@@ -36,7 +36,15 @@ function check_mind(input_file::String)
         output = MinimumDistance(+Inf),
     )
     mind = map_pairwise((x,y,i,j,d2,md) -> update_mind(i, j, d2, pdb, md), sys)
-    return (mind.d > (1 - precision) * tolerance)
+    if (mind.d < (1 - precision) * tolerance)
+        error("""\n
+
+            Packing reported success, but minimum distance is not correct for $input_file
+            Obtained minimum-distance = $(mind.d) for tolerance $tolerance and precision $precision.
+            
+        """)
+    end
+    return nothing
 end 
 
 if !isinteractive()
@@ -45,9 +53,7 @@ if !isinteractive()
         log = IOBuffer()
         run(pipeline(`$packmol`; stdin=input_test, stdout=log))
         if occursin("Success!", String(take!(log)))
-            if !check_mind(input_test)
-                error("Packing reported success, but minimum distance is not correct for $input_test")
-            end
+            check_mind(input_test)
         else
             error("Failed packing for $input_test")
         end

@@ -4,12 +4,12 @@
 
 tolerance 2.0
 filetype pdb
-output water_box.pdb
+output output.pdb
 
 maxit 2
 nloop 1
 
-structure water.pdb
+structure ./structure_files/water.pdb
   number 2
   inside box 0. 0. 0. 3.0 3.0 1.0
 end structure
