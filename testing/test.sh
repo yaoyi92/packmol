@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Install Julia
-#curl -fsSL https://install.julialang.org | sh
+curl -fsSL https://install.julialang.org | sh
 # Run the tests
 julia runtests.jl ./input_files/water_box.inp \
                   ./input_files/ieee_signaling.inp \
