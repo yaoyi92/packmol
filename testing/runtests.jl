@@ -2,6 +2,14 @@ import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate()
 using PDBTools
 using CellListMap
 
+# 
+# Note: this tests depend on each molecule being identified as a single residue
+# in the structure. Thus, the PDB file should have a single residue for each molecule,
+# for instance, a protein must have a single residue name for all its atoms.
+# The residue numbers are overwritten by the `resnumbers` option of the input
+# packmol files .
+#
+
 struct MinimumDistance d::Float64 end
 function update_mind(i, j, d2, pdb, md::MinimumDistance)
     residue(pdb[i]) == residue(pdb[j]) && return md
