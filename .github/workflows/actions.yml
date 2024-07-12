@@ -40,8 +40,5 @@ jobs:
     - name: Run
       run: |
           cd testing
-          ./test.sh "water_box.inp" "packmol.log" "Success!"
-          ./test.sh "ieee_signaling.inp" "packmol.log" "Success!"
-          ./test.sh "water_box_failed.inp" "packmol.log" "FORCED"
-          cd ..
+          ./test.sh
       shell: bash

@@ -1,25 +1,15 @@
 #!/bin/bash
 #
-# First argument: input file name
-# Second argument: log file name
-#
-# Third argument: string to be searched in the log file, to declare that
-# the test passed
-#
-# Example: ./test.sh "water_box.inp" "packmol.log" "Success!"
-#
-if ! [ -f $1 ]; then
-    echo "Error: input file not found: $1"
-    exit 1
-fi
-../packmol < $1 > $2
-if ! [ -f $2 ]; then
-    echo "Error: Log file not generated: $2"
-    exit 1
-fi
-if ! grep -q $3 $2; then
-    echo "Error: could not find $3 in $2"
-    exit 1
-fi
-echo "Test passed."
-exit 0
+# Install Julia
+curl -fsSL https://install.julialang.org | sh
+# Run the tests
+julia runtests.jl ./input_files/water_box.inp \
+                  ./input_files/ieee_signaling.inp \
+                  ./input_files/mixture.inp \
+                  ./input_files/spherical.inp \
+                  ./input_files/bilayer.inp \
+                  ./input_files/solvprotein.inp \
+                  ./input_files/water_box_pbc.inp
+
+# check if output files are properly generated in a failed run
+./test_failed.sh ./input_files/water_box_failed.inp packmol.log "FORCED" 

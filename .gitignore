@@ -11,3 +11,6 @@ testing/ieee_signaling_box.pdb
 testing/water_box.pdb
 testing/water_box.pdb_FORCED
 testing/packmol.log
+testing/Manifest.toml
+testing/output.pdb
+testing/output.pdb_FORCED
