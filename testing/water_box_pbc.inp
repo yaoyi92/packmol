@@ -7,6 +7,6 @@ filetype pdb
 output water_box.pdb
 pbc 31. 31. 31.
 
-structure water.pdb
+structure ./structure_files/water.pdb
   number 1000
 end structure
