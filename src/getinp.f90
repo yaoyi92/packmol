@@ -745,7 +745,7 @@ subroutine getinp()
     restpars(irest,6) = pbc_box(3) + dism/2
     write(*,*) " For periodic boundary condition." 
     write(*,*) " We automatically add a constraint for all atoms."
-    write(*,*) " inside box -tol -tol -tol box1+tol box2+tol box3+tol"
+    write(*,*) " inside box -tol/2 -tol/2 -tol/2 box1+tol/2 box2+tol/2 box3+tol/2"
   end if
 
   nrest = irest 

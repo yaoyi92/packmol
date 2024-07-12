@@ -353,7 +353,6 @@ program packmol
           do irest = 1, nrest
             if (irestline(irest).eq.-1) iratom(icart,iratcount) = irest
           end do
-          !write(*,*) "test here", irestline(1), nrest, icart, iratcount, iratom(icart, iratcount)
         end if
         if(nratom(icart).gt.0) rests = .true.
       end do 
